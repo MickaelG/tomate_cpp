@@ -141,16 +141,16 @@ int xml_write_data(string filename,const Dataset& dataset)
 
         add_float_attribute(elem_node, "width", plot.get_rect().get_width());
         add_float_attribute(elem_node, "height", plot.get_rect().get_height());
-        add_float_attribute(elem_node, "posx", plot.get_rect().get_posx());
-        add_float_attribute(elem_node, "posy", plot.get_rect().get_posy());
+        add_float_attribute(elem_node, "posx", plot.get_rect().get_x());
+        add_float_attribute(elem_node, "posy", plot.get_rect().get_y());
 
         for (Plot subd: plot.get_subplots())
         {
             xml_node subd_node = elem_node.append_child("subd");
             add_float_attribute(subd_node, "width", subd.get_rect().get_width());
             add_float_attribute(subd_node, "height", subd.get_rect().get_height());
-            add_float_attribute(subd_node, "posx", subd.get_rect().get_posx());
-            add_float_attribute(subd_node, "posy", subd.get_rect().get_posy());
+            add_float_attribute(subd_node, "posx", subd.get_rect().get_x());
+            add_float_attribute(subd_node, "posy", subd.get_rect().get_y());
         }
     }
     xml_node plant_node = root_node.append_child("plants");

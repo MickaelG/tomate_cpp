@@ -4,4 +4,6 @@ CMakeCache.txt
 Makefile
 .*.swp
 .kdev4/
+moc_*.cpp
+*_automoc.cpp
 
