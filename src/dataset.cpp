@@ -158,6 +158,21 @@ bool Crop::is_planned_at_date(bg::date date) const
     return result;
 }
 
+bool Crop::is_in_year_started_by(bg::date date) const
+{
+    if ((~get_virtual_end_date().is_not_a_date() && get_virtual_end_date() >= date) &&
+        (~start_date.is_not_a_date() && start_date <= date + bg::date_duration(365)))
+    {
+        return true;
+    }
+    else if ((~planned_end_date.is_not_a_date() && planned_end_date >= date) &&
+             (~planned_start_date.is_not_a_date() && planned_start_date <= date + bg::date_duration(365)))
+    {
+        return true;
+    }
+    return false;
+}
+
 bg::date Crop::get_virtual_end_date() const
 {
     if (end_date.is_not_a_date() && (!start_date.is_not_a_date()))
@@ -167,6 +182,18 @@ bg::date Crop::get_virtual_end_date() const
     else
     {
         return end_date;
+    }
+}
+
+bg::date Crop::get_virtual_planned_end_date() const
+{
+    if (planned_end_date.is_not_a_date() && (!planned_start_date.is_not_a_date()))
+    {
+        return planned_start_date + bg::days(14);
+    }
+    else
+    {
+        return planned_end_date;
     }
 }
 

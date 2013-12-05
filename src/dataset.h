@@ -56,6 +56,7 @@ class Plot: public KeyName
         void add_subplot(float width, float height, float posx, float posy);
         string get_descr() const { return descr; };
         Rectangle& get_rect() { return geometry; };
+        const list<Plot>& get_subplots() const { return subplots; };
         list<Plot>& get_subplots() { return subplots; };
         Plot& get_subplot(string key);
 };
@@ -140,6 +141,7 @@ class Crop
         Plot& get_plot() const;
         bg::date get_date(string which) const;
         bg::date get_virtual_end_date() const;
+        bg::date get_virtual_planned_end_date() const;
         void add_action(bg::date date, string note);
         list<CropAction>& get_actions();
         string get_varkey() const;
@@ -147,6 +149,7 @@ class Crop
         explicit operator bool() const;
         bool is_active_at_date(bg::date date) const;
         bool is_planned_at_date(bg::date date) const;
+        bool is_in_year_started_by(bg::date date) const;
         string description() const;
 };
 extern Crop NullCrop;

@@ -28,9 +28,9 @@ string slurp(ifstream& in) {
 BOOST_AUTO_TEST_CASE(xml)
 {
     Dataset dataset;
-    xml_read_data("testfiles/data.sfg", dataset);
+    xml_read_data("../testfiles/data.sfg", dataset);
     xml_write_data("data_out.sfg", dataset);
-    ifstream ifs1("testfiles/data.sfg");
+    ifstream ifs1("../testfiles/data.sfg");
     ifstream ifs2("data_out.sfg");
     string str1;
     string str2;
@@ -40,10 +40,6 @@ BOOST_AUTO_TEST_CASE(xml)
     BOOST_CHECK(!(ifs1 && ifs2));
 }
 
-BOOST_AUTO_TEST_CASE(dates)
-{
-    BOOST_CHECK(bg::date(2012, 11, 21) > bg::date(2012, 11, 01));
-}
 
 BOOST_AUTO_TEST_CASE(is_active)
 {

@@ -4,9 +4,13 @@
 
 #include "dataset.h"
 
-#include "gui_widgets.h"
+#include "gui_utils.h"
+
 BOOST_AUTO_TEST_CASE(date)
 {
     BOOST_CHECK(QDate::currentDate() == toQDate(bg::day_clock::local_day()));
     BOOST_CHECK(fromQDate(QDate::currentDate()) == bg::day_clock::local_day());
+    
+    BOOST_CHECK(QDate() == toQDate(bg::date()));
+    BOOST_CHECK(fromQDate(QDate()) == bg::date());
 }

@@ -4,12 +4,12 @@
 
 int main(int argc, char *argv[])
 {
-    Dataset data;
-    xml_read_data("user_data/data.sfg", data);
-    xml_write_data("user_data/data_out.sfg", data);
+    Dataset dataset;
+    xml_read_data("../user_data/data.sfg", dataset);
+    xml_write_data("../user_data/data_out.sfg", dataset);
     
     QApplication a(argc, argv);
-    GuiMainWin w(data);
+    GuiMainWin w(dataset);
     w.show();
 
     return a.exec();
