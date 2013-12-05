@@ -6,4 +6,5 @@ Makefile
 .kdev4/
 moc_*.cpp
 *_automoc.cpp
+build/
 
