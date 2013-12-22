@@ -75,24 +75,4 @@ public:
     AddCropDialog(Dataset& dataset, QWidget* parent=NULL);
 };
 
-class ListModel: public QAbstractListModel
-{
-    Q_OBJECT
-
-public:
-    ListModel(vector<QString> elem_list, QWidget* parent = 0);
-
-private:
-    vector<QString> elem_list;
-};
-
-class ListWidget: public QListView
-{
-    Q_OBJECT
-
-public:
-    ListWidget(vector<QString> elem_list, QWidget* parent=NULL);
-    void index();
-};
-
 #endif //GUI_WIDGETS_H

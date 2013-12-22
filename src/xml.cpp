@@ -13,6 +13,17 @@ bg::date get_date(xml_node &elem_xml, string attribute_name)
     return date;
 }
 
+void replaceAll(std::string& str, const std::string& from, const std::string& to);
+
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
 
 int xml_read_data(string filename, Dataset& dataset)
 {
@@ -50,7 +61,7 @@ int xml_read_data(string filename, Dataset& dataset)
         string key = elem_xml.attribute("key").value();
         string name = elem_xml.attribute("name").value();
         string note = elem_xml.attribute("note").value();
-        //TODO: note = re.sub('\\\\n', '\n', note)
+        replaceAll(note, "\\n", "\n");
         string color = elem_xml.attribute("color").value();
         Plant plant(key, name, note, color);
         for (xml_node var_xml: elem_xml.children())
@@ -160,7 +171,9 @@ int xml_write_data(string filename,const Dataset& dataset)
         elem_node.append_attribute("key") = plant.get_key().c_str();
         elem_node.append_attribute("name") = plant.get_name().c_str();
         add_str_attribute(elem_node, "color", plant.get_color_str());
-        add_str_attribute(elem_node, "note", plant.get_note());
+        string note = plant.get_note();
+        replaceAll(note, "\n", "\\n");
+        add_str_attribute(elem_node, "note", note);
         for (Var var: plant.get_vars())
         {
             xml_node var_node = elem_node.append_child("var");

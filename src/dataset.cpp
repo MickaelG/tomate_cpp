@@ -295,14 +295,40 @@ string Plant::get_note() const
     return note;
 }
 
+void Plant::set_note(string in_note)
+{
+    note = in_note;
+}
+
 string Plant::get_color_str() const
 {
     return color;
 }
 
+void Plant::set_color_str(string color)
+{
+    this->color = color;
+}
+
 Vars& Plant::get_vars() {
     return varlist; 
 }
+
+
+Plant& Plants::index(int plant_index)
+{
+    if (plant_index >= 0)
+    {
+        Plants::iterator it = this->begin();
+        advance(it, plant_index);
+        return *it;
+    }
+    else
+    {
+        return NullPlant;
+    }
+}
+
 
 //TODO: search hierarchically without running through all subplots
 Plot& Dataset::get_plot(string key)

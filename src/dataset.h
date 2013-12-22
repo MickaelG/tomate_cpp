@@ -91,9 +91,11 @@ class Plant: public KeyName
     public:
         Plant() {};
         Plant(string key, string name, string note="", string color="");
-        void add_var(string key, string name, string note);
+        void add_var(string key, string name, string note="");
         string get_note() const;
+        void set_note(string);
         string get_color_str() const;
+        void set_color_str(string color);
         Vars& get_vars();
 };
 extern Plant NullPlant;
@@ -101,6 +103,8 @@ extern Plant NullPlant;
 //this is dangerous to store reference from vector elements. use list.
 class Plants: public list<Plant>
 {
+public:
+    Plant& index(int plant_index);
 };
 
 
