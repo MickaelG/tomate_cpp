@@ -14,6 +14,65 @@ Rectangle::Rectangle()
 }
 
 
+/*
+template <class T> T& ListKeyNames<T>::index(int data_index)
+{
+    if (data_index >= 0)
+    {
+        typename list<T>::iterator it = this->begin();
+        advance(it, data_index);
+        return *it;
+    }
+    else
+    {
+        return NullKeyName;
+    }
+}
+*/
+
+KeyName NullKeyName;
+KeyName& KeyNames::index(int data_index)
+{
+    if (data_index >= 0)
+    {
+        KeyNames::iterator it = this->begin();
+        advance(it, data_index);
+        return *it;
+    }
+    else
+    {
+        return NullKeyName;
+    }
+}
+
+Plot& Plots::index(int data_index)
+{
+    if (data_index >= 0)
+    {
+        Plots::iterator it = this->begin();
+        advance(it, data_index);
+        return *it;
+    }
+    else
+    {
+        return NullPlot;
+    }
+}
+
+Plant& Plants::index(int data_index)
+{
+    if (data_index >= 0)
+    {
+        Plants::iterator it = this->begin();
+        advance(it, data_index);
+        return *it;
+    }
+    else
+    {
+        return NullPlant;
+    }
+}
+
 Var::Var(string key, string name, string note) :
     KeyName(key, name), note(note) {}
 
@@ -37,7 +96,7 @@ void Plot::add_subplot(float width, float height, float posx, float posy)
 Crop NullCrop;
 string Crop::str_descr() const
 {
-    return plant.get_name();
+    return p_plant->get_name();
 }
 
 bg::date Crop::get_date(string which) const
@@ -54,13 +113,42 @@ bg::date Crop::get_date(string which) const
     {
         return end_date;
     }
-    else
+    else if (which == "start")
     {
         return start_date;
+    } else {
+        throw "Erreur, unknown which";
     }
 }
 
-Crop::Crop() : plant(NullPlant), plot(NullPlot)
+void Crop::set_date(string which, bg::date date)
+{
+    if (which == "planned_start")
+    {
+        planned_start_date = date;
+    }
+    else if (which == "planned_end")
+    {
+        planned_end_date = date;
+    }
+    else if (which == "end")
+    {
+       end_date = date;
+    }
+    else if (which == "start")
+    {
+        start_date = date;
+    } else {
+        
+    }
+}
+
+void Crop::set_note(string note)
+{
+    this->note = note;
+}
+
+Crop::Crop() : p_plant(0), p_plot(0)
 {
 }
 
@@ -71,7 +159,7 @@ Crop::Crop(bg::date start_date, bg::date end_date,
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
     varkey(varkey),
-    plant(plant), plot(plot), note(note)
+    p_plant(&plant), p_plot(&plot), note(note)
 {
 }
 
@@ -80,7 +168,7 @@ Crop::Crop(bg::date start_date, bg::date end_date,
      Plot &plot, string note) :
     start_date(start_date), end_date(end_date),
     varkey(varkey),
-    plant(plant), plot(plot), note(note)
+    p_plant(&plant), p_plot(&plot), note(note)
 {
 }
 
@@ -94,13 +182,33 @@ string Crop::description() const
 
 Plant& Crop::get_plant() const
 {
-    return plant;
+    if (p_plant)
+    {
+        return *p_plant;
+    } else {
+        return NullPlant;
+    }
 };
+
+void Crop::set_plant(Plant& plant)
+{
+    p_plant = &plant;
+}
 
 Plot& Crop::get_plot() const
 {
-    return plot;
+    if (p_plot)
+    {
+        return *p_plot;
+    } else {
+        return NullPlot;
+    }
 };
+
+void Crop::set_plot(Plot& plot)
+{
+    p_plot = &plot;
+}
 
 void Crop::add_action(bg::date date, string note)
 {
@@ -117,6 +225,11 @@ string Crop::get_varkey() const
     return varkey;
 }
 
+void Crop::set_varkey(string varkey)
+{
+    this->varkey = varkey;
+}
+
 string Crop::get_note() const
 {
     return note;
@@ -124,7 +237,11 @@ string Crop::get_note() const
 
 Crop::operator bool() const
 {
-    return (plant) && (plot);
+    if ((!p_plant) || (!p_plot))
+    {
+        return false;
+    }
+    return (*p_plant) && (*p_plot);
 }
         
         
@@ -312,21 +429,6 @@ void Plant::set_color_str(string color)
 
 Vars& Plant::get_vars() {
     return varlist; 
-}
-
-
-Plant& Plants::index(int plant_index)
-{
-    if (plant_index >= 0)
-    {
-        Plants::iterator it = this->begin();
-        advance(it, plant_index);
-        return *it;
-    }
-    else
-    {
-        return NullPlant;
-    }
 }
 
 

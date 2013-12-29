@@ -8,70 +8,6 @@
 #include <QDialogButtonBox>
 
 
-VarsModel::VarsModel(Plants& plants, ListWidget* plants_widget, QWidget* parent) :
-    QAbstractListModel(parent), plants(plants), plants_widget(plants_widget)
-{
-}
-
-
-int VarsModel::rowCount(const QModelIndex& model_index) const
-{
-    int plant_index = plants_widget->index();
-    if (plant_index >= 0)
-    {
-        Plants::iterator it = plants.begin();
-        advance(it, plant_index);
-        return it->get_vars().size();
-    }
-    return 0;
-}
-
-
-QVariant VarsModel::data(const QModelIndex& index, int role) const
-{
-    if (role == Qt::DisplayRole)
-    {
-        if (index.column() == 0)
-        {
-            int plant_index = plants_widget->index();
-            if (plant_index > 0)
-            {
-                Plants::iterator it = plants.begin();
-                advance(it, plant_index);
-                Vars vars = it->get_vars();
-                Vars::iterator itv = vars.begin();
-                advance(itv, index.row());
-                return QVariant(toQString(itv->get_name()));
-            }
-        }
-    }
-    return QVariant();
-}
-
-PlantsModel::PlantsModel(Plants& plants, QWidget* parent) :
-    QAbstractListModel(parent), plants(plants)
-{
-}
-
-int PlantsModel::rowCount(const QModelIndex& index) const
-{
-    return plants.size();
-}
-
-QVariant PlantsModel::data(const QModelIndex& index, int role) const
-{
-    if (role == Qt::DisplayRole)
-    {
-        if (index.column() == 0)
-        {
-            QString plant_name = toQString(plants.index(index.row()).get_name());
-            return QVariant(plant_name);
-        }
-    }
-    return QVariant();
-}
-
-
 
 AddDialog::AddDialog(Plants& plants, QWidget* parent) :
   plants(plants), QDialog(parent)
@@ -162,6 +98,7 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
     QVBoxLayout* plants_layout = new QVBoxLayout();
     vector<QString> plants_str = plants_str_list();
     plants_widget = new ListWidget(new PlantsModel(plants));
+    //plants_widget = new ListWidget(new KeyNamesModel(plants));
     plants_layout->addWidget(plants_widget);
     QPushButton* add_plant_btn = new QPushButton(tr("Add a plant"));
     AddDialog* add_plant = new AddPlantDialog(plants);

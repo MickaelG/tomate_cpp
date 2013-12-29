@@ -9,9 +9,13 @@ class GuiMainWin : public QMainWindow
 {
     Q_OBJECT
 
-    public:
-        GuiMainWin(Dataset& data);
-        ~GuiMainWin();
-    private:
-        Dataset& data;
+public:
+    GuiMainWin(Dataset& dataset);
+    ~GuiMainWin();
+    
+private slots:
+    void write_file();
+
+private:
+    Dataset& dataset;
 };

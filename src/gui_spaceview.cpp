@@ -1,6 +1,7 @@
 
 #include "gui_spaceview.h"
-#include "gui_widgets.h"
+
+#include "gui_utils.h"
 
 #include <QLayout>
 #include <QFont>
@@ -13,33 +14,33 @@ SpaceViewWindow::SpaceViewWindow(Dataset& dataset) : view(dataset, this)
     this->layout()->addWidget(&view);
 }
 
-void SpaceViewWindow::update()
+void SpaceViewWindow::update_draw()
 {
-    this->view.update();
+    view.update_draw();
 }
                 
 WholeSceneView::WholeSceneView(Dataset& dataset, QWidget* parent):
   my_scene(dataset)
 {
-    this->setScene(&my_scene);
-    this->zoom_fit();
+    setScene(&my_scene);
+    zoom_fit();
 }
 
-void WholeSceneView::update()
+void WholeSceneView::update_draw()
 {
-    this->scene()->update();
-    this->zoom_fit();
+    my_scene.update_draw();
+    zoom_fit();
 }
 
 void WholeSceneView::zoom_fit()
 {
-    this->fitInView(this->sceneRect(), Qt::KeepAspectRatio);
+    fitInView(sceneRect(), Qt::KeepAspectRatio);
 }
 
 void WholeSceneView::resizeEvent(QResizeEvent *event)
 
 {
-    this->zoom_fit();
+    zoom_fit();
 }
 
 PlotRepresentation::PlotRepresentation(Crops& crops, Plot& plot, QDate date) :
@@ -106,7 +107,7 @@ void WholeScene::set_date(QDate date)
     this->update();
 }
 
-void WholeScene::update()
+void WholeScene::update_draw()
 {
     this->clear();
     this->draw_scene();

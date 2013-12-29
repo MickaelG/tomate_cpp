@@ -3,52 +3,25 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMenu>
+#include <QGraphicsItemGroup>
 
 #include "dataset.h"
-#include "gui_widgets.h"
+#include "gui_widgets/EditCropDialog.h"
 
-
-class ContextMenu: public QMenu
-{
-    Q_OBJECT
-public:
-    ContextMenu();
-    void show(QPoint pos, Crop* crop);
-
-signals:
-    void modify_selected(Crop* crop);
-    void new_selected();
-
-private:
-    Crop* crop;
-};
 
 class CropTimeRepresentation: public QGraphicsItemGroup
 {
 public:
-    CropTimeRepresentation(Crop& crop, QMenu* context_menu, QDate date0 = QDate(), QWidget* parent = NULL);
+    CropTimeRepresentation(Crop& crop, QDate date0 = QDate(), QWidget* parent = NULL);
     void create_rect(QDate start_date, QDate end_date, bool planned=false);
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void delete_me();
-    void show(QPoint point, CropTimeRepresentation* crop_repr);
+    Crop* get_pcrop();
+    //void show(QPoint point, Crop* p_crop);
 private:
     Crop& crop;
     QDate date0;
-    ContextMenu* context_menu;
 };
 
-
-class PlotTimeRepresentation: public QGraphicsItemGroup
-{
-public:
-    PlotTimeRepresentation(Crops& crops, Plot& plot, QMenu* context_menu, QDate date0, QWidget* parent=NULL);
-    void update(Crops& crops, Plot& plot);
-private:
-    Crops& crops;
-    Plot& plot;
-    QDate date0;
-    QMenu* context_menu;
-};
 
 class MonthsRepresentation: public QGraphicsItemGroup
 {
@@ -66,6 +39,8 @@ public:
     WholeTimeScene(Dataset& dataset, QWidget* parent=NULL);
     void draw_scene();
     void clear_crops();
+    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    EditCropDialog* get_ecd() { return edit_crop_dialog; };
 
 public slots:
     void redraw();
@@ -74,9 +49,10 @@ public slots:
 
 private:
     Dataset& dataset;
-    EditCropDialog edit_crop_dialog;
-    ContextMenu* context_menu;
+    EditCropDialog* edit_crop_dialog;
+    QMenu* context_menu;
     int year;
+    vector<CropTimeRepresentation*> crop_reprs;
     
     void add_year_buttons();
 };
@@ -89,8 +65,10 @@ public:
     WholeTimeSceneView(Dataset& dataset, QWidget* parent=NULL);
     void update_draw();
     void update_rect();
+    WholeTimeScene* get_scene() { return _scene; };
 
 private:
+    WholeTimeScene* _scene;
 };
 
 class TimelineWindow: public QWidget
@@ -99,6 +77,9 @@ class TimelineWindow: public QWidget
 
 public:
     TimelineWindow(Dataset& dataset, QWidget* parent=NULL);
+    WholeTimeSceneView* get_view() { return &view; };
+    
+private slots:
     void update();
 
 private:

@@ -15,6 +15,13 @@ BOOST_AUTO_TEST_CASE(crops)
     BOOST_CHECK(crop.get_plant().get_name() == "tomate");
     plant.set_name("Concombre");
     BOOST_CHECK(crop.get_plant().get_name() == "Concombre");
+    Plant plant2("ra", "radis");
+    crop.set_plant(plant2);
+    BOOST_CHECK(crop.get_plant().get_name() == "radis");
+    Plot plot2("p2", "Carré2");
+    BOOST_CHECK(crop.get_plot().get_name() == "Carré1");
+    crop.set_plot(plot2);
+    BOOST_CHECK(crop.get_plot().get_name() == "Carré2");
 }
 
 #include <fstream>

@@ -42,6 +42,23 @@ class KeyName
         void set_name(string in_name) { name = in_name; }
         explicit operator bool() const { return !(key == "" && name == ""); };
 };
+extern KeyName NullKeyName;
+
+/*
+//this is dangerous to store reference from vector elements. use list.
+template <class T> class ListKeyNames: public list<T>
+{
+public:
+    T& index(int data_index);
+};
+*/
+
+class KeyNames: public list<KeyName>
+{
+public:
+    KeyName& index(int data_index);
+};
+
 
 class Plot: public KeyName
 {
@@ -65,6 +82,8 @@ extern Plot NullPlot;
 //this is dangerous to store reference from vector elements. use list.
 class Plots: public list<Plot>
 {
+public:
+    Plot& index(int data_index);
 };
 
 
@@ -104,7 +123,7 @@ extern Plant NullPlant;
 class Plants: public list<Plant>
 {
 public:
-    Plant& index(int plant_index);
+    Plant& index(int data_index);
 };
 
 
@@ -127,9 +146,9 @@ class Crop
         bg::date planned_start_date;
         bg::date planned_end_date;
         string note;
-        Plant &plant;
+        Plant* p_plant;
         string varkey;
-        Plot &plot;
+        Plot* p_plot;
         list<CropAction> actions;
     public:
         Crop();
@@ -142,14 +161,19 @@ class Crop
              Plot &plot, string note = "");
         string str_descr() const;
         Plant& get_plant() const;
+        void set_plant(Plant& plant);
         Plot& get_plot() const;
+        void set_plot(Plot& plot);
         bg::date get_date(string which) const;
+        void set_date(string which, bg::date date);
         bg::date get_virtual_end_date() const;
         bg::date get_virtual_planned_end_date() const;
         void add_action(bg::date date, string note);
         list<CropAction>& get_actions();
         string get_varkey() const;
+        void set_varkey(string varkey);
         string get_note() const;
+        void set_note(string note);
         explicit operator bool() const;
         bool is_active_at_date(bg::date date) const;
         bool is_planned_at_date(bg::date date) const;

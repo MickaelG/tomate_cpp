@@ -1,10 +1,10 @@
 
 #include "dataset.h"
-#include "gui_widgets.h"
 #include "gui_widgets/ListWidget.h"
+#include "gui_widgets/EditCropDialog.h"
+#include "gui_widgets/PlantsModel.h"
 
 #include <QWidget>
-#include <QAbstractListModel>
 #include <QLayout>
 #include <QWidget>
 #include <QPushButton>
@@ -12,34 +12,6 @@
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QColorDialog>
-
-class VarsModel: public QAbstractListModel
-{
-    Q_OBJECT
-    
-public:
-    VarsModel(Plants& plants, ListWidget* plants_widget, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    
-private:
-    Plants& plants;
-    ListWidget* plants_widget;
-    
-};
-
-class PlantsModel: public QAbstractListModel
-{
-    Q_OBJECT
-    
-public:
-    PlantsModel(Plants& plants, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    
-private:
-    Plants& plants;
-};
 
 class AddDialog: public QDialog
 {

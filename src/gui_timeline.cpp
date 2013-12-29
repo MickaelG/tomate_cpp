@@ -1,11 +1,13 @@
 
 #include "gui_timeline.h"
+#include "gui_utils.h"
 
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsProxyWidget>
 #include <QGridLayout>
 #include <stdexcept>
 #include <QColor>
+#include <QSignalMapper>
 
 int Margin = 20;
 int SubMargin = 5;
@@ -22,7 +24,7 @@ int date_to_pos(QDate date, QDate date0)
 }
 
 
-CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QMenu* context_menu, QDate date0, QWidget* parent) :
+CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget* parent) :
     date0(date0), crop(crop)
 {
     QString text = toQString(crop.get_plant().get_name());
@@ -79,14 +81,14 @@ void CropTimeRepresentation::create_rect(QDate start_date, QDate end_date, bool 
 }
 
 
-void CropTimeRepresentation::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-    context_menu->show(event->screenPos(), &crop);
-    //QMenu menu;
-    //QAction *removeAction = menu.addAction("Remove");
-    //QAction *markAction = menu.addAction("Mark");
-    //QAction *selectedAction = menu.exec(event->screenPos());
-}
+//void CropTimeRepresentation::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+//{
+//    context_menu->show(event->screenPos(), &crop);
+//    //QMenu menu;
+//    //QAction *removeAction = menu.addAction("Remove");
+//    //QAction *markAction = menu.addAction("Mark");
+//    //QAction *selectedAction = menu.exec(event->screenPos());
+//}
 
 
 void CropTimeRepresentation::delete_me()
@@ -94,30 +96,9 @@ void CropTimeRepresentation::delete_me()
     this->scene()->removeItem(this);
 }
 
-
-PlotTimeRepresentation::PlotTimeRepresentation(Crops& crops, Plot& plot, QMenu* context_menu, QDate date0, QWidget* parent) :
-    crops(crops), plot(plot), date0(date0)
+Crop* CropTimeRepresentation::get_pcrop()
 {
-    this->setHandlesChildEvents(false);
-    this->update(crops, plot);
-}
-
-
-void PlotTimeRepresentation::update(Crops& crops, Plot& plot)
-{
-    //subdiv numbers on the left
-    QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(plot.get_key()));
-    T->setPos(-40, 8);
-    T->setParentItem(this);
-
-    //actual timeline
-    for (Crop crop: crops)
-    {
-        if (crop.get_plot().get_key() == plot.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
-        {
-            addToGroup(new CropTimeRepresentation(crop, context_menu, date0));
-        }
-    }
+    return &crop;
 }
 
 
@@ -153,15 +134,42 @@ MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWi
 
 
 WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
-    dataset(dataset), edit_crop_dialog(dataset)
+    dataset(dataset)
 {
-    //QObject::connect(&edit_crop_dialog, SIGNAL(dataset_changed()), this, SLOT(update())); 
-    //QObject::connect(context_menu, SIGNAL(modify_selected), &edit_crop_dialog, SLOT(show()));
-    //QObject::connect(context_menu, SIGNAL(new_selected), &edit_crop_dialog, SLOT(show()));
+    edit_crop_dialog = new EditCropDialog(dataset);
+    context_menu = new QMenu;
+    context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
     year = QDate::currentDate().year();
     draw_scene();
 }
 
+void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    Crop* p_current_crop = 0;
+    QGraphicsItem* itempos = itemAt(event->scenePos());
+    QPointF clic_point = event->scenePos();
+    for (CropTimeRepresentation* crop_repr: crop_reprs)
+    {
+        QRectF local_crop_rect = crop_repr->boundingRect();
+        QRectF crop_rect = crop_repr->sceneTransform().mapRect(local_crop_rect);
+
+        if (crop_rect.contains(clic_point))
+        {
+            p_current_crop = crop_repr->get_pcrop();
+        }
+    }
+    edit_crop_dialog->set_crop_values(p_current_crop);
+    QAction* action = context_menu->actions().first();
+    if (p_current_crop)
+    {
+        action->setText(tr("Edit crop"));
+    }
+    else
+    {
+        action->setText(tr("New crop"));
+    }
+    context_menu->exec(event->screenPos());
+}
 
 void WholeTimeScene::next_year() {
     year++;
@@ -216,6 +224,7 @@ void WholeTimeScene::draw_scene()
     Crops& crops = dataset.get_crops();
 
     add_year_buttons();
+    crop_reprs.clear();
     
     QDate date0 = QDate(year, 1, 1);
     MonthsRepresentation *months = new MonthsRepresentation(date0, date0.addYears(1).addDays(-1));
@@ -224,10 +233,22 @@ void WholeTimeScene::draw_scene()
     {
         for (Plot square: plot.get_subplots())
         {
-            PlotTimeRepresentation* plot_repr = new PlotTimeRepresentation(dataset.get_crops(), square,
-                                                                       context_menu, date0);
-            plot_repr->setY(y_pos);
-            addItem(plot_repr);
+            //subdiv numbers on the left
+            QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(square.get_key()));
+            T->setPos(-40, y_pos + 8);
+            addItem(T);
+
+            //actual timeline
+            for (Crop& crop: crops)
+            {
+                if (crop.get_plot().get_key() == square.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
+                {
+                    CropTimeRepresentation* crop_repr = new CropTimeRepresentation(crop, date0);
+                    crop_repr->setY(y_pos);
+                    addItem(crop_repr);
+                    crop_reprs.push_back(crop_repr);
+                }
+            }
             y_pos += SquareUnit + SubMargin;
         }
         y_pos += Margin;
@@ -236,28 +257,17 @@ void WholeTimeScene::draw_scene()
 }
 
 
-ContextMenu::ContextMenu()
-{
-    //addAction("Modifier", emit(modify_selected(crop_repr));
-    //addAction("Nouveau", QObject::emit(new_selected());
-}
-
-void ContextMenu::show(QPoint pos, Crop* crop)
-{
-    this->crop = crop;
-    popup(pos);
-}
-
 
 WholeTimeSceneView::WholeTimeSceneView(Dataset& dataset, QWidget* parent)
 {
-    this->setScene(new  WholeTimeScene(dataset, parent));
+    _scene = new WholeTimeScene(dataset, parent);
+    this->setScene(_scene);
     this->update_rect();
 }
 
 void WholeTimeSceneView::update_draw()
 {
-    scene()->update();
+    get_scene()->redraw();
     update_rect();
 }
 
@@ -282,5 +292,5 @@ TimelineWindow::TimelineWindow(Dataset& dataset, QWidget* parent) :
 
 void TimelineWindow::update()
 {
-    view.update();
+    view.update_draw();
 }
