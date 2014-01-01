@@ -73,6 +73,20 @@ Plant& Plants::index(int data_index)
     }
 }
 
+Plant& Plants::add_plant(string key, string name)
+{
+    if (key == "")
+    {
+        key = to_string(size());
+    }
+    if (get_plant(key))
+    {
+        return NullPlant;
+    }
+    push_back(Plant(key, name));
+    return back();
+}
+
 Var::Var(string key, string name, string note) :
     KeyName(key, name), note(note) {}
 
@@ -357,7 +371,12 @@ Plant& Dataset::add_plant(Plant plant)
 
 Plant& Dataset::get_plant(string key)
 {
-    for (Plants::iterator it=plants.begin(); it != plants.end(); ++it)
+    return get_plants().get_plant(key);
+}
+
+Plant& Plants::get_plant(string key)
+{
+    for (Plants::iterator it=this->begin(); it != this->end(); ++it)
     {
         if (it->get_key() == key)
         {
@@ -404,6 +423,11 @@ Plant::Plant(string key, string name, string note, string color) :
     
 void Plant::add_var(string key, string name, string note)
 {
+    if (key == "")
+    {
+        key = to_string(varlist.size());
+    }
+    //TODO : check that key is unique
     varlist.push_back(Var(key, name, note));
 }
 

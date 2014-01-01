@@ -124,6 +124,8 @@ class Plants: public list<Plant>
 {
 public:
     Plant& index(int data_index);
+    Plant& add_plant(string key, string name);
+    Plant& get_plant(string key);
 };
 
 

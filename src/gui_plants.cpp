@@ -16,8 +16,7 @@ AddDialog::AddDialog(Plants& plants, QWidget* parent) :
     QFormLayout* formLayout = new QFormLayout(this);
     keyInput = new QLineEdit();
     nameInput = new QLineEdit();
-    formLayout->addRow("Key :", keyInput);
-    formLayout->addRow("Name :", nameInput);
+    formLayout->addRow(tr("Name :"), nameInput);
     QPushButton* OKbutton = new QPushButton(tr("Add"));
     QPushButton* Canbutton = new QPushButton(tr("Cancel"));
     QDialogButtonBox* buttonBox = new QDialogButtonBox();
@@ -31,9 +30,8 @@ AddDialog::AddDialog(Plants& plants, QWidget* parent) :
 
 void AddDialog::add()
 {
-    QString key = keyInput->text();
     QString name = nameInput->text();
-    add_elem(key, name);
+    add_elem(name);
     emit list_updated();
     hide();
 }
@@ -43,7 +41,7 @@ class AddPlantDialog: public AddDialog
 {
 public:
     AddPlantDialog(Plants& plants);
-    void add_elem(QString key, QString name);
+    void add_elem(QString name);
 
 };
 
@@ -51,9 +49,9 @@ AddPlantDialog::AddPlantDialog(Plants& plants): AddDialog(plants)
 {
 }
 
-void AddPlantDialog::add_elem(QString key, QString name)
+void AddPlantDialog::add_elem(QString name)
 {
-    plants.push_back(Plant(fromQString(key), fromQString(name)));
+    plants.add_plant("", fromQString(name));
 }
 
 
@@ -61,7 +59,7 @@ class AddVarDialog: public AddDialog
 {
 public:
     AddVarDialog(Plants& plants, ListWidget* plants_widget, QWidget* parent=NULL);
-    void add_elem(QString key, QString name);
+    void add_elem(QString name);
     
 private:
     ListWidget* plants_widget;
@@ -74,10 +72,10 @@ AddVarDialog::AddVarDialog(Plants& plants, ListWidget* plants_widget, QWidget* p
 }
 
 
-void AddVarDialog::add_elem(QString key, QString name)
+void AddVarDialog::add_elem(QString name)
 {
     int plant_index = plants_widget->index();
-    plants.index(plant_index).add_var(fromQString(key), fromQString(name));
+    plants.index(plant_index).add_var("", fromQString(name));
 }
 
 vector<QString> PlantsWindow::plants_str_list()

@@ -25,7 +25,7 @@ signals:
 
 private slots:
     void add();
-    virtual void add_elem(QString key, QString name) = 0;
+    virtual void add_elem(QString name) = 0;
     
 protected:
     Plants& plants;
