@@ -10,7 +10,7 @@ OptionalCalendar::OptionalCalendar(QString title, QWidget* parent):
 {
     this->setLayout(new QVBoxLayout);
     QLabel* label = new QLabel(title);
-    checkbox.setText("Activer");
+    checkbox.setText(tr("Activate"));
     checkbox.setChecked(true);
     //QObject::connect(&checkbox, SIGNAL(stateChanged(int)), &calendar, SLOT(setEnabled(int)));
     this->layout()->addWidget(label);

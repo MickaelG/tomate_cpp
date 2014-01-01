@@ -11,10 +11,10 @@ EditCropDialog::EditCropDialog(Dataset& dataset, QWidget* parent) :
 {
     setModal(true);
 
-    startdateInput = new OptionalCalendar("Start");
-    enddateInput = new OptionalCalendar("End");
-    plannedstartdateInput = new OptionalCalendar("Planned start");
-    plannedenddateInput = new OptionalCalendar("Planned end");
+    startdateInput = new OptionalCalendar(tr("Start"));
+    enddateInput = new OptionalCalendar(tr("End"));
+    plannedstartdateInput = new OptionalCalendar(tr("Planned start"));
+    plannedenddateInput = new OptionalCalendar(tr("Planned end"));
     plantInput = new ComboBoxKey(new PlantsModel(dataset.get_plants()));
     varInput = new ComboBoxKey(new VarsModel(dataset.get_plants(), plantInput));
     plotInput = new ComboBoxKey(new PlotsModel(dataset.get_plots()));
@@ -24,8 +24,8 @@ EditCropDialog::EditCropDialog(Dataset& dataset, QWidget* parent) :
     QObject::connect(plantInput, SIGNAL(currentIndexChanged(int)), this->varInput->model(), SIGNAL(layoutChanged()));
     QObject::connect(plotInput, SIGNAL(currentIndexChanged(int)), this->subplotInput->model(), SIGNAL(layoutChanged()));
 
-    OKbutton = new QPushButton("Modifier");
-    QPushButton* Canbutton = new QPushButton("Annuler");
+    OKbutton = new QPushButton(tr("Edit"));
+    QPushButton* Canbutton = new QPushButton(tr("Cancel"));
     
     QDialogButtonBox* buttonBox = new QDialogButtonBox();
     buttonBox->addButton(OKbutton, QDialogButtonBox::AcceptRole);

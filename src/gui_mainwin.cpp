@@ -11,13 +11,13 @@ QTabWidget* createTabsWidget(Dataset& data)
     QTabWidget* widget = new QTabWidget;
 
     SpaceViewWindow* spacewidget = new SpaceViewWindow(data);
-    widget->addTab(spacewidget, "Space view");
+    widget->addTab(spacewidget, QObject::tr("Space view"));
 
     TimelineWindow* timewidget = new TimelineWindow(data);
-    widget->addTab(timewidget, "Time view");
+    widget->addTab(timewidget, QObject::tr("Time view"));
 
     PlantsWindow* plantswidget = new PlantsWindow(data.get_plants());
-    widget->addTab(plantswidget, "Plants");
+    widget->addTab(plantswidget, QObject::tr("Plants"));
 
     //self.plantswidget.timeline_need_update.connect(self.timewidget.update)
     //self.plantswidget.timeline_need_update.connect(self.spacewidget.update)
@@ -36,7 +36,7 @@ GuiMainWin::GuiMainWin(Dataset& dataset) : dataset(dataset) {
     showMaximized();
     
     QToolBar* toolbar = new QToolBar();
-    QAction* write_action = toolbar->addAction("Write");
+    QAction* write_action = toolbar->addAction(tr("Write"));
     QObject::connect(write_action, SIGNAL(triggered()), this, SLOT(write_file()));
     addToolBar(toolbar);
     
