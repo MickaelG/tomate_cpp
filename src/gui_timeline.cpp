@@ -34,11 +34,18 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget*
     if (start_date > end_date) {
         std::cout << "Error with crop " << crop.get_plant().get_name() << std::endl;
     }
-    create_rect(start_date, end_date, true);
+    QGraphicsRectItem* acrect = create_rect(start_date, end_date, true);
+    if (acrect) {
+        this->addToGroup(acrect);
+    }
     
     start_date = toQDate(crop.get_date("start"));
     end_date = toQDate(crop.get_virtual_end_date());
-    create_rect(start_date, end_date, false);
+    QGraphicsRectItem* plrect = create_rect(start_date, end_date, false);
+    if (plrect)
+    {
+        this->addToGroup(plrect);
+    }
 
     QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
     center_text(textw, this->boundingRect());
@@ -48,11 +55,15 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget*
 }
 
 
-void CropTimeRepresentation::create_rect(QDate start_date, QDate end_date, bool planned)
+QGraphicsRectItem* CropTimeRepresentation::create_rect(QDate start_date, QDate end_date, bool planned)
 {
-    if (!start_date.isValid())
+    if (!(start_date.isValid() && end_date.isValid()))
     {
-        return;
+        return NULL;
+    }
+    if (start_date > date0.addYears(1) || end_date < date0)
+    {
+        return NULL;
     }
     if (start_date < date0) { start_date = date0.addDays(-3); }
     if (end_date > date0.addYears(1)) { end_date = date0.addYears(1).addDays(3); }
@@ -77,7 +88,8 @@ void CropTimeRepresentation::create_rect(QDate start_date, QDate end_date, bool 
         rect->setBrush(QBrush(color));
     }
     rect->setPen(QPen(Qt::NoPen));
-    this->addToGroup(rect);
+    
+    return rect;
 }
 
 
