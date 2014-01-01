@@ -35,10 +35,12 @@ QTabWidget* createTabsWidget(Dataset& data)
 GuiMainWin::GuiMainWin(Dataset& dataset) : dataset(dataset) {
     showMaximized();
     
+    /*
     QToolBar* toolbar = new QToolBar();
     QAction* write_action = toolbar->addAction(tr("Write"));
     QObject::connect(write_action, SIGNAL(triggered()), this, SLOT(write_file()));
     addToolBar(toolbar);
+    */
     
     setCentralWidget(new QWidget);
     centralWidget()->setLayout(new QGridLayout);
