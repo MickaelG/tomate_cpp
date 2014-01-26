@@ -94,7 +94,7 @@ void EditCropDialog::edit_plot()
     if (!p_crop)
     {
         Crop crop = dataset.add_crop(Crop(fromQDate(start_date), fromQDate(end_date),
-                                          fromQDate(planned_end_date), fromQDate(planned_end_date),
+                                          fromQDate(planned_start_date), fromQDate(planned_end_date),
                                           plant, fromQString(var_key), plot, fromQString(note)));
     }
     else
