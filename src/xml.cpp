@@ -148,7 +148,7 @@ int xml_write_data(string filename,const Dataset& dataset)
         xml_node elem_node = plot_node.append_child("plot");
         elem_node.append_attribute("key") = plot.get_key().c_str();
         elem_node.append_attribute("name") = plot.get_name().c_str();
-        elem_node.append_attribute("descr") = plot.get_descr().c_str();
+        elem_node.append_attribute("descr") = plot.get_note().c_str();
 
         add_float_attribute(elem_node, "width", plot.get_rect().get_width());
         add_float_attribute(elem_node, "height", plot.get_rect().get_height());

@@ -1,6 +1,9 @@
 #include "dataset.h"
 
 
+///////////////////////////////////////////////////////////////////////////////
+// class Rectangle
+///////////////////////////////////////////////////////////////////////////////
 Rectangle::Rectangle(int width, int height, int posx, int posy) :
     width(width), height(height), posx(posx), posy(posy) {}
 
@@ -12,6 +15,7 @@ Rectangle::Rectangle()
     posx = 0;
     posy = 0;
 }
+///////////////////////////////////////////////////////////////////////////////
 
 
 /*
@@ -30,7 +34,54 @@ template <class T> T& ListKeyNames<T>::index(int data_index)
 }
 */
 
+///////////////////////////////////////////////////////////////////////////////
+// class KeyName
+///////////////////////////////////////////////////////////////////////////////
+KeyName::KeyName()
+{
+}
+
+KeyName::KeyName(string key, string name, string note) :
+    key(key), name(name), note(note)
+{
+}
+
+string KeyName::get_key() const
+{
+    return key;
+}
+
+string KeyName::get_name() const
+{
+    return name;
+}
+
+string KeyName::get_note() const
+{
+    return note;
+}
+
+void KeyName::set_note(string note)
+{
+    this->note = note;
+}
+
+void KeyName::set_name(string name)
+{
+    this->name = name;
+}
+
+KeyName::operator bool() const
+{
+    return !(key == "" && name == "");
+}
+
 KeyName NullKeyName;
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
+// class KeyNames
+///////////////////////////////////////////////////////////////////////////////
 KeyName& KeyNames::index(int data_index)
 {
     if (data_index >= 0)
@@ -44,21 +95,45 @@ KeyName& KeyNames::index(int data_index)
         return NullKeyName;
     }
 }
+///////////////////////////////////////////////////////////////////////////////
 
-Plot& Plots::index(int data_index)
+
+///////////////////////////////////////////////////////////////////////////////
+// class Plant
+///////////////////////////////////////////////////////////////////////////////
+Plant NullPlant;
+Plant::Plant(string key, string name, string note, string color) :
+    KeyName(key, name, note), color(color) {};
+
+void Plant::add_var(string key, string name, string note)
 {
-    if (data_index >= 0)
+    if (key == "")
     {
-        Plots::iterator it = this->begin();
-        advance(it, data_index);
-        return *it;
+        key = to_string(varlist.size());
     }
-    else
-    {
-        return NullPlot;
-    }
+    //TODO : check that key is unique
+    varlist.push_back(Var(key, name, note));
 }
 
+string Plant::get_color_str() const
+{
+    return color;
+}
+
+void Plant::set_color_str(string color)
+{
+    this->color = color;
+}
+
+Vars& Plant::get_vars() {
+    return varlist;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class Plants
+///////////////////////////////////////////////////////////////////////////////
 Plant& Plants::index(int data_index)
 {
     if (data_index >= 0)
@@ -87,17 +162,61 @@ Plant& Plants::add_plant(string key, string name)
     return back();
 }
 
-Var::Var(string key, string name, string note) :
-    KeyName(key, name), note(note) {}
+Plant& Plants::get_plant(string key)
+{
+    for (Plants::iterator it=this->begin(); it != this->end(); ++it)
+    {
+        if (it->get_key() == key)
+        {
+            return *it;
+        }
+    }
+    return NullPlant;
+}
+///////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+// class Var
+///////////////////////////////////////////////////////////////////////////////
+Var::Var(string key, string name, string note) :
+    KeyName(key, name, note) {}
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class Plot
+///////////////////////////////////////////////////////////////////////////////
 Plot NullPlot;
+
+Plot::Plot()
+{
+}
+
 Plot::Plot(string key, string name, string descr, Rectangle rect) :
-    KeyName(key, name), geometry(rect), descr(descr) {}
+    KeyName(key, name, descr), geometry(rect)
+{
+}
 
 Plot::Plot(string key, string name, string descr, float width, float height, float posx, float posy) :
-    KeyName(key, name), descr(descr)
+    KeyName(key, name, descr)
 {
     geometry = Rectangle(width, height, posx, posy);
+}
+
+Rectangle& Plot::get_rect()
+{
+    return geometry;
+}
+
+const list<Plot>& Plot::get_subplots() const
+{
+    return subplots;
+}
+
+list<Plot>& Plot::get_subplots()
+{
+    return subplots;
 }
 
 void Plot::add_subplot(float width, float height, float posx, float posy)
@@ -107,6 +226,43 @@ void Plot::add_subplot(float width, float height, float posx, float posy)
     subplots.push_back(Plot(subd_key, "", "", width, height, posx, posy));
 }
 
+Plot& Plot::get_subplot(string key)
+{
+    for (Plots::iterator it=subplots.begin(); it != subplots.end(); ++it)
+    {
+        if (it->get_key() == key)
+        {
+            return *it;
+        }
+
+    }
+    return NullPlot;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class Plots
+///////////////////////////////////////////////////////////////////////////////
+Plot& Plots::index(int data_index)
+{
+    if (data_index >= 0)
+    {
+        Plots::iterator it = this->begin();
+        advance(it, data_index);
+        return *it;
+    }
+    else
+    {
+        return NullPlot;
+    }
+}
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class Crop
+///////////////////////////////////////////////////////////////////////////////
 Crop NullCrop;
 string Crop::str_descr() const
 {
@@ -153,13 +309,8 @@ void Crop::set_date(string which, bg::date date)
     {
         start_date = date;
     } else {
-        
-    }
-}
 
-void Crop::set_note(string note)
-{
-    this->note = note;
+    }
 }
 
 Crop::Crop() : p_plant(0), p_plot(0)
@@ -244,11 +395,6 @@ void Crop::set_varkey(string varkey)
     this->varkey = varkey;
 }
 
-string Crop::get_note() const
-{
-    return note;
-}
-
 Crop::operator bool() const
 {
     if ((!p_plant) || (!p_plot))
@@ -257,12 +403,12 @@ Crop::operator bool() const
     }
     return (*p_plant) && (*p_plot);
 }
-        
-        
+
+
 bool Crop::is_active_at_date(bg::date date) const
 {
     bool result;
-    if ((~start_date.is_not_a_date() && date >= start_date) && 
+    if ((~start_date.is_not_a_date() && date >= start_date) &&
         (~get_virtual_end_date().is_not_a_date() && date <= get_virtual_end_date()))
     {
         result = true;
@@ -328,7 +474,21 @@ bg::date Crop::get_virtual_planned_end_date() const
     }
 }
 
+string Crop::get_note() const
+{
+    return note;
+}
 
+void Crop::set_note(string note)
+{
+    this->note = note;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class Crops
+///////////////////////////////////////////////////////////////////////////////
 Crop& Crops::find_crop(const Plot& plot, bg::date date)
 {
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
@@ -345,7 +505,12 @@ Crop& Crops::find_crop(const Plot& plot, bg::date date)
     }
     return NullCrop;
 }
+///////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////////////////////////////////////////////////////
+// class Dataset
+///////////////////////////////////////////////////////////////////////////////
 Crop& Dataset::add_crop(Crop crop)
 {
     this->crops.push_back(crop);
@@ -372,18 +537,6 @@ Plant& Dataset::add_plant(Plant plant)
 Plant& Dataset::get_plant(string key)
 {
     return get_plants().get_plant(key);
-}
-
-Plant& Plants::get_plant(string key)
-{
-    for (Plants::iterator it=this->begin(); it != this->end(); ++it)
-    {
-        if (it->get_key() == key)
-        {
-            return *it;
-        }
-    }
-    return NullPlant;
 }
 
 void Dataset::set_filename(string in_filename)
@@ -417,45 +570,6 @@ Crops& Dataset::get_crops() {
     return crops;
 }
 
-Plant NullPlant;
-Plant::Plant(string key, string name, string note, string color) :
-    KeyName(key, name), note(note), color(color) {};
-    
-void Plant::add_var(string key, string name, string note)
-{
-    if (key == "")
-    {
-        key = to_string(varlist.size());
-    }
-    //TODO : check that key is unique
-    varlist.push_back(Var(key, name, note));
-}
-
-string Plant::get_note() const
-{
-    return note;
-}
-
-void Plant::set_note(string in_note)
-{
-    note = in_note;
-}
-
-string Plant::get_color_str() const
-{
-    return color;
-}
-
-void Plant::set_color_str(string color)
-{
-    this->color = color;
-}
-
-Vars& Plant::get_vars() {
-    return varlist; 
-}
-
-
 //TODO: search hierarchically without running through all subplots
 Plot& Dataset::get_plot(string key)
 {
@@ -472,16 +586,4 @@ Plot& Dataset::get_plot(string key)
     }
     return NullPlot;
 }
-
-Plot& Plot::get_subplot(string key)
-{
-    for (Plots::iterator it=subplots.begin(); it != subplots.end(); ++it)
-    {
-        if (it->get_key() == key)
-        {
-            return *it;
-        }
-
-    }
-    return NullPlot;
-}
+///////////////////////////////////////////////////////////////////////////////

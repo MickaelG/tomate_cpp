@@ -34,13 +34,16 @@ class KeyName
     protected:
         string key;
         string name;
+        string note;
     public:
-        KeyName() {};
-        KeyName(string key, string name) : key(key), name(name) {};
-        string get_key() const { return key; };
-        string get_name() const { return name; };
-        void set_name(string in_name) { name = in_name; }
-        explicit operator bool() const { return !(key == "" && name == ""); };
+        KeyName();
+        KeyName(string key, string name, string note);
+        string get_key() const;
+        string get_name() const;
+        string get_note() const;
+        void set_note(string);
+        void set_name(string name);
+        explicit operator bool() const;
 };
 extern KeyName NullKeyName;
 
@@ -64,17 +67,15 @@ class Plot: public KeyName
 {
     private:
         Rectangle geometry;
-        string descr;
         list<Plot> subplots;
     public:
-        Plot() {};
+        Plot();
         Plot(string key, string name, string descr, Rectangle rect);
         Plot(string key, string name, string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
         void add_subplot(float width, float height, float posx, float posy);
-        string get_descr() const { return descr; };
-        Rectangle& get_rect() { return geometry; };
-        const list<Plot>& get_subplots() const { return subplots; };
-        list<Plot>& get_subplots() { return subplots; };
+        Rectangle& get_rect();
+        const list<Plot>& get_subplots() const;
+        list<Plot>& get_subplots();
         Plot& get_subplot(string key);
 };
 extern Plot NullPlot;
@@ -90,10 +91,8 @@ public:
 class Var: public KeyName
 {
     private:
-        string note;
     public:
-        Var(string key, string name, string note);
-        string get_note() const { return note; }
+        Var(string key, string name, string note = "");
 };
 
 class Vars: public list<Var>
@@ -105,14 +104,11 @@ class Plant: public KeyName
 {
     private:
         string color;
-        string note;
         Vars varlist;
     public:
         Plant() {};
         Plant(string key, string name, string note="", string color="");
         void add_var(string key, string name, string note="");
-        string get_note() const;
-        void set_note(string);
         string get_color_str() const;
         void set_color_str(string color);
         Vars& get_vars();
