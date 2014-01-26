@@ -4,12 +4,17 @@
 <context>
     <name>AddDialog</name>
     <message>
-        <location filename="src/gui_plants.cpp" line="21"/>
+        <location filename="src/gui_plants.cpp" line="19"/>
+        <source>Name :</source>
+        <translation>Nom :</translation>
+    </message>
+    <message>
+        <location filename="src/gui_plants.cpp" line="20"/>
         <source>Add</source>
         <translation>Ajoute</translation>
     </message>
     <message>
-        <location filename="src/gui_plants.cpp" line="22"/>
+        <location filename="src/gui_plants.cpp" line="21"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -56,9 +61,8 @@
 <context>
     <name>GuiMainWin</name>
     <message>
-        <location filename="src/gui_mainwin.cpp" line="39"/>
         <source>Write</source>
-        <translation>Enregistrer</translation>
+        <translation type="obsolete">Enregistrer</translation>
     </message>
 </context>
 <context>
@@ -72,17 +76,17 @@
 <context>
     <name>PlantsWindow</name>
     <message>
-        <location filename="src/gui_plants.cpp" line="103"/>
+        <location filename="src/gui_plants.cpp" line="101"/>
         <source>Add a plant</source>
         <translation>Ajouter une plante</translation>
     </message>
     <message>
-        <location filename="src/gui_plants.cpp" line="112"/>
+        <location filename="src/gui_plants.cpp" line="110"/>
         <source>Add a variety</source>
         <translation>Ajouter une variété</translation>
     </message>
     <message>
-        <location filename="src/gui_plants.cpp" line="131"/>
+        <location filename="src/gui_plants.cpp" line="129"/>
         <source>Color</source>
         <translation>Couleur</translation>
     </message>
