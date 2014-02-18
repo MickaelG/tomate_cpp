@@ -14,8 +14,10 @@ class WholeScene: public QGraphicsScene
 
 public:
     WholeScene(Dataset& dataset);
-    void set_date(QDate date);
     void update_draw();
+
+private slots:
+    void set_date(QDate date);
     
 private:
     Dataset& dataset;
@@ -32,6 +34,7 @@ public:
     void zoom_fit();
     void update_draw();
     void resizeEvent(QResizeEvent *event);
+    WholeScene* get_scene() { return &my_scene; };
 
 private:
     WholeScene my_scene;
@@ -43,6 +46,7 @@ class SpaceViewWindow: public QWidget
 
 public:
     SpaceViewWindow(Dataset& data);
+    WholeSceneView* get_view() { return &view; };
      
 private slots:
     void update_draw();

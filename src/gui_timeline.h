@@ -40,6 +40,7 @@ public:
     void draw_scene();
     void clear_crops();
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     EditCropDialog* get_ecd() { return edit_crop_dialog; };
 
 public slots:
@@ -47,14 +48,18 @@ public slots:
     void previous_year();
     void next_year();
 
+signals:
+    void current_date_changed(QDate date);
+
 private:
     Dataset& dataset;
     EditCropDialog* edit_crop_dialog;
     QMenu* context_menu;
-    int year;
+    QDate date;
     vector<CropTimeRepresentation*> crop_reprs;
     
     void add_year_buttons();
+    void draw_date_line(QDate date);
 };
 
 class WholeTimeSceneView: public QGraphicsView

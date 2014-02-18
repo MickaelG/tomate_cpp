@@ -104,7 +104,7 @@ WholeScene::WholeScene(Dataset& dataset) : dataset(dataset)
 void WholeScene::set_date(QDate date)
 {
     this->date = date;
-    this->update();
+    this->update_draw();
 }
 
 void WholeScene::update_draw()

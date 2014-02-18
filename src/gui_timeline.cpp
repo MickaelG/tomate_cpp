@@ -23,6 +23,13 @@ int date_to_pos(QDate date, QDate date0)
     return x;
 }
 
+QDate pos_to_date(int pos, QDate date0)
+{
+    //Returns a pixel position from a date
+    int nb_days = pos / PixPerDay;
+    return date0.addDays(nb_days);
+}
+
 
 CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget* parent) :
     date0(date0), crop(crop)
@@ -151,7 +158,7 @@ WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
     edit_crop_dialog = new EditCropDialog(dataset);
     context_menu = new QMenu;
     context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
-    year = QDate::currentDate().year();
+    date = QDate::currentDate();
     draw_scene();
 }
 
@@ -183,14 +190,29 @@ void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     context_menu->exec(event->screenPos());
 }
 
+void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QPointF clic_point = event->scenePos();
+    if ((clic_point.y() > -30) && (clic_point.y() < 20)) {
+        int xpos = clic_point.x();
+        date = pos_to_date(xpos, QDate(date.year(), 1, 1));
+        current_date_changed(date);
+        redraw();
+    } else {
+        QGraphicsScene::mousePressEvent(event); //To forward event for buttons
+    }
+}
+
 void WholeTimeScene::next_year() {
-    year++;
+    date = date.addYears(1);
+    current_date_changed(date);
     redraw();
 }
 
 
 void WholeTimeScene::previous_year() {
-    year--;
+    date = date.addYears(-1);
+    current_date_changed(date);
     redraw();
 }
 
@@ -204,7 +226,7 @@ void WholeTimeScene::redraw()
 
 void WholeTimeScene::add_year_buttons()
 {
-    QDate date0 = QDate(year, 1, 1);
+    QDate date0 = QDate(date.year(), 1, 1);
     QDate date_end = date0.addYears(1);
 
     int x0 = date_to_pos(date0, date0);
@@ -238,7 +260,7 @@ void WholeTimeScene::draw_scene()
     add_year_buttons();
     crop_reprs.clear();
     
-    QDate date0 = QDate(year, 1, 1);
+    QDate date0 = QDate(date.year(), 1, 1);
     MonthsRepresentation *months = new MonthsRepresentation(date0, date0.addYears(1).addDays(-1));
     addItem(months);
     for (const Plot plot: dataset.get_plots())
@@ -265,9 +287,17 @@ void WholeTimeScene::draw_scene()
         }
         y_pos += Margin;
     }
+    draw_date_line(date);
     update();
 }
 
+void WholeTimeScene::draw_date_line(QDate date)
+{
+    int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
+    QGraphicsLineItem *L = new QGraphicsLineItem(xpos, -30, xpos, height());
+    L->setPen(QPen(QColor("red")));
+    addItem(L);
+}
 
 
 WholeTimeSceneView::WholeTimeSceneView(Dataset& dataset, QWidget* parent)
