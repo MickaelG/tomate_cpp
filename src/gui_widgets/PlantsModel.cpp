@@ -200,7 +200,7 @@ QVariant SubPlotsModel::data(const QModelIndex& index, int role) const
     if (role == Qt::DisplayRole)
     {
         int plot_index = get_plot_index();
-        if (plot_index > 0)
+        if (plot_index >= 0)
         {
             Plots::iterator it = plots.begin();
             advance(it, plot_index);
