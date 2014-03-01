@@ -4,7 +4,7 @@
 
 #include <QLineEdit>
 #include <QVBoxLayout>
-#include "../geometry.h"
+#include "geometry.h"
 
 class PhysInput: public QWidget
 {

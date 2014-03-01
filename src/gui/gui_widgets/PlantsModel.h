@@ -5,7 +5,7 @@
 #include <QAbstractListModel>
 #include <QComboBox>
 
-#include "../dataset.h"
+#include "../../core/dataset.h"
 #include "ListWidget.h"
 
 class KeyNamesModel: public QAbstractListModel

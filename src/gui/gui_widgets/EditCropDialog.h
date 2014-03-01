@@ -8,7 +8,7 @@
 
 #include "ComboBoxKey.h"
 #include "OptionalCalendar.h"
-#include "../dataset.h"
+#include "dataset.h"
 
 class EditCropDialog: public QDialog
 {

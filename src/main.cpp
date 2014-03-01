@@ -1,5 +1,5 @@
 
-#include "gui_mainwin.h"
+#include "gui/gui_mainwin.h"
 #include <QApplication>
 
 #include <QTranslator>
@@ -36,3 +36,4 @@ int main(int argc, char *argv[])
     
     return result;
 }
+
