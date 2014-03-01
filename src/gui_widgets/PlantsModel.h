@@ -64,7 +64,8 @@ public:
     int rowCount(const QModelIndex& model_index) const;
     int columnCount(const QModelIndex& index) const;
     QVariant data(const QModelIndex& index, int role) const;
-    
+    bool removeRows (int row, int count, const QModelIndex & parent = QModelIndex() );
+
 private:
     Plots& plots;
 };
@@ -89,3 +90,4 @@ private:
 };
 
 #endif //GUI_PLANTSMODEL_H
+

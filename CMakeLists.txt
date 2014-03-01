@@ -15,16 +15,17 @@ include(${QT_USE_FILE})
 
 file(GLOB WIDGETS_SRC src/gui_widgets/*.cpp)
 file(GLOB GUI_SRC src/gui_*.cpp)
+file(GLOB CORE_SRC src/dataset.cpp src/geometry.cpp src/xml.cpp lib/pugixml.cpp)
 
-add_executable(tomate_gui src/dataset.cpp ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp src/xml.cpp lib/pugixml.cpp)
+add_executable(tomate_gui ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp)
 #qt4_use_modules(tomate_gui Widgets)
 target_link_libraries(tomate_gui boost_date_time)
 target_link_libraries(tomate_gui ${QT_LIBRARIES})
 
-add_executable(test src/dataset.cpp src/test.cpp src/xml.cpp lib/pugixml.cpp)
+add_executable(test ${CORE_SRC} src/test.cpp)
 target_link_libraries(test boost_unit_test_framework boost_date_time)
 
-add_executable(test_gui src/test_gui.cpp src/dataset.cpp ${GUI_SRC} ${WIDGETS_SRC} src/xml.cpp lib/pugixml.cpp)
+add_executable(test_gui src/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC})
 target_link_libraries(test_gui boost_unit_test_framework boost_date_time)
 target_link_libraries(test_gui ${QT_LIBRARIES})
 #qt4_use_modules(test_gui Widgets)

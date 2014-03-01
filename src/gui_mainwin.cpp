@@ -1,5 +1,6 @@
 #include "gui_mainwin.h"
 #include "gui_plants.h"
+#include "gui_plots.h"
 #include "gui_spaceview.h"
 #include "gui_timeline.h"
 
@@ -19,9 +20,15 @@ QTabWidget* createTabsWidget(Dataset& data)
     PlantsWindow* plantswidget = new PlantsWindow(data.get_plants());
     widget->addTab(plantswidget, QObject::tr("Plants"));
 
+    PlotsWindow* plotswidget = new PlotsWindow(data.get_plots());
+    widget->addTab(plotswidget, QObject::tr("Plots"));
+
+    //TODO
     //self.plantswidget.timeline_need_update.connect(self.timewidget.update)
     //self.plantswidget.timeline_need_update.connect(self.spacewidget.update)
-    
+
+    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
+
     //self.spacewidget.view.scene().edit_crop_dialog.timeline_need_update.connect(self.spacewidget.update)
     //self.spacewidget.view.scene().edit_crop_dialog.timeline_need_update.connect(self.timewidget.update)
     

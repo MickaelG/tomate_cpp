@@ -1,22 +1,6 @@
 #include "dataset.h"
 
 
-///////////////////////////////////////////////////////////////////////////////
-// class Rectangle
-///////////////////////////////////////////////////////////////////////////////
-Rectangle::Rectangle(int width, int height, int posx, int posy) :
-    width(width), height(height), posx(posx), posy(posy) {}
-
-
-Rectangle::Rectangle()
-{
-    width = 0;
-    height = 0;
-    posx = 0;
-    posy = 0;
-}
-///////////////////////////////////////////////////////////////////////////////
-
 
 /*
 template <class T> T& ListKeyNames<T>::index(int data_index)
@@ -77,6 +61,12 @@ KeyName::operator bool() const
 }
 
 KeyName NullKeyName;
+
+bool operator==(const KeyName& elem1, const KeyName& elem2)
+{
+    return (elem1.get_key() == elem2.get_key());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -111,7 +101,7 @@ void Plant::add_var(string key, string name, string note)
     {
         key = to_string(varlist.size());
     }
-    //TODO : check that key is unique
+    //TODO : check that key is unique
     varlist.push_back(Var(key, name, note));
 }
 
@@ -204,9 +194,14 @@ Plot::Plot(string key, string name, string descr, float width, float height, flo
     geometry = Rectangle(width, height, posx, posy);
 }
 
-Rectangle& Plot::get_rect()
+Rectangle Plot::get_rect()
 {
     return geometry;
+}
+
+void Plot::set_rect(Rectangle rect)
+{
+    geometry = rect;
 }
 
 const list<Plot>& Plot::get_subplots() const
@@ -224,6 +219,22 @@ void Plot::add_subplot(float width, float height, float posx, float posy)
     int key_num = subplots.size() + 1;
     string subd_key = key + "-" + to_string(key_num);
     subplots.push_back(Plot(subd_key, "", "", width, height, posx, posy));
+}
+
+void Plot::create_subplots(int nb_hor, int nb_vert)
+{
+   float total_height = get_rect().get_height();
+   float total_width = get_rect().get_width();
+   float width = total_width / nb_hor;
+   float height = total_height / nb_vert;
+
+   for (int ix=0; ix < nb_hor; ix++)
+   {
+       for (int iy=0; iy < nb_vert; iy++)
+       {
+           add_subplot(width, height, ix*width, iy*height);
+       }
+   }
 }
 
 Plot& Plot::get_subplot(string key)
@@ -256,6 +267,55 @@ Plot& Plots::index(int data_index)
     {
         return NullPlot;
     }
+}
+
+Plot& Plots::add_plot(string key, string name, string descr, float width, float height, float posx, float posy)
+{
+    if (key == "")
+    {
+        key = to_string(size());
+    }
+    return add_plot(Plot(key, name, descr, width, height, posx, posy));
+}
+
+Plot& Plots::add_plot(Plot plot)
+{
+    if (get_plot(plot.get_key()))
+    {
+        return NullPlot;
+    }
+    push_back(plot);
+    return back();
+}
+
+void Plots::delete_plot(string key)
+{
+    Plot& del_plot = get_plot(key);
+    delete_plot(del_plot);
+}
+
+void Plots::delete_plot(int del_index)
+{
+    Plot& del_plot = index(del_index);
+    delete_plot(del_plot);
+}
+
+void Plots::delete_plot(Plot& plot)
+{
+    //TODO: check that plot is not used in crops
+    remove(plot);
+}
+
+Plot& Plots::get_plot(string key)
+{
+    for (Plots::iterator it=this->begin(); it != this->end(); ++it)
+    {
+        if (it->get_key() == key)
+        {
+            return *it;
+        }
+    }
+    return NullPlot;
 }
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -494,8 +554,7 @@ Crop& Crops::find_crop(const Plot& plot, bg::date date)
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
     for (Crops::iterator it=this->begin(); it != this->end(); ++it)
     {
-        //TODO: add operator== for Plot
-        if (it->get_plot().get_key() == plot.get_key())
+        if (it->get_plot() == plot)
         {
            if (it->is_active_at_date(date) || it->is_planned_at_date(date))
            {
@@ -517,22 +576,16 @@ Crop& Dataset::add_crop(Crop crop)
     return crops.back();
 }
 
-Plot& Dataset::add_plot(string key, string name, string descr, float width, float height, float posx, float posy)
-{
-    this->plots.push_back(Plot(key, name, descr, width, height, posx, posy));
-    return plots.back();
-}
-Plot& Dataset::add_plot(Plot plot)
-{
-    this->plots.push_back(plot);
-    return plots.back();
-}
-
 Plant& Dataset::add_plant(Plant plant)
 {
     plants.push_back(plant);
     return plants.back();
-};
+}
+
+Plot& Dataset::add_plot(Plot& plot)
+{
+    return get_plots().add_plot(plot);
+}
 
 Plant& Dataset::get_plant(string key)
 {

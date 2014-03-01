@@ -97,8 +97,8 @@ BOOST_AUTO_TEST_CASE(is_active)
 BOOST_AUTO_TEST_CASE(find_crop)
 {
     Dataset data;
-    Plot& plot = data.add_plot(Plot("pn", "plot_nom", "une jolie planche", Rectangle(2,3,8,9)));
-    Plot& plot2 = data.add_plot(Plot("p2", "plot_nom2", "une très jolie planche", Rectangle(2,3,8,9)));
+    Plot& plot = data.get_plots().add_plot("pn", "plot_nom", "une jolie planche", 2,3,8,9);
+    Plot& plot2 = data.get_plots().add_plot("p2", "plot_nom2", "une très jolie planche", 2,3,8,9);
     Plant& plant = data.add_plant(Plant("pl", "plant_name"));
     data.add_crop(Crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), plant, "", plot, "first crop"));
     data.add_crop(Crop(bg::date(2012, 10, 02), bg::date(2012, 11, 10), plant, "", plot, "second crop"));
@@ -121,4 +121,42 @@ BOOST_AUTO_TEST_CASE(find_crop)
     BOOST_CHECK( crop4 );
     BOOST_CHECK_EQUAL(crop4.get_note(), "third, planned crop");
 }
-    
+
+BOOST_AUTO_TEST_CASE(plots)
+{
+    Dataset data;
+    Plot& plot = data.get_plots().add_plot("te", "test");
+    Plot& plt2 = data.get_plots().add_plot("te2", "test2");
+
+    BOOST_CHECK_EQUAL(data.get_plots().size(), 2);
+    BOOST_CHECK_EQUAL(data.get_plots().index(0).get_key(), "te");
+    BOOST_CHECK_EQUAL(data.get_plots().index(1).get_key(), "te2");
+    vector<string> keys;
+    for(Plot plot: data.get_plots())
+    {
+        keys.push_back(plot.get_key());
+    }
+    BOOST_CHECK_EQUAL(keys.size(), 2);
+
+    data.get_plots().delete_plot("te");
+
+    BOOST_CHECK_EQUAL(data.get_plots().size(), 1);
+    BOOST_CHECK_EQUAL(data.get_plots().index(0).get_key(), "te2");
+    keys.clear();
+    for(Plot plot: data.get_plots())
+    {
+        keys.push_back(plot.get_key());
+    }
+    BOOST_CHECK_EQUAL(keys.size(), 1);
+
+    data.get_plots().delete_plot("te2");
+
+    BOOST_CHECK_EQUAL(data.get_plots().size(), 0);
+    keys.clear();
+    for(Plot plot: data.get_plots())
+    {
+        keys.push_back(plot.get_key());
+    }
+    BOOST_CHECK_EQUAL(keys.size(), 0);
+}
+

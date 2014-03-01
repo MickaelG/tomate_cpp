@@ -12,21 +12,9 @@ using namespace std;
 #include <boost/date_time.hpp>
 namespace bg = boost::gregorian;
 
+#include "geometry.h"
 
-class Rectangle
-{
-    private:
-        int width, height;
-        int posx, posy;
-    public:
-        Rectangle();
-        Rectangle(int, int, int, int);
-        float get_width() const { return width; }
-        float get_height() const { return height; }
-        float get_x() const { return posx; }
-        float get_y() const { return posy; }
-        explicit operator bool() const { return !(posx == -1); };
-};
+
 
 
 class KeyName
@@ -47,6 +35,8 @@ class KeyName
 };
 extern KeyName NullKeyName;
 
+bool operator==(const KeyName&, const KeyName&);
+
 /*
 //this is dangerous to store reference from vector elements. use list.
 template <class T> class ListKeyNames: public list<T>
@@ -65,18 +55,20 @@ public:
 
 class Plot: public KeyName
 {
-    private:
-        Rectangle geometry;
-        list<Plot> subplots;
-    public:
-        Plot();
-        Plot(string key, string name, string descr, Rectangle rect);
-        Plot(string key, string name, string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
-        void add_subplot(float width, float height, float posx, float posy);
-        Rectangle& get_rect();
-        const list<Plot>& get_subplots() const;
-        list<Plot>& get_subplots();
-        Plot& get_subplot(string key);
+private:
+    Rectangle geometry;
+    list<Plot> subplots;
+public:
+    Plot();
+    Plot(string key, string name, string descr, Rectangle rect);
+    Plot(string key, string name, string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
+    void add_subplot(float width, float height, float posx, float posy);
+    void create_subplots(int nb_hor, int nb_vert);
+    Rectangle get_rect();
+    void set_rect(Rectangle rect);
+    const list<Plot>& get_subplots() const;
+    list<Plot>& get_subplots();
+    Plot& get_subplot(string key);
 };
 extern Plot NullPlot;
 
@@ -85,6 +77,12 @@ class Plots: public list<Plot>
 {
 public:
     Plot& index(int data_index);
+    Plot& add_plot(string key, string name, string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
+    Plot& add_plot(Plot plot);
+    void delete_plot(string key);
+    void delete_plot(int index);
+    void delete_plot(Plot& plot);
+    Plot& get_plot(string key);
 };
 
 
@@ -198,10 +196,9 @@ class Dataset
         Plants plants;
     public:
         Dataset() {};
-        Plot& add_plot(Plot plot);
-        Plot& add_plot(string key, string name, string descr, float width, float height, float posx, float posy);
         Crop& add_crop(Crop crop);
         Plant& add_plant(Plant plant);
+        Plot& add_plot(Plot& plot);
         void set_filename(string in_filename);
         Plant& get_plant(string key);
         Plot& get_plot(string key);

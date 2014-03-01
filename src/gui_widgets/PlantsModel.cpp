@@ -150,6 +150,20 @@ QVariant PlotsModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
+
+bool PlotsModel::removeRows(int position, int rows, const QModelIndex &parent)
+{
+    beginRemoveRows(QModelIndex(), position, position+rows-1);
+
+    bool retval = true;
+    for (int row = 0; row < rows; ++row) {
+        plots.delete_plot(position + row);
+    }
+
+    endRemoveRows();
+    return retval;
+}
+
 SubPlotsModel::SubPlotsModel(Plots& plots, ListWidget* plots_widget, QWidget* parent) :
     QAbstractListModel(parent), plots(plots),
     plots_list_widget(plots_widget), plots_combo_widget(0)
