@@ -228,9 +228,9 @@ void Plot::create_subplots(int nb_hor, int nb_vert)
    float width = total_width / nb_hor;
    float height = total_height / nb_vert;
 
-   for (int ix=0; ix < nb_hor; ix++)
+   for (int iy=0; iy < nb_vert; iy++)
    {
-       for (int iy=0; iy < nb_vert; iy++)
+       for (int ix=0; ix < nb_hor; ix++)
        {
            add_subplot(width, height, ix*width, iy*height);
        }
