@@ -6,7 +6,7 @@
 #include <QGroupBox>
 
 
-PhysInput::PhysInput(Rectangle rect, QWidget* parent):
+PhysInput::PhysInput(Rectangle rect, bool editable, QWidget* parent):
     QWidget(parent)
 {
     this->setLayout(new QHBoxLayout);
@@ -19,6 +19,10 @@ PhysInput::PhysInput(Rectangle rect, QWidget* parent):
     width_widget->setValidator( new QIntValidator(1, 10000, this) );
     height_widget = new QLineEdit();
     height_widget->setValidator( new QIntValidator(1, 10000, this) );
+    x_widget->setEnabled(editable);
+    y_widget->setEnabled(editable);
+    width_widget->setEnabled(editable);
+    height_widget->setEnabled(editable);
     this->layout()->addWidget(new QLabel(tr("x position:")));
     this->layout()->addWidget(x_widget);
     this->layout()->addWidget(new QLabel(tr("y position:")));
@@ -71,7 +75,7 @@ void SubdWidget::set_rects(QVector<Rectangle> all_rects)
 
     for (Rectangle rect: all_rects)
     {
-        PhysInput* input = new PhysInput(rect);
+        PhysInput* input = new PhysInput(rect, false);
         inputs.push_back(input);
         this->main_layout->addWidget(input);
     }
