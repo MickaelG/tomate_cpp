@@ -1,5 +1,5 @@
 
-#include "dataset.h"
+#include "plots.h"
 #include "gui_widgets/ListWidget.h"
 #include "gui_widgets/PlantsModel.h"
 #include "gui_widgets/PhysInput.h"

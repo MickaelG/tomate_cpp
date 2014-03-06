@@ -4,6 +4,8 @@
 #include "gui_spaceview.h"
 #include "gui_timeline.h"
 
+#include "xml.h"
+
 #include <QGridLayout>
 #include <QToolBar>
 

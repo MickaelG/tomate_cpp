@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "dataset.h"
+#include "xml.h"
 
 
 BOOST_AUTO_TEST_CASE(crops)

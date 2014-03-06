@@ -1,5 +1,6 @@
 
 #include "gui/gui_mainwin.h"
+#include "xml.h"
 #include <QApplication>
 
 #include <QTranslator>
