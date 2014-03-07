@@ -22,11 +22,11 @@ class Dataset
 {
     private:
         string filename;
-        Plots plots;
         Crops crops;
+        Plots plots;
         Plants plants;
     public:
-        Dataset() {};
+        Dataset();
         Crop& add_crop(Crop crop);
         Plant& add_plant(Plant plant);
         Plot& add_plot(Plot& plot);

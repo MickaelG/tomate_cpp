@@ -65,7 +65,7 @@ PlotsWindow::PlotsWindow(Plots& plots, QWidget* parent) :
     QObject::connect(add_plot_btn, SIGNAL(clicked()), add_plot, SLOT(show()));
     plots_layout->addWidget(add_plot_btn);
 
-    QPushButton* del_plot_btn = new QPushButton(tr("Delete plot"));
+    del_plot_btn = new QPushButton(tr("Delete plot"));
     QObject::connect(del_plot_btn, SIGNAL(clicked()), this, SLOT(delete_plot()));
     plots_layout->addWidget(del_plot_btn);
 
@@ -117,7 +117,17 @@ void PlotsWindow::update_plot_data(const QModelIndex& current_plot_mi, const QMo
     update_notes(current_plot_index, previous_plot_index);
     update_phys(current_plot_index, previous_plot_index);
     update_subd(current_plot_index, previous_plot_index);
+    update_del_btn(current_plot_index);
     emit timeline_need_update();
+}
+
+void PlotsWindow::update_del_btn(int current_plot_index)
+{
+    if (plots.is_used(current_plot_index)) {
+        del_plot_btn->setEnabled(false);
+    } else {
+        del_plot_btn->setEnabled(true);
+    }
 }
 
 void PlotsWindow::update_notes(int current_plot_index, int previous_plot_index)

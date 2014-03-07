@@ -6,7 +6,7 @@
 namespace bg = boost::gregorian;
 
 #include "plants.h"
-#include "plots.h"
+#include "plot.h"
 
 class CropAction
 {
@@ -69,6 +69,7 @@ class Crops: public list<Crop>
     private:
     public:
         Crop& find_crop(const Plot& plot, bg::date date);
+        bool is_used_plot(const Plot& plot) const;
 };
 
 #endif //CROPS_H

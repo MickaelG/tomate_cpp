@@ -12,6 +12,7 @@
 #include <QListView>
 #include <QTextEdit>
 #include <QLineEdit>
+#include <QPushButton>
 
 class AddPlotDialog: public QDialog
 {
@@ -53,6 +54,7 @@ private slots:
     void update_notes(int current_plot_index, int previous_plot_index);
     void update_phys(int current_plot_index, int previous_plot_index);
     void update_subd(int current_plot_index, int previous_plot_index);
+    void update_del_btn(int current_plot_index);
 
 private:
     Plots& plots;
@@ -60,4 +62,5 @@ private:
     ListWidget* plots_widget;
     PhysInput* phys_widget;
     SubdWidget* subd_widget;
+    QPushButton* del_plot_btn;
 };

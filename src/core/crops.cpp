@@ -245,4 +245,19 @@ Crop& Crops::find_crop(const Plot& plot, bg::date date)
     }
     return NullCrop;
 }
+
+bool Crops::is_used_plot(const Plot& plot) const
+{
+    string plot_key = plot.get_key();
+    for (Crops::const_iterator it=this->begin(); it != this->end(); ++it)
+    {
+        string loop_key = it->get_plot().get_key();
+        //plot_key must be conntained in loop_key
+        if (loop_key.find(plot_key) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 ///////////////////////////////////////////////////////////////////////////////
