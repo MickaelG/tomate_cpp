@@ -1,4 +1,4 @@
-#include "../lib/pugixml.hpp"
+#include "pugixml.hpp"
 #include "xml.h"
 using namespace pugi;
 

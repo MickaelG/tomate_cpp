@@ -1,7 +1,7 @@
 
 #include "PlantsModel.h"
 
-#include "../gui_utils.h"
+#include "gui_utils.h"
 using namespace std;
 
 VarsModel::VarsModel(Plants& plants, ListWidget* plants_widget, QWidget* parent) :

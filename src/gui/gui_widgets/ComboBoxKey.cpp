@@ -1,6 +1,6 @@
 
 #include "ComboBoxKey.h"
-#include "../gui_utils.h"
+#include "gui_utils.h"
 
 ComboBoxKey::ComboBoxKey(QAbstractListModel* model)
 {

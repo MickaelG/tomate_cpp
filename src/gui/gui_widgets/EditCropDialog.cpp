@@ -3,7 +3,7 @@
 #include <QDialogButtonBox>
 #include <QGridLayout>
 
-#include "../gui_utils.h"
+#include "gui_utils.h"
 #include "PlantsModel.h"
 
 EditCropDialog::EditCropDialog(Dataset& dataset, QWidget* parent) :

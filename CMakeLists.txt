@@ -8,7 +8,8 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -g")
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-include_directories( ${CMAKE_SOURCE_DIR}/src/core/ )
+include_directories( ${CMAKE_SOURCE_DIR}/src/core/ ${CMAKE_SOURCE_DIR}/lib/
+                     ${CMAKE_SOURCE_DIR}/src/gui/ )
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
