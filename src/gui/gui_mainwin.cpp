@@ -30,6 +30,7 @@ QTabWidget* createTabsWidget(Dataset& data)
     //self.plantswidget.timeline_need_update.connect(self.spacewidget.update)
 
     QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
+    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update()));
 
     //self.spacewidget.view.scene().edit_crop_dialog.timeline_need_update.connect(self.spacewidget.update)
     //self.spacewidget.view.scene().edit_crop_dialog.timeline_need_update.connect(self.timewidget.update)
