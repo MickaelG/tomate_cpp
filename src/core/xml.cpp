@@ -31,8 +31,16 @@ int xml_read_data(string filename, Dataset& dataset)
     xml_parse_result load_res = doc.load_file(filename.c_str());
     if (!load_res)
     {
-        std::cout << "Error while parsing xml: " << load_res.description() << " (offset: " << load_res.offset << ") " << std::endl;
-        return -1;
+        if (load_res.status == status_file_not_found)
+        {
+            std::cout << "File does not exists." << std::endl;
+            return -1;
+        }
+        else
+        {
+            std::cout << "Error while parsing xml: " << load_res.description() << " (offset: " << load_res.offset << ") " << std::endl;
+            return -2;
+        }
     }
     dataset.set_filename(filename);
 
@@ -203,7 +211,10 @@ int xml_write_data(string filename,const Dataset& dataset)
         }
 
     }
-    doc.save_file(filename.c_str(), "  ");
+    bool wsuccess = doc.save_file(filename.c_str(), "  ");
+    if (!wsuccess) {
+        return -1;
+    }
 
     return 0;
 }
