@@ -56,7 +56,7 @@ QVariant VarsModel::data(const QModelIndex& index, int role) const
         if (index.column() == 0)
         {
             int plant_index = get_plant_index();
-            if (plant_index > 0)
+            if (plant_index >= 0)
             {
                 Plants::iterator it = plants.begin();
                 advance(it, plant_index);
