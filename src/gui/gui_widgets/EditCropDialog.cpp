@@ -11,18 +11,26 @@ EditCropDialog::EditCropDialog(Dataset& dataset, QWidget* parent) :
 {
     setModal(true);
 
-    startdateInput = new OptionalCalendar(tr("Start"));
-    enddateInput = new OptionalCalendar(tr("End"));
-    plannedstartdateInput = new OptionalCalendar(tr("Planned start"));
-    plannedenddateInput = new OptionalCalendar(tr("Planned end"));
+    startdateInput = new OptionalCalendar(tr("Start:"));
+    enddateInput = new OptionalCalendar(tr("End:"));
+    plannedstartdateInput = new OptionalCalendar(tr("Planned start:"));
+    plannedenddateInput = new OptionalCalendar(tr("Planned end:"));
     plantInput = new ComboBoxKey(new PlantsModel(dataset.get_plants()));
+    plantInput->setToolTip(tr("Plant"));
     varInput = new ComboBoxKey(new VarsModel(dataset.get_plants(), plantInput));
+    varInput->setToolTip(tr("Variety"));
     plotInput = new ComboBoxKey(new PlotsModel(dataset.get_plots()));
+    plotInput->setToolTip(tr("Plot"));
     subplotInput = new ComboBoxKey(new SubPlotsModel(dataset.get_plots(), plotInput));
+    subplotInput->setToolTip(tr("Subplot"));
     noteInput = new QLineEdit;
-    
+    noteInput->setPlaceholderText(tr("Note"));
+    noteInput->setToolTip(tr("Note"));
+
     QObject::connect(plantInput, SIGNAL(currentIndexChanged(int)), this->varInput->model(), SIGNAL(layoutChanged()));
     QObject::connect(plotInput, SIGNAL(currentIndexChanged(int)), this->subplotInput->model(), SIGNAL(layoutChanged()));
+    QObject::connect(plantInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initVarInput()));
+    QObject::connect(plotInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initSubplotInput()));
 
     OKbutton = new QPushButton(tr("Edit"));
     QPushButton* Canbutton = new QPushButton(tr("Cancel"));
@@ -44,8 +52,19 @@ EditCropDialog::EditCropDialog(Dataset& dataset, QWidget* parent) :
     layout->addWidget(varInput);
     layout->addWidget(plotInput);
     layout->addWidget(subplotInput);
-    layout->addWidget(noteInput);
-    layout->addWidget(buttonBox);
+    layout->addWidget(noteInput, 4, 0, 1, 2);
+    layout->addWidget(buttonBox, 5, 1);
+}
+
+void EditCropDialog::initSubplotInput()
+{
+    subplotInput->setCurrentIndex(-1);
+    subplotInput->setCurrentIndex(0);
+}
+void EditCropDialog::initVarInput()
+{
+    varInput->setCurrentIndex(-1);
+    varInput->setCurrentIndex(0);
 }
 
 void EditCropDialog::set_crop_values(Crop* p_crop)
@@ -70,11 +89,6 @@ void EditCropDialog::set_crop_values(Crop* p_crop)
         //set_default_values();
         OKbutton->setText(tr("Add"));
     }
-}
-
-
-void EditCropDialog::fill_var(int plant_index)
-{
 }
 
 

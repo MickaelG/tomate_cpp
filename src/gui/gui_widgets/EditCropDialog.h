@@ -21,8 +21,9 @@ public:
 
 private slots:
     void edit_plot();
-    void fill_var(int plant_index);
-    
+    void initSubplotInput();
+    void initVarInput();
+
 signals:
     void dataset_changed();
     
