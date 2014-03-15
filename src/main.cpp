@@ -18,13 +18,29 @@ int main(int argc, char *argv[])
     a.installTranslator(&translator);
 
     //TODO: make it cross platform
-    string home_dir;
-    char const* temp = getenv("HOME");
-    if(temp != NULL)
+    string data_home;
+    char const* temp = getenv("XDG_DATA_HOME");
+    if (temp != NULL)
     {
-        home_dir = string(temp);
+        data_home = string(temp);
     }
-    string user_data_dir = home_dir + "/.config/tomate/";
+    else
+    {
+        string home_dir;
+        char const* temp = getenv("HOME");
+        if(temp != NULL)
+        {
+            home_dir = string(temp);
+        } else {
+            QMessageBox::critical(NULL, QObject::tr("Error"),
+                                  QObject::tr("Error, HOME environment variable not set."));
+            return -1;
+        }
+        data_home =  home_dir + "/.local/share/";
+
+    }
+
+    string user_data_dir = data_home + "/tomate/";
     string data_file = user_data_dir + "/data.sfg";
 
     Dataset dataset;
