@@ -287,14 +287,14 @@ void WholeTimeScene::draw_scene()
         }
         y_pos += Margin;
     }
-    draw_date_line(date);
+    draw_date_line(date, y_pos);
     update();
 }
 
-void WholeTimeScene::draw_date_line(QDate date)
+void WholeTimeScene::draw_date_line(QDate date, int bottom_y)
 {
     int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
-    QGraphicsLineItem *L = new QGraphicsLineItem(xpos, -30, xpos, height());
+    QGraphicsLineItem *L = new QGraphicsLineItem(xpos, -30, xpos, bottom_y);
     L->setPen(QPen(QColor("red")));
     addItem(L);
 }
@@ -321,6 +321,7 @@ void WholeTimeSceneView::update_rect()
     int height = sceneRect().height();
     this->setSceneRect(x - Margin, y - Margin,
                       width + 2 * Margin, height + 2 * Margin);
+    this->setAlignment(Qt::AlignTop);
 }
 
 

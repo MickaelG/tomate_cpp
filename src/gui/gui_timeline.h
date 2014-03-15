@@ -59,7 +59,7 @@ private:
     vector<CropTimeRepresentation*> crop_reprs;
     
     void add_year_buttons();
-    void draw_date_line(QDate date);
+    void draw_date_line(QDate date, int bottom_y);
 };
 
 class WholeTimeSceneView: public QGraphicsView
