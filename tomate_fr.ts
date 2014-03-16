@@ -11,7 +11,7 @@
     <message>
         <location filename="src/gui/gui_plants.cpp" line="20"/>
         <source>Add</source>
-        <translation>Ajoute</translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="src/gui/gui_plants.cpp" line="21"/>
@@ -51,37 +51,67 @@
     <name>EditCropDialog</name>
     <message>
         <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="14"/>
-        <source>Start</source>
-        <translation>Début</translation>
+        <source>Start:</source>
+        <oldsource>Start</oldsource>
+        <translation>Début :</translation>
     </message>
     <message>
         <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="15"/>
-        <source>End</source>
-        <translation>Fin</translation>
+        <source>End:</source>
+        <oldsource>End</oldsource>
+        <translation>Fin :</translation>
     </message>
     <message>
         <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="16"/>
-        <source>Planned start</source>
-        <translation>Début plannifié</translation>
+        <source>Planned start:</source>
+        <oldsource>Planned start</oldsource>
+        <translation>Début plannifié :</translation>
     </message>
     <message>
         <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="17"/>
-        <source>Planned end</source>
-        <translation>Fin plannifiée</translation>
+        <source>Planned end:</source>
+        <oldsource>Planned end</oldsource>
+        <translation>Fin plannifiée :</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="19"/>
+        <source>Plant</source>
+        <translation>Plante</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="21"/>
+        <source>Variety</source>
+        <translation>Variété</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="23"/>
+        <source>Plot</source>
+        <translation>Planche</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="25"/>
+        <source>Subplot</source>
+        <translation>Subdivision</translation>
     </message>
     <message>
         <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="27"/>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="68"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="28"/>
+        <source>Note</source>
+        <translation>Note</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="35"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="87"/>
         <source>Edit</source>
         <translation>Modifier</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="28"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="36"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="71"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="90"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
@@ -96,7 +126,7 @@
 <context>
     <name>OptionalCalendar</name>
     <message>
-        <location filename="src/gui/gui_widgets/OptionalCalendar.cpp" line="13"/>
+        <location filename="src/gui/gui_widgets/OptionalCalendar.cpp" line="14"/>
         <source>Activate</source>
         <translation>Activer</translation>
     </message>
@@ -132,12 +162,17 @@
         <translation>Ajouter une plante</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plants.cpp" line="110"/>
+        <location filename="src/gui/gui_plants.cpp" line="102"/>
+        <source>Delete plant</source>
+        <translation>Supprimer la plante</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_plants.cpp" line="113"/>
         <source>Add a variety</source>
         <translation>Ajouter une variété</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plants.cpp" line="129"/>
+        <location filename="src/gui/gui_plants.cpp" line="130"/>
         <source>Color</source>
         <translation>Couleur</translation>
     </message>
@@ -176,6 +211,38 @@
         <location filename="src/gui/gui_mainwin.cpp" line="26"/>
         <source>Plots</source>
         <translation>Planches</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="35"/>
+        <location filename="src/main.cpp" line="56"/>
+        <location filename="src/main.cpp" line="78"/>
+        <source>Error</source>
+        <translation>Erreur</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="36"/>
+        <source>Error, HOME environment variable not set.</source>
+        <translation>Erreur, variable d&apos;environnement &quot;HOME&quot; non définie.</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="52"/>
+        <source>Information</source>
+        <translation>Information</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="53"/>
+        <source>Data file not found. A new one will be created</source>
+        <translation>Fichier de donnée non trouvé. Un nouveau sera créé.</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="57"/>
+        <source>Error reading data file. Please check console output.</source>
+        <translation>Erreur de lecture du fichier de donnée. Vérifiez la sortie de la console.</translation>
+    </message>
+    <message>
+        <location filename="src/main.cpp" line="79"/>
+        <source>Error writing data file.</source>
+        <translation>Erreur d&apos;écriture du fichier de données.</translation>
     </message>
 </context>
 <context>
