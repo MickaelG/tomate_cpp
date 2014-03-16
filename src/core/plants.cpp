@@ -2,46 +2,32 @@
 #include "plants.h"
 
 ///////////////////////////////////////////////////////////////////////////////
-// class Plant
-///////////////////////////////////////////////////////////////////////////////
-Plant NullPlant;
-Plant::Plant(string key, string name, string note, string color) :
-    KeyName(key, name, note), color(color) {};
-
-void Plant::add_var(string key, string name, string note)
-{
-    if (key == "")
-    {
-        key = to_string(varlist.size());
-    }
-    //TODO : check that key is unique
-    varlist.push_back(Var(key, name, note));
-}
-
-string Plant::get_color_str() const
-{
-    return color;
-}
-
-void Plant::set_color_str(string color)
-{
-    this->color = color;
-}
-
-Vars& Plant::get_vars() {
-    return varlist;
-}
-///////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////
 // class Plants
 ///////////////////////////////////////////////////////////////////////////////
+
+Plants::Plants(const Crops& crops) : crops(crops)
+{
+}
+
 Plant& Plants::index(int data_index)
 {
     if (data_index >= 0)
     {
         Plants::iterator it = this->begin();
+        advance(it, data_index);
+        return *it;
+    }
+    else
+    {
+        return NullPlant;
+    }
+}
+
+const Plant& Plants::index(int data_index) const
+{
+    if (data_index >= 0)
+    {
+        Plants::const_iterator it = this->begin();
         advance(it, data_index);
         return *it;
     }
@@ -76,12 +62,40 @@ Plant& Plants::get_plant(string key)
     }
     return NullPlant;
 }
+
+int Plants::delete_plant(string key)
+{
+    Plant& del_plant = get_plant(key);
+    return delete_plant(del_plant);
+}
+
+int Plants::delete_plant(int del_index)
+{
+    Plant& del_plant = index(del_index);
+    delete_plant(del_plant);
+}
+
+int Plants::delete_plant(Plant& plant)
+{
+    if ( ! crops.is_used_plant(plant) )
+    {
+        remove(plant);
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+bool Plants::is_used(int in_index) const
+{
+    return is_used(index(in_index));
+}
+
+bool Plants::is_used(const Plant& plant) const
+{
+    return crops.is_used_plant(plant);
+}
 ///////////////////////////////////////////////////////////////////////////////
 
-
-///////////////////////////////////////////////////////////////////////////////
-// class Var
-///////////////////////////////////////////////////////////////////////////////
-Var::Var(string key, string name, string note) :
-    KeyName(key, name, note) {}
-///////////////////////////////////////////////////////////////////////////////

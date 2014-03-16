@@ -4,7 +4,7 @@
 // class Dataset
 ///////////////////////////////////////////////////////////////////////////////
 
-Dataset::Dataset() : plots(crops)
+Dataset::Dataset() : plots(crops), plants(crops)
 {
 }
 

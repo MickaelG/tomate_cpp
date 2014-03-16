@@ -1,0 +1,47 @@
+
+#include "plant.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// class Plant
+///////////////////////////////////////////////////////////////////////////////
+Plant NullPlant;
+
+Plant::Plant()
+{
+}
+
+Plant::Plant(string key, string name, string note, string color) :
+    KeyName(key, name, note), color(color) {};
+
+void Plant::add_var(string key, string name, string note)
+{
+    if (key == "")
+    {
+        key = to_string(varlist.size());
+    }
+    //TODO : check that key is unique
+    varlist.push_back(Var(key, name, note));
+}
+
+string Plant::get_color_str() const
+{
+    return color;
+}
+
+void Plant::set_color_str(string color)
+{
+    this->color = color;
+}
+
+Vars& Plant::get_vars() {
+    return varlist;
+}
+///////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////
+// class Var
+///////////////////////////////////////////////////////////////////////////////
+Var::Var(string key, string name, string note) :
+    KeyName(key, name, note) {}
+///////////////////////////////////////////////////////////////////////////////

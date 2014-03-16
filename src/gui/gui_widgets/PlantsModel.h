@@ -52,7 +52,8 @@ public:
     int rowCount(const QModelIndex& model_index) const;
     int columnCount(const QModelIndex& index) const;
     QVariant data(const QModelIndex& index, int role) const;
-    
+    bool removeRows (int row, int count, const QModelIndex & parent = QModelIndex() );
+
 private:
     Plants& plants;
 };

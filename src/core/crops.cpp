@@ -260,4 +260,19 @@ bool Crops::is_used_plot(const Plot& plot) const
     }
     return false;
 }
+
+bool Crops::is_used_plant(const Plant& plant) const
+{
+    string plant_key = plant.get_key();
+    for (Crops::const_iterator it=this->begin(); it != this->end(); ++it)
+    {
+        string loop_key = it->get_plant().get_key();
+        //plant_key must be conntained in loop_key
+        if (loop_key.find(plant_key) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
 ///////////////////////////////////////////////////////////////////////////////

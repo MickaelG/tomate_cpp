@@ -5,8 +5,8 @@
 #include <boost/date_time.hpp>
 namespace bg = boost::gregorian;
 
-#include "plants.h"
 #include "plot.h"
+#include "plant.h"
 
 class CropAction
 {
@@ -70,6 +70,7 @@ class Crops: public list<Crop>
     public:
         Crop& find_crop(const Plot& plot, bg::date date);
         bool is_used_plot(const Plot& plot) const;
+        bool is_used_plant(const Plant& plant) const;
 };
 
 #endif //CROPS_H

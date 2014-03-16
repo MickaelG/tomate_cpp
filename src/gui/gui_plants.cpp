@@ -99,9 +99,12 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
     //plants_widget = new ListWidget(new KeyNamesModel(plants));
     plants_layout->addWidget(plants_widget);
     QPushButton* add_plant_btn = new QPushButton(tr("Add a plant"));
+    del_plant_btn = new QPushButton(tr("Delete plant"));
     AddDialog* add_plant = new AddPlantDialog(plants);
     QObject::connect(add_plant_btn, SIGNAL(clicked()), add_plant, SLOT(show()));
+    QObject::connect(del_plant_btn, SIGNAL(clicked()), this, SLOT(delete_plant()));
     plants_layout->addWidget(add_plant_btn);
+    plants_layout->addWidget(del_plant_btn);
 
     QVBoxLayout* var_layout = new QVBoxLayout();
     var_widget = new QListView();
@@ -117,9 +120,7 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
     QObject::connect(plants_widget->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
                      var_widget->model(), SIGNAL(layoutChanged()));
     QObject::connect(plants_widget->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-                     this, SLOT(update_notes(const QModelIndex&, const QModelIndex&)));
-    QObject::connect(plants_widget->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-                     this, SLOT(update_btns_state()));
+                     this, SLOT(update_plant_data(const QModelIndex&, const QModelIndex&)));
 
     QVBoxLayout* notes_layout = new QVBoxLayout();
     notes_widget = new QTextEdit();
@@ -142,6 +143,46 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
 }
 
 
+Plant& PlantsWindow::selected_plant()
+{
+    int plant_index = plants_widget->selectionModel()->currentIndex().row();
+    return plants.index(plant_index);
+}
+
+void PlantsWindow::set_color()
+{
+    QString color_str = toQString(selected_plant().get_color_str());
+    QColor init_color(color_str);
+    QColor color = color_dialog->getColor(init_color, this);
+    selected_plant().set_color_str(fromQString(color.name()));
+    emit timeline_need_update();
+}
+
+void PlantsWindow::delete_plant()
+{
+    plants_widget->model()->removeRow(plants_widget->selectionModel()->currentIndex().row());
+    emit timeline_need_update();
+}
+
+void PlantsWindow::update_plant_data(const QModelIndex& current_plant_mi, const QModelIndex& previous_plant_mi)
+{
+    int previous_plant_index = previous_plant_mi.row();
+    int current_plant_index = current_plant_mi.row();
+    update_btns_state();
+    update_notes(current_plant_index, previous_plant_index);
+    update_del_btn(current_plant_index);
+    emit timeline_need_update();
+}
+
+void PlantsWindow::update_del_btn(int current_plant_index)
+{
+    if (plants.is_used(current_plant_index)) {
+        del_plant_btn->setEnabled(false);
+    } else {
+        del_plant_btn->setEnabled(true);
+    }
+}
+
 void PlantsWindow::update_btns_state()
 {
     if (plants_widget->index() < 0)
@@ -158,25 +199,8 @@ void PlantsWindow::update_btns_state()
     }
 }
 
-Plant& PlantsWindow::selected_plant()
+void PlantsWindow::update_notes(int previous_plant_index, int current_plant_index)
 {
-    int plant_index = plants_widget->selectionModel()->currentIndex().row();
-    return plants.index(plant_index);
-}
-
-void PlantsWindow::set_color()
-{
-    QString color_str = toQString(selected_plant().get_color_str());
-    QColor init_color(color_str);
-    QColor color = color_dialog->getColor(init_color, this);
-    selected_plant().set_color_str(fromQString(color.name()));
-    emit timeline_need_update();
-}
-
-
-void PlantsWindow::update_notes(const QModelIndex& current_plant_mi, const QModelIndex& previous_plant_mi)
-{
-    int previous_plant_index = previous_plant_mi.row();
     //We save the note content of the previous plant
     if (previous_plant_index >= 0)
     {
@@ -185,7 +209,6 @@ void PlantsWindow::update_notes(const QModelIndex& current_plant_mi, const QMode
     }
 
     //and get the notes for the new plant
-    int current_plant_index = current_plant_mi.row();
     if (current_plant_index >= 0)
     {
         QString text = toQString(plants.index(current_plant_index).get_note());

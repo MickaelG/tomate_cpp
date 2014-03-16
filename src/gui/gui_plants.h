@@ -12,6 +12,7 @@
 #include <QTextEdit>
 #include <QLineEdit>
 #include <QColorDialog>
+#include <QPushButton>
 
 class AddDialog: public QDialog
 {
@@ -46,9 +47,12 @@ signals:
     void timeline_need_update();
     
 private slots:
-    void update_btns_state();
-    void update_notes(const QModelIndex& current_plant_mi, const QModelIndex& previous_plant_mi);
     void set_color();
+    void delete_plant();
+    void update_plant_data(const QModelIndex& current_plant_mi, const QModelIndex& previous_plant_mi);
+    void update_btns_state();
+    void update_del_btn(int current_plant_index);
+    void update_notes(int previous_plant_index, int current_plant_index);
 
 private:
     vector<QString> plants_str_list();
@@ -59,4 +63,5 @@ private:
     ListWidget* plants_widget;
     QListView* var_widget;
     QColorDialog* color_dialog;
+    QPushButton* del_plant_btn;
 };

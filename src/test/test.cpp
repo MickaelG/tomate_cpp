@@ -161,3 +161,16 @@ BOOST_AUTO_TEST_CASE(plots)
     BOOST_CHECK_EQUAL(keys.size(), 0);
 }
 
+BOOST_AUTO_TEST_CASE(plants)
+{
+    Dataset data;
+    Plant& plant = data.get_plants().add_plant("pl1", "plant1");
+    Plot plot("p1", "Carré1", "description du carré 1", Rectangle(2,3,8,9));
+    bg::date start_date(2013, 3, 3);
+    bg::date end_date(2013, 3, 23);
+
+    BOOST_CHECK_EQUAL(data.get_plants().is_used(plant), false);
+    data.add_crop(Crop(start_date, end_date, plant, "", plot));
+    BOOST_CHECK_EQUAL(data.get_plants().is_used(plant), true);
+}
+

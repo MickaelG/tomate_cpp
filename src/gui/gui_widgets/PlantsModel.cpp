@@ -116,6 +116,19 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
     return QVariant();
 }
 
+bool PlantsModel::removeRows(int position, int rows, const QModelIndex &parent)
+{
+    beginRemoveRows(QModelIndex(), position, position+rows-1);
+
+    bool retval = true;
+    for (int row = 0; row < rows; ++row) {
+        plants.delete_plant(position + row);
+    }
+
+    endRemoveRows();
+    return retval;
+}
+
 PlotsModel::PlotsModel(Plots& plots, QWidget* parent) :
     QAbstractListModel(parent), plots(plots)
 {

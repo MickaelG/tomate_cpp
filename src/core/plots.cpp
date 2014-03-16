@@ -71,7 +71,6 @@ void Plots::delete_plot(int del_index)
 
 void Plots::delete_plot(Plot& plot)
 {
-    //TODO: check that plot is not used in crops
     if ( ! crops.is_used_plot(plot) )
     {
         remove(plot);
