@@ -17,3 +17,6 @@ Tomate is a garden planning and reporting tool for a kitchen garden, developped 
     cmake -G 'Unix Makefiles'
     make tomate_gui
     ./tomate_gui
+
+# License #
+Tomate is licensed under GPL.
