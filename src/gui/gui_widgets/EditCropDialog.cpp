@@ -32,6 +32,9 @@ EditCropDialog::EditCropDialog(Dataset& dataset, QWidget* parent) :
     QObject::connect(plantInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initVarInput()));
     QObject::connect(plotInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initSubplotInput()));
 
+    QObject::connect(this, SIGNAL(update_plant_plot()), plantInput->model(), SIGNAL(layoutChanged()));
+    QObject::connect(this, SIGNAL(update_plant_plot()), plotInput->model(), SIGNAL(layoutChanged()));
+
     OKbutton = new QPushButton(tr("Edit"));
     QPushButton* Canbutton = new QPushButton(tr("Cancel"));
     
@@ -69,6 +72,8 @@ void EditCropDialog::initVarInput()
 
 void EditCropDialog::set_crop_values(Crop* p_crop)
 {
+    emit update_plant_plot();
+
     this->p_crop = p_crop;
     if (p_crop)
     {

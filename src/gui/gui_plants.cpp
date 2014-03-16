@@ -100,6 +100,7 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
     plants_layout->addWidget(plants_widget);
     QPushButton* add_plant_btn = new QPushButton(tr("Add a plant"));
     del_plant_btn = new QPushButton(tr("Delete plant"));
+    del_plant_btn->setEnabled(false);
     AddDialog* add_plant = new AddPlantDialog(plants);
     QObject::connect(add_plant_btn, SIGNAL(clicked()), add_plant, SLOT(show()));
     QObject::connect(del_plant_btn, SIGNAL(clicked()), this, SLOT(delete_plant()));

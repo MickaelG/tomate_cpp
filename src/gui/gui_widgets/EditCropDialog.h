@@ -26,6 +26,7 @@ private slots:
 
 signals:
     void dataset_changed();
+    void update_plant_plot();
     
 private:
     Dataset& dataset;
