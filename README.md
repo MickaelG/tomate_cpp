@@ -11,6 +11,10 @@ Tomate is a garden planning and reporting tool for a kitchen garden, developped 
 - Keep notes for each plant
 - Planning
 
+# Screenshots #
+![Tomate time view](/screenshots/tomate_timeview.png "time view")
+![Tomate space view](/screenshots/tomate_spaceview.png "space view")
+
 # Installation #
     git clone http://github.com/MickaelG/tomate_cpp
     cd tomate_cpp
