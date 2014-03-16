@@ -24,6 +24,28 @@
       <subd width="40" height="40" posx="40" posy="0" />
       <subd width="40" height="40" posx="40" posy="40" />
     </plot>
+    <plot key="3" name="neg_plot" descr="plot with neg pos" width="120" height="120" posx="-200" posy="-150">
+      <subd width="40" height="40" posx="80" posy="0" />
+      <subd width="40" height="40" posx="80" posy="40" />
+      <subd width="40" height="40" posx="80" posy="80" />
+      <subd width="40" height="40" posx="40" posy="80" />
+      <subd width="40" height="40" posx="0" posy="80" />
+      <subd width="40" height="40" posx="0" posy="40" />
+      <subd width="40" height="40" posx="0" posy="0" />
+      <subd width="40" height="40" posx="40" posy="0" />
+      <subd width="40" height="40" posx="40" posy="40" />
+    </plot>
+    <plot key="4" name="non_phys_plot" descr="plot without phys">
+      <subd />
+      <subd />
+      <subd />
+      <subd />
+      <subd />
+      <subd />
+      <subd />
+      <subd />
+      <subd />
+    </plot>
   </plots>
   <plants>
     <plant key="la" name="Laitue" color="#DDDDDD" />

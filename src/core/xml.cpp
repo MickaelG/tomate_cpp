@@ -53,13 +53,13 @@ int xml_read_data(string filename, Dataset& dataset)
         string descr = elem_xml.attribute("descr").value();
         float width = elem_xml.attribute("width").as_float(-1);
         float height = elem_xml.attribute("height").as_float(-1);
-        float posx = elem_xml.attribute("posx").as_float(-1);
-        float posy = elem_xml.attribute("posy").as_float(-1);
+        float posx = elem_xml.attribute("posx").as_float(0);
+        float posy = elem_xml.attribute("posy").as_float(0);
         Plot plot(key, name, descr, width, height, posx, posy);
         for (xml_node subd_xml: elem_xml.children())
         {
             plot.add_subplot(subd_xml.attribute("width").as_float(-1), subd_xml.attribute("height").as_float(-1),
-                            subd_xml.attribute("posx").as_float(-1), subd_xml.attribute("posy").as_float(-1));
+                            subd_xml.attribute("posx").as_float(0), subd_xml.attribute("posy").as_float(0));
         }
         dataset.add_plot(plot);
     }
@@ -137,10 +137,7 @@ void add_str_attribute(xml_node &elem_node, string attribute_name, string attrib
 
 void add_float_attribute(xml_node &elem_node, string attribute_name, float attribute_value)
 {
-    if (attribute_value >= 0)
-    {
-        elem_node.append_attribute(attribute_name.c_str()) = attribute_value;
-    }
+    elem_node.append_attribute(attribute_name.c_str()) = attribute_value;
 }
 
 int xml_write_data(string filename,const Dataset& dataset)
@@ -158,18 +155,28 @@ int xml_write_data(string filename,const Dataset& dataset)
         elem_node.append_attribute("name") = plot.get_name().c_str();
         elem_node.append_attribute("descr") = plot.get_note().c_str();
 
-        add_float_attribute(elem_node, "width", plot.get_rect().get_width());
-        add_float_attribute(elem_node, "height", plot.get_rect().get_height());
-        add_float_attribute(elem_node, "posx", plot.get_rect().get_x());
-        add_float_attribute(elem_node, "posy", plot.get_rect().get_y());
+        float width = plot.get_rect().get_width();
+        float height = plot.get_rect().get_height();
+        if (width > 0 && height > 0)
+        {
+            add_float_attribute(elem_node, "width", width);
+            add_float_attribute(elem_node, "height", height);
+            add_float_attribute(elem_node, "posx", plot.get_rect().get_x());
+            add_float_attribute(elem_node, "posy", plot.get_rect().get_y());
+        }
 
         for (Plot subd: plot.get_subplots())
         {
             xml_node subd_node = elem_node.append_child("subd");
-            add_float_attribute(subd_node, "width", subd.get_rect().get_width());
-            add_float_attribute(subd_node, "height", subd.get_rect().get_height());
-            add_float_attribute(subd_node, "posx", subd.get_rect().get_x());
-            add_float_attribute(subd_node, "posy", subd.get_rect().get_y());
+            width = subd.get_rect().get_width();
+            height = subd.get_rect().get_height();
+            if (width > 0 && height > 0)
+            {
+                add_float_attribute(subd_node, "width", width);
+                add_float_attribute(subd_node, "height", height);
+                add_float_attribute(subd_node, "posx", subd.get_rect().get_x());
+                add_float_attribute(subd_node, "posy", subd.get_rect().get_y());
+            }
         }
     }
     xml_node plant_node = root_node.append_child("plants");
