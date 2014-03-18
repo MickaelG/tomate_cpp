@@ -13,7 +13,9 @@ include_directories( ${CMAKE_SOURCE_DIR}/src/core/ ${CMAKE_SOURCE_DIR}/lib/
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt4)
+find_package(Boost 1.54 COMPONENTS date_time unit_test_framework)
+
+find_package(Qt4 4.8)
 include(${QT_USE_FILE})
 
 file(GLOB WIDGETS_SRC src/gui/gui_widgets/*.cpp)
@@ -32,4 +34,8 @@ add_executable(test_gui src/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC})
 target_link_libraries(test_gui boost_unit_test_framework boost_date_time)
 target_link_libraries(test_gui ${QT_LIBRARIES})
 #qt4_use_modules(test_gui Widgets)
+
+#Installation
+install(TARGETS tomate_gui RUNTIME DESTINATION bin)
+install(PROGRAMS tomate.desktop DESTINATION share/applications/)
 
