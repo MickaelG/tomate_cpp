@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     QTranslator translator;
-    translator.load("tomate_" + QLocale::system().name());
+    translator.load("tomate_" + QLocale::system().name(), ":/lang/");
     a.installTranslator(&translator);
 
     //TODO: make it cross platform

@@ -1,0 +1,6 @@
+<!DOCTYPE RCC>
+<RCC>
+    <qresource prefix="/lang">
+        <file>tomate_fr.qm</file>
+    </qresource>
+</RCC>

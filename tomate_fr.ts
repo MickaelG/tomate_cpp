@@ -100,18 +100,18 @@
         <translation>Note</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="35"/>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="87"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="38"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="92"/>
         <source>Edit</source>
         <translation>Modifier</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="36"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="39"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="90"/>
+        <location filename="src/gui/gui_widgets/EditCropDialog.cpp" line="95"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
@@ -167,12 +167,12 @@
         <translation>Supprimer la plante</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plants.cpp" line="113"/>
+        <location filename="src/gui/gui_plants.cpp" line="114"/>
         <source>Add a variety</source>
         <translation>Ajouter une variété</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plants.cpp" line="130"/>
+        <location filename="src/gui/gui_plants.cpp" line="131"/>
         <source>Color</source>
         <translation>Couleur</translation>
     </message>
