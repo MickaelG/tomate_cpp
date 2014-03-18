@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Tomate
+Exec=tomate_gui
+Type=Application
+Comment=Kitchen garden planning and logging
