@@ -25,7 +25,7 @@ Install dependencies for compilation: libqt4-dev, libboost-date-time-dev and lib
     make tomate_gui
     ./tomate_gui
 
-You can also download packages for version 2.1 here:
+You can also download packages for version 0.1 here:
 http://software.opensuse.org/download.html?project=home%3Aclaudex&package=tomate
 
 # Quick start #
