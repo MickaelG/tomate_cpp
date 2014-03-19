@@ -25,6 +25,9 @@ Install dependencies for compilation: libqt4-dev, libboost-date-time-dev and lib
     make tomate_gui
     ./tomate_gui
 
+You can also download packages for version 2.1 here:
+http://software.opensuse.org/download.html?project=home%3Aclaudex&package=tomate
+
 # Quick start #
 - Add plots in the "Plots" tab. Each plot is subdivided in subplots, and crops will take place in the subplots. You can create only one subplot in a plot if needed.
 - Add plants in the "Plants" tab. You can set a different color for each plant with the "color" button
