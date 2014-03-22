@@ -333,7 +333,7 @@ TimelineWindow::TimelineWindow(Dataset& dataset, QWidget* parent) :
 }
 
 
-void TimelineWindow::update()
+void TimelineWindow::update_draw()
 {
     view.update_draw();
 }

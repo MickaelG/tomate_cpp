@@ -85,7 +85,7 @@ public:
     WholeTimeSceneView* get_view() { return &view; };
     
 private slots:
-    void update();
+    void update_draw();
 
 private:
     WholeTimeSceneView view;

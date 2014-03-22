@@ -31,8 +31,8 @@ QTabWidget* createTabsWidget(Dataset& data)
     QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
     QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update()));
 
-    QObject::connect(timewidget->get_view()->get_scene()->get_ecd(), SIGNAL(dataset_changed()), timewidget, SLOT(update()));
-    QObject::connect(timewidget->get_view()->get_scene()->get_ecd(), SIGNAL(dataset_changed()), spacewidget, SLOT(update()));
+    QObject::connect(timewidget->get_view()->get_scene()->get_ecd(), SIGNAL(dataset_changed()), timewidget, SLOT(update_draw()));
+    QObject::connect(timewidget->get_view()->get_scene()->get_ecd(), SIGNAL(dataset_changed()), spacewidget, SLOT(update_draw()));
     QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(current_date_changed(QDate)), spacewidget->get_view()->get_scene(), SLOT(set_date(QDate)));
 
     return widget;
