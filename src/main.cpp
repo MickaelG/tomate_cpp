@@ -1,13 +1,14 @@
 
 #include "gui/gui_mainwin.h"
 #include "xml.h"
-#include <sys/stat.h>
 #include <QApplication>
 
 #include <QTranslator>
 #include <QLocale>
 #include <QDateTime>
 #include <QMessageBox>
+
+#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
     
     if (new_file)
     {
-        mkdir(user_data_dir.c_str(), 0755);
+        boost::filesystem::create_directories(user_data_dir.c_str());
     }
     int wresult = xml_write_data(data_file, dataset);
     if (wresult != 0) {
