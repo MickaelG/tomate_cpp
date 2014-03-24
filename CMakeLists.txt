@@ -10,7 +10,7 @@ set(CMAKE_CXX_FLAGS "-std=c++0x -g")
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories( ${CMAKE_SOURCE_DIR}/src/core/ ${CMAKE_SOURCE_DIR}/lib/
-                     ${CMAKE_SOURCE_DIR}/src/gui/ )
+                     ${CMAKE_SOURCE_DIR}/src/gui/ ${CMAKE_SOURCE_DIR}/src/gui/gui_widgets )
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
@@ -25,7 +25,10 @@ file(GLOB CORE_SRC src/core/*.cpp lib/pugixml.cpp)
 
 set( qrc_outfile ${CMAKE_CURRENT_BINARY_DIR}/qrc_tomate.cxx)
 
-add_executable(tomate_gui ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp ${qrc_outfile})
+set(ui_FORMS src/gui/gui_widgets/EditCropWidget.ui src/gui/gui_widgets/EnableCalendar.ui)
+QT4_WRAP_UI(ui_FORMS_HEADERS ${ui_FORMS})
+
+add_executable(tomate_gui ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp ${qrc_outfile} ${ui_FORMS_HEADERS})
 #qt4_use_modules(tomate_gui Widgets)
 target_link_libraries(tomate_gui boost_date_time boost_filesystem boost_system)
 target_link_libraries(tomate_gui ${QT_LIBRARIES})
@@ -66,4 +69,3 @@ add_custom_command(
 #Installation
 install(TARGETS tomate_gui RUNTIME DESTINATION bin)
 install(PROGRAMS tomate.desktop DESTINATION share/applications/)
-

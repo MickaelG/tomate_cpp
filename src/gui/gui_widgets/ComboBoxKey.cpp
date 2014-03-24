@@ -2,9 +2,9 @@
 #include "ComboBoxKey.h"
 #include "gui_utils.h"
 
-ComboBoxKey::ComboBoxKey(QAbstractListModel* model)
+ComboBoxKey::ComboBoxKey(QWidget *parent) :
+    QComboBox(parent)
 {
-    setModel(model);
 }
 
 void ComboBoxKey::setCurrentElem(QString key)

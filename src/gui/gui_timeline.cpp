@@ -1,11 +1,11 @@
 
 #include "gui_timeline.h"
 #include "gui_utils.h"
+#include "EditCropWidget.h"
 
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsProxyWidget>
 #include <QGridLayout>
-#include <stdexcept>
 #include <QColor>
 #include <QSignalMapper>
 
@@ -57,8 +57,8 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget*
     QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
     center_text(textw, this->boundingRect());
     textw->setParentItem(this);
-    QGraphicsRectItem* rect = new QGraphicsRectItem(boundingRect());
-    this->addToGroup(rect);
+    global_rect = new QGraphicsRectItem(boundingRect());
+    this->addToGroup(global_rect);
 }
 
 
@@ -120,6 +120,11 @@ Crop* CropTimeRepresentation::get_pcrop()
     return &crop;
 }
 
+QGraphicsRectItem* CropTimeRepresentation::get_global_rect()
+{
+    return global_rect;
+}
+
 
 MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWidget* parent)
 {
@@ -159,32 +164,85 @@ WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
     context_menu = new QMenu;
     context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
     date = QDate::currentDate();
+    selected_crop_repr = 0;
     draw_scene();
 }
 
-void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+CropTimeRepresentation* WholeTimeScene::getCropReprAtPos(QPointF scene_pos)
 {
-    Crop* p_current_crop = 0;
-    QGraphicsItem* itempos = itemAt(event->scenePos());
-    QPointF clic_point = event->scenePos();
+    CropTimeRepresentation* p_current_crop_repr = 0;
     for (CropTimeRepresentation* crop_repr: crop_reprs)
     {
         QRectF local_crop_rect = crop_repr->boundingRect();
         QRectF crop_rect = crop_repr->sceneTransform().mapRect(local_crop_rect);
 
-        if (crop_rect.contains(clic_point))
+        if (crop_rect.contains(scene_pos))
         {
-            p_current_crop = crop_repr->get_pcrop();
+            p_current_crop_repr = crop_repr;
         }
     }
-    edit_crop_dialog->set_crop_values(p_current_crop);
-    QAction* action = context_menu->actions().first();
-    if (p_current_crop)
+    return p_current_crop_repr;
+}
+
+void WholeTimeScene::drawCropSelection()
+{
+    if (selected_crop && !selected_crop_repr)
     {
+        for (CropTimeRepresentation* crop_repr: crop_reprs)
+        {
+            if (crop_repr->get_pcrop() == selected_crop)
+            {
+                selected_crop_repr = crop_repr;
+                break;
+            }
+        }
+
+    }
+    if (selected_crop_repr)
+    {
+        QPen selected_pen;
+        selected_pen.setWidth(4);
+        //selected_pen.setColor(QColor("#444444"));
+        selected_crop_repr->get_global_rect()->setPen(selected_pen);
+    }
+}
+
+void WholeTimeScene::removeCropSelection()
+{
+    if (selected_crop_repr)
+    {
+        selected_crop_repr->get_global_rect()->setPen(QPen());
+    }
+}
+
+void WholeTimeScene::selectCrop(CropTimeRepresentation* p_crop_repr)
+{
+    removeCropSelection();
+    selected_crop_repr = p_crop_repr;
+    if (p_crop_repr)
+    {
+        selected_crop = p_crop_repr->get_pcrop();
+    }
+    else
+    {
+        selected_crop = 0;
+    }
+    emit crop_selected(selected_crop);
+    drawCropSelection();
+}
+
+void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+{
+    CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(event->scenePos());
+    QAction* action = context_menu->actions().first();
+    if (p_current_crop_repr)
+    {
+        edit_crop_dialog->set_crop_values(p_current_crop_repr->get_pcrop());
         action->setText(tr("Edit crop"));
     }
     else
     {
+        edit_crop_dialog->set_crop_values(0);
         action->setText(tr("New crop"));
     }
     context_menu->exec(event->screenPos());
@@ -193,13 +251,23 @@ void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF clic_point = event->scenePos();
-    if ((clic_point.y() > -30) && (clic_point.y() < 20)) {
+    if ((clic_point.y() > -30) && (clic_point.y() < 0))
+    {
         int xpos = clic_point.x();
         date = pos_to_date(xpos, QDate(date.year(), 1, 1));
         current_date_changed(date);
         redraw();
-    } else {
-        QGraphicsScene::mousePressEvent(event); //To forward event for buttons
+    }
+    else {
+        CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
+        if (p_current_crop_repr)
+        {
+            selectCrop(p_current_crop_repr);
+        }
+        else
+        {
+            selectCrop(0);
+        }
     }
 }
 
@@ -219,8 +287,15 @@ void WholeTimeScene::previous_year() {
 
 void WholeTimeScene::redraw()
 {
-    clear();
+    clear_scene();
     draw_scene();
+}
+
+void WholeTimeScene::clear_scene()
+{
+    selected_crop_repr = 0;
+    crop_reprs.clear();
+    clear();
 }
 
 
@@ -231,17 +306,17 @@ void WholeTimeScene::add_year_buttons()
 
     int x0 = date_to_pos(date0, date0);
     int x1 = date_to_pos(date_end, date0);
-    
+
     QPushButton *previous_year_button = new QPushButton("<<");
     previous_year_button->setGeometry(0, -54, 80, 24);
     QObject::connect(previous_year_button, SIGNAL(clicked(bool)), this, SLOT(previous_year()), Qt::QueuedConnection);
     QGraphicsProxyWidget* proxy_prev = addWidget(previous_year_button);
-   
+
     QPushButton *next_year_button = new QPushButton(">>");
     next_year_button->setGeometry(x1-80, -54, 80, 24);
     QObject::connect(next_year_button, SIGNAL(clicked(bool)), this, SLOT(next_year()), Qt::QueuedConnection);
     QGraphicsProxyWidget* proxy_next = addWidget(next_year_button);
-    
+
     QGraphicsRectItem* rect = new QGraphicsRectItem(x0, -54, x1 - x0, 24);
     addItem(rect);
     QGraphicsSimpleTextItem* text = new QGraphicsSimpleTextItem(date0.toString("yyyy"));
@@ -258,7 +333,6 @@ void WholeTimeScene::draw_scene()
     Crops& crops = dataset.get_crops();
 
     add_year_buttons();
-    crop_reprs.clear();
     
     QDate date0 = QDate(date.year(), 1, 1);
     MonthsRepresentation *months = new MonthsRepresentation(date0, date0.addYears(1).addDays(-1));
@@ -288,6 +362,7 @@ void WholeTimeScene::draw_scene()
         y_pos += Margin;
     }
     draw_date_line(date, y_pos);
+    drawCropSelection();
     update();
 }
 
@@ -330,6 +405,11 @@ TimelineWindow::TimelineWindow(Dataset& dataset, QWidget* parent) :
 {
     this->setLayout(new QGridLayout);
     this->layout()->addWidget(&view);
+    EditCropWidget* edit_crop_widget = new EditCropWidget(dataset);
+    this->layout()->addWidget(edit_crop_widget);
+
+    QObject::connect(view.get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
+    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), this, SLOT(update_draw()));
 }
 
 

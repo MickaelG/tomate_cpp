@@ -11,7 +11,7 @@ class ComboBoxKey: public QComboBox
     //(based on QComboBox).
     Q_OBJECT
 public:
-    ComboBoxKey(QAbstractListModel* model);
+    ComboBoxKey(QWidget* parent=NULL);
     QString currentElem();
     void setCurrentElem(QString key);
 

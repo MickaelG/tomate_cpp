@@ -17,9 +17,12 @@ public:
     void delete_me();
     Crop* get_pcrop();
     //void show(QPoint point, Crop* p_crop);
+    QGraphicsRectItem* get_global_rect();
+
 private:
     Crop& crop;
     QDate date0;
+    QGraphicsRectItem* global_rect;
 };
 
 
@@ -38,7 +41,11 @@ class WholeTimeScene: public QGraphicsScene
 public:
     WholeTimeScene(Dataset& dataset, QWidget* parent=NULL);
     void draw_scene();
-    void clear_crops();
+    void clear_scene();
+    CropTimeRepresentation* getCropReprAtPos(QPointF scene_pos);
+    void selectCrop(CropTimeRepresentation *p_crop_repr);
+    void drawCropSelection();
+    void removeCropSelection();
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
     EditCropDialog* get_ecd() { return edit_crop_dialog; };
@@ -50,6 +57,7 @@ public slots:
 
 signals:
     void current_date_changed(QDate date);
+    void crop_selected(Crop* p_crop);
 
 private:
     Dataset& dataset;
@@ -57,7 +65,9 @@ private:
     QMenu* context_menu;
     QDate date;
     vector<CropTimeRepresentation*> crop_reprs;
-    
+    CropTimeRepresentation* selected_crop_repr;
+    Crop* selected_crop;
+
     void add_year_buttons();
     void draw_date_line(QDate date, int bottom_y);
 };
