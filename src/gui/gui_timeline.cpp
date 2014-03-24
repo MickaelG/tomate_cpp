@@ -160,9 +160,8 @@ MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWi
 WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
     dataset(dataset)
 {
-    edit_crop_dialog = new EditCropDialog(dataset);
-    context_menu = new QMenu;
-    context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
+    //context_menu = new QMenu;
+    //context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
     date = QDate::currentDate();
     selected_crop_repr = 0;
     draw_scene();
@@ -231,6 +230,7 @@ void WholeTimeScene::selectCrop(CropTimeRepresentation* p_crop_repr)
     drawCropSelection();
 }
 
+/*
 void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(event->scenePos());
@@ -247,6 +247,7 @@ void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     context_menu->exec(event->screenPos());
 }
+*/
 
 void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {

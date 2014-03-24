@@ -1,7 +1,6 @@
 
 #include "plants.h"
 #include "gui_widgets/ListWidget.h"
-#include "gui_widgets/EditCropDialog.h"
 #include "gui_widgets/PlantsModel.h"
 
 #include <QWidget>

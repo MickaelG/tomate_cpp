@@ -3,10 +3,10 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QMenu>
+#include <QDate>
 #include <QGraphicsItemGroup>
 
 #include "dataset.h"
-#include "gui_widgets/EditCropDialog.h"
 
 
 class CropTimeRepresentation: public QGraphicsItemGroup
@@ -46,9 +46,8 @@ public:
     void selectCrop(CropTimeRepresentation *p_crop_repr);
     void drawCropSelection();
     void removeCropSelection();
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+    //void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
-    EditCropDialog* get_ecd() { return edit_crop_dialog; };
 
 public slots:
     void redraw();
@@ -61,8 +60,7 @@ signals:
 
 private:
     Dataset& dataset;
-    EditCropDialog* edit_crop_dialog;
-    QMenu* context_menu;
+    //QMenu* context_menu;
     QDate date;
     vector<CropTimeRepresentation*> crop_reprs;
     CropTimeRepresentation* selected_crop_repr;
