@@ -1,12 +1,12 @@
 
 #include "gui_timeline.h"
 #include "gui_utils.h"
-#include "EditCropWidget.h"
 
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsProxyWidget>
 #include <QGridLayout>
 #include <QColor>
+#include <QPushButton>
 #include <QSignalMapper>
 
 int Margin = 20;
@@ -214,6 +214,14 @@ void WholeTimeScene::removeCropSelection()
     }
 }
 
+void WholeTimeScene::selectCrop(Crop* p_crop)
+{
+    removeCropSelection();
+    selected_crop_repr = 0;
+    selected_crop = p_crop;
+    drawCropSelection();
+}
+
 void WholeTimeScene::selectCrop(CropTimeRepresentation* p_crop_repr)
 {
     removeCropSelection();
@@ -226,7 +234,6 @@ void WholeTimeScene::selectCrop(CropTimeRepresentation* p_crop_repr)
     {
         selected_crop = 0;
     }
-    emit crop_selected(selected_crop);
     drawCropSelection();
 }
 
@@ -261,14 +268,8 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
     else {
         CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
-        if (p_current_crop_repr)
-        {
-            selectCrop(p_current_crop_repr);
-        }
-        else
-        {
-            selectCrop(0);
-        }
+        selectCrop(p_current_crop_repr);
+        emit crop_selected(selected_crop);
     }
 }
 
@@ -406,11 +407,6 @@ TimelineWindow::TimelineWindow(Dataset& dataset, QWidget* parent) :
 {
     this->setLayout(new QGridLayout);
     this->layout()->addWidget(&view);
-    EditCropWidget* edit_crop_widget = new EditCropWidget(dataset);
-    this->layout()->addWidget(edit_crop_widget);
-
-    QObject::connect(view.get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
-    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), this, SLOT(update_draw()));
 }
 
 

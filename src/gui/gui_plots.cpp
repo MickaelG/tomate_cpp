@@ -54,8 +54,10 @@ void AddPlotDialog::add()
 
 
 PlotsWindow::PlotsWindow(Plots& plots, QWidget* parent) :
-  QWidget(parent), plots(plots)
+  QDialog(parent), plots(plots)
 {
+    setModal(true);
+
     QVBoxLayout* plots_layout = new QVBoxLayout();
     plots_widget = new ListWidget(new PlotsModel(plots));
     plots_layout->addWidget(plots_widget);
@@ -68,6 +70,10 @@ PlotsWindow::PlotsWindow(Plots& plots, QWidget* parent) :
     del_plot_btn = new QPushButton(tr("Delete plot"));
     QObject::connect(del_plot_btn, SIGNAL(clicked()), this, SLOT(delete_plot()));
     plots_layout->addWidget(del_plot_btn);
+
+    QPushButton* close_btn = new QPushButton(tr("Close"));
+    plots_layout->addWidget(close_btn);
+    QObject::connect(close_btn, SIGNAL(clicked()), this, SLOT(accept()));
 
     QObject::connect(add_plot, SIGNAL(list_updated()), plots_widget->model(), SIGNAL(layoutChanged()));
     QObject::connect(this, SIGNAL(plots_widget_layoutAboutToBeChanged()), plots_widget->model(), SIGNAL(layoutAboutToBeChanged()));

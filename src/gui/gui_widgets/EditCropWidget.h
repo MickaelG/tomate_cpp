@@ -19,6 +19,7 @@ public:
     EditCropWidget(Dataset& dataset, QWidget* parent=NULL);
     ~EditCropWidget();
     void set_default_values();
+    Ui::EditCropWidget *ui;
 
 private slots:
     void set_crop_values(Crop* p_crop);
@@ -26,12 +27,13 @@ private slots:
     void initSubplotInput();
     void initVarInput();
 
+    void on_EditPlantsBtn_clicked();
+
 signals:
     void dataset_changed();
     void update_plant_plot();
     
 private:
-    Ui::EditCropWidget *ui;
     Dataset& dataset;
     Crop* p_crop;
 };

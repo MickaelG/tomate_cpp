@@ -34,7 +34,7 @@ private:
     QLineEdit* nameInput;
 };
 
-class PlantsWindow: public QWidget
+class PlantsWindow: public QDialog
 {
     Q_OBJECT
 

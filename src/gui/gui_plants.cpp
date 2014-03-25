@@ -90,8 +90,10 @@ vector<QString> PlantsWindow::plants_str_list()
 }
 
 PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
-  QWidget(parent), plants(plants)
+  QDialog(parent), plants(plants)
 {
+    setModal(true);
+
     color_dialog = new QColorDialog;
     QVBoxLayout* plants_layout = new QVBoxLayout();
     vector<QString> plants_str = plants_str_list();
@@ -106,6 +108,10 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
     QObject::connect(del_plant_btn, SIGNAL(clicked()), this, SLOT(delete_plant()));
     plants_layout->addWidget(add_plant_btn);
     plants_layout->addWidget(del_plant_btn);
+
+    QPushButton* close_btn = new QPushButton(tr("Close"));
+    plants_layout->addWidget(close_btn);
+    QObject::connect(close_btn, SIGNAL(clicked()), this, SLOT(accept()));
 
     QVBoxLayout* var_layout = new QVBoxLayout();
     var_widget = new QListView();

@@ -50,6 +50,7 @@ public:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
+    void selectCrop(Crop *p_crop);
     void redraw();
     void previous_year();
     void next_year();

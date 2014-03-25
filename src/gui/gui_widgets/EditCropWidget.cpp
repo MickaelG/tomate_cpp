@@ -104,3 +104,8 @@ void EditCropWidget::edit_crop()
     }
     emit dataset_changed();
 }
+
+void EditCropWidget::on_EditPlantsBtn_clicked()
+{
+
+}

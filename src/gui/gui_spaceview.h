@@ -8,6 +8,32 @@
 #include "dataset.h"
 
 
+class SubdRepresentation: public QGraphicsRectItem
+{
+public:
+    SubdRepresentation(Rectangle rect, Crop& crop, QDate date);
+    Crop* get_pcrop();
+    Rectangle get_rect() { return rect; };
+private:
+    Rectangle rect;
+    Crop& crop;
+};
+
+
+class PlotRepresentation: public QGraphicsRectItem
+{
+public:
+    PlotRepresentation(Crops& crops, Plot& plot, QDate date);
+    void update_draw(QDate date);
+    vector<SubdRepresentation*> subd_reprs;
+
+private:
+    QMenu context_menu;
+    Crops& crops;
+    Plot& plot;
+};
+
+
 class WholeScene: public QGraphicsScene
 {
     Q_OBJECT
@@ -15,14 +41,26 @@ class WholeScene: public QGraphicsScene
 public:
     WholeScene(Dataset& dataset);
     void update_draw();
+    void draw_scene();
+    void clear_scene();
+    Crop* getCropAtPos(QPointF scene_pos);
+    void drawCropSelection();
+    void removeCropSelection();
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private slots:
     void set_date(QDate date);
+    void selectCrop(Crop *p_crop);
+
+signals:
+    void crop_selected(Crop* p_crop);
     
 private:
     Dataset& dataset;
-    void draw_scene();
     QDate date;
+    Crop* selected_crop;
+    SubdRepresentation* selected_subd_repr;
+    vector<PlotRepresentation*> plot_reprs;
 };
 
 class WholeSceneView: public QGraphicsView
@@ -53,29 +91,5 @@ private slots:
 
 private:
     WholeSceneView view;
-};
-
-
-class PlotRepresentation: public QGraphicsRectItem
-{
-    public:
-        PlotRepresentation(Crops& crops, Plot& plot, QDate date);
-        void update(QDate date);
-                
-    private:
-        QMenu context_menu;
-        Crops& crops;
-        Plot& plot;
-};
-                
-
-class SubdRepresentation: public QGraphicsRectItem
-{
-    public:
-        SubdRepresentation(Rectangle rect, Crop& crop, QDate date);
-        Rectangle get_rect() { return rect; };
-    private:
-        Rectangle rect;
-        Crop& crop;
 };
 

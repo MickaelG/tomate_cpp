@@ -3,37 +3,56 @@
 #include "gui_plots.h"
 #include "gui_spaceview.h"
 #include "gui_timeline.h"
+#include "EditCropWidget.h"
 
 #include "xml.h"
 
 #include <QGridLayout>
 #include <QToolBar>
 
-QTabWidget* createTabsWidget(Dataset& data)
+QWidget* createTabsWidget(Dataset& data)
 {
-    QTabWidget* widget = new QTabWidget;
+    QTabWidget* tab_widget = new QTabWidget;
 
     SpaceViewWindow* spacewidget = new SpaceViewWindow(data);
-    widget->addTab(spacewidget, QObject::tr("Space view"));
+    tab_widget->addTab(spacewidget, QObject::tr("Space view"));
 
     TimelineWindow* timewidget = new TimelineWindow(data);
-    widget->addTab(timewidget, QObject::tr("Time view"));
+    tab_widget->addTab(timewidget, QObject::tr("Time view"));
 
     PlantsWindow* plantswidget = new PlantsWindow(data.get_plants());
-    widget->addTab(plantswidget, QObject::tr("Plants"));
-
     PlotsWindow* plotswidget = new PlotsWindow(data.get_plots());
-    widget->addTab(plotswidget, QObject::tr("Plots"));
+
+    EditCropWidget* edit_crop_widget = new EditCropWidget(data);
 
     QObject::connect(plantswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
-    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update()));
+    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update_draw()));
 
     QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
-    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update()));
+    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update_draw()));
 
-    //QObject::connect(timewidget->get_view()->get_scene()->get_ecd(), SIGNAL(dataset_changed()), timewidget, SLOT(update_draw()));
-    //QObject::connect(timewidget->get_view()->get_scene()->get_ecd(), SIGNAL(dataset_changed()), spacewidget, SLOT(update_draw()));
+    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), timewidget, SLOT(update_draw()));
+    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), spacewidget, SLOT(update_draw()));
+
+    //Date of the spacewidget
     QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(current_date_changed(QDate)), spacewidget->get_view()->get_scene(), SLOT(set_date(QDate)));
+
+    //Crops selection synchronisation
+    QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
+    QObject::connect(spacewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
+    QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)),
+                     spacewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
+    QObject::connect(spacewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)),
+                     timewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
+
+    QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
+    QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
+
+    QWidget* widget = new QWidget;
+    QGridLayout* main_layout = new QGridLayout;
+    main_layout->addWidget(tab_widget);
+    main_layout->addWidget(edit_crop_widget);
+    widget->setLayout(main_layout);
 
     return widget;
 }
@@ -42,23 +61,10 @@ QTabWidget* createTabsWidget(Dataset& data)
 GuiMainWin::GuiMainWin(Dataset& dataset) : dataset(dataset) {
     showMaximized();
     
-    /*
-    QToolBar* toolbar = new QToolBar();
-    QAction* write_action = toolbar->addAction(tr("Write"));
-    QObject::connect(write_action, SIGNAL(triggered()), this, SLOT(write_file()));
-    addToolBar(toolbar);
-    */
-    
     setCentralWidget(new QWidget);
     centralWidget()->setLayout(new QGridLayout);
     centralWidget()->layout()->addWidget(createTabsWidget(dataset));
 }
-
-void GuiMainWin::write_file()
-{
-    xml_write_data("../user_data/data_out.sfg", dataset);
-}
-
 
 GuiMainWin::~GuiMainWin() {
     //TODO: delete tabwidget, timewidget, plantswidget, spacewidget

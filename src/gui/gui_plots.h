@@ -35,7 +35,7 @@ private:
     QLineEdit* horInput;
 };
 
-class PlotsWindow: public QWidget
+class PlotsWindow: public QDialog
 {
     Q_OBJECT
 

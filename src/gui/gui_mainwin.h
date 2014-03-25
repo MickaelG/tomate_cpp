@@ -13,9 +13,6 @@ public:
     GuiMainWin(Dataset& dataset);
     ~GuiMainWin();
     
-private slots:
-    void write_file();
-
 private:
     Dataset& dataset;
 };
