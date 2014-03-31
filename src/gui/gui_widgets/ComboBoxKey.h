@@ -3,7 +3,6 @@
 #define GUI_COMBOBOXKEY_H
 
 #include <QComboBox>
-#include "PlantsModel.h"
 
 class ComboBoxKey: public QComboBox
 {

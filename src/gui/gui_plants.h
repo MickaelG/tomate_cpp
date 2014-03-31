@@ -1,7 +1,11 @@
 
-#include "plants.h"
-#include "gui_widgets/ListWidget.h"
-#include "gui_widgets/PlantsModel.h"
+#include <vector>
+using namespace std;
+
+class Plants;
+class Plant;
+class ListWidget;
+class PlantsModel;
 
 #include <QWidget>
 #include <QLayout>

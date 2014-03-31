@@ -1,7 +1,8 @@
 
 
 #include <QMainWindow>
-#include "dataset.h"
+
+class Dataset;
 
 
 class GuiMainWin : public QMainWindow

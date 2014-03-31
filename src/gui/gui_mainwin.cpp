@@ -1,3 +1,5 @@
+
+#include "dataset.h"
 #include "gui_mainwin.h"
 #include "gui_plants.h"
 #include "gui_plots.h"

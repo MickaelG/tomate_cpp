@@ -5,8 +5,12 @@
 #include <boost/date_time.hpp>
 namespace bg = boost::gregorian;
 
-#include "plot.h"
-#include "plant.h"
+#include <string>
+#include <list>
+using namespace std;
+
+class Plot;
+class Plant;
 
 class CropAction
 {

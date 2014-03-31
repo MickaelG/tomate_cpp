@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.8.7)
 project(tomate)
 
 #set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS "-std=c++0x -g")
+set(CMAKE_CXX_FLAGS "-std=c++0x -g -O0")
 
 
 # Find includes in corresponding build directories

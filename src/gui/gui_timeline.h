@@ -6,7 +6,11 @@
 #include <QDate>
 #include <QGraphicsItemGroup>
 
-#include "dataset.h"
+#include <vector>
+using namespace std;
+
+class Dataset;
+class Crop;
 
 
 class CropTimeRepresentation: public QGraphicsItemGroup

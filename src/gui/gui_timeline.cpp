@@ -2,6 +2,9 @@
 #include "gui_timeline.h"
 #include "gui_utils.h"
 
+#include "dataset.h"
+#include "plot.h"
+
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsProxyWidget>
 #include <QGridLayout>

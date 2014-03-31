@@ -5,7 +5,15 @@
 #include <QGraphicsView>
 #include <QMenu>
 #include <QDate>
-#include "dataset.h"
+
+#include <vector>
+using namespace std;
+
+class Dataset;
+class Crop;
+class Crops;
+class Plot;
+#include "geometry.h"
 
 
 class SubdRepresentation: public QGraphicsRectItem

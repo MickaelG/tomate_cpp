@@ -1,5 +1,9 @@
 #include "pugixml.hpp"
 #include "xml.h"
+#include "dataset.h"
+#include "plot.h"
+#include "plant.h"
+#include "crops.h"
 using namespace pugi;
 
 bg::date get_date(xml_node &elem_xml, string attribute_name)

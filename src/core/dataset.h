@@ -12,7 +12,6 @@ using namespace std;
 #include <boost/date_time.hpp>
 namespace bg = boost::gregorian;
 
-#include "geometry.h"
 #include "plots.h"
 #include "plants.h"
 #include "crops.h"

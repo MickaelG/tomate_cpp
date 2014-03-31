@@ -2,9 +2,8 @@
 #ifndef PLANTS_H
 #define PLANTS_H
 
-#include "keynames.h"
 #include "plant.h"
-#include "crops.h"
+class Crops;
 
 //this is dangerous to store reference from vector elements. use list.
 class Plants: public list<Plant>

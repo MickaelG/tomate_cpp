@@ -4,6 +4,9 @@
 #include "gui_utils.h"
 #include "PlantsModel.h"
 
+#include "dataset.h"
+#include "plot.h"
+
 EditCropWidget::EditCropWidget(Dataset& dataset, QWidget* parent) :
     QWidget(parent), dataset(dataset), p_crop(0),
     ui(new Ui::EditCropWidget)

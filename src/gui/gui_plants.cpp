@@ -2,6 +2,10 @@
 #include "gui_plants.h"
 #include "gui_utils.h"
 
+#include "plants.h"
+#include "gui_widgets/ListWidget.h"
+#include "gui_widgets/PlantsModel.h"
+
 #include <QColorDialog>
 #include <QDialog>
 #include <QFormLayout>

@@ -1,8 +1,10 @@
 
-#include "plots.h"
-#include "gui_widgets/ListWidget.h"
-#include "gui_widgets/PlantsModel.h"
-#include "gui_widgets/PhysInput.h"
+class Plot;
+class Plots;
+class ListWidget;
+class PlantModel;
+class PhysInput;
+class SubdWidget;
 
 #include <QDialog>
 #include <QWidget>

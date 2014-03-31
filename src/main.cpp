@@ -1,14 +1,16 @@
 
 #include "gui/gui_mainwin.h"
 #include "xml.h"
-#include <QApplication>
+#include "dataset.h"
 
+#include <QApplication>
 #include <QTranslator>
 #include <QLocale>
 #include <QDateTime>
 #include <QMessageBox>
 
 #include <boost/filesystem.hpp>
+#include <fstream>
 
 int main(int argc, char *argv[])
 {

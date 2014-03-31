@@ -2,6 +2,12 @@
 #include "gui_plots.h"
 #include "gui_utils.h"
 
+#include "plots.h"
+#include "plot.h"
+#include "gui_widgets/ListWidget.h"
+#include "gui_widgets/PlantsModel.h"
+#include "gui_widgets/PhysInput.h"
+
 #include <QFormLayout>
 #include <QDialogButtonBox>
 #include <QLabel>

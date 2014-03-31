@@ -3,6 +3,9 @@
 
 #include "gui_utils.h"
 
+#include "dataset.h"
+#include "plot.h"
+
 #include <QLayout>
 #include <QFont>
 #include <QColor>

@@ -2,6 +2,13 @@
 #include "PlantsModel.h"
 
 #include "gui_utils.h"
+
+#include "plants.h"
+#include "keynames.h"
+#include "plots.h"
+#include "plot.h"
+#include "ListWidget.h"
+
 using namespace std;
 
 VarsModel::VarsModel(Plants& plants, ListWidget* plants_widget, QWidget* parent) :

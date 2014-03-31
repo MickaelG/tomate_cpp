@@ -1,6 +1,8 @@
 
 #include "plants.h"
 
+#include "crops.h"
+
 ///////////////////////////////////////////////////////////////////////////////
 // class Plants
 ///////////////////////////////////////////////////////////////////////////////
@@ -72,7 +74,7 @@ int Plants::delete_plant(string key)
 int Plants::delete_plant(int del_index)
 {
     Plant& del_plant = index(del_index);
-    delete_plant(del_plant);
+    return delete_plant(del_plant);
 }
 
 int Plants::delete_plant(Plant& plant)

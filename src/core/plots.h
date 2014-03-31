@@ -2,9 +2,12 @@
 #ifndef PLOTS_H
 #define PLOTS_H
 
-#include "crops.h"
+#include <list>
+#include <string>
+using namespace std;
+
 #include "plot.h"
-#include "crops.h"
+class Crops;
 
 //this is dangerous to store reference from vector elements. use list.
 class Plots: public list<Plot>

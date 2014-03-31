@@ -5,10 +5,10 @@
 #include <QAbstractListModel>
 #include <QComboBox>
 
-#include "plants.h"
-#include "keynames.h"
-#include "plots.h"
-#include "ListWidget.h"
+class Plants;
+class KeyNames;
+class Plots;
+class ListWidget;
 
 class KeyNamesModel: public QAbstractListModel
 {

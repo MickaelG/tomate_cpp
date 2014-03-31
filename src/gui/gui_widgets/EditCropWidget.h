@@ -6,10 +6,10 @@
 #include <QLineEdit>
 #include <QPushButton>
 
-#include "ComboBoxKey.h"
-#include "dataset.h"
-
 #include "ui_EditCropWidget.h"
+
+class Dataset;
+class Crop;
 
 class EditCropWidget: public QWidget
 {
