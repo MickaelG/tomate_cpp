@@ -55,7 +55,10 @@ private slots:
     void update_plant_data(const QModelIndex& current_plant_mi, const QModelIndex& previous_plant_mi);
     void update_btns_state();
     void update_del_btn(int current_plant_index);
-    void update_notes(int previous_plant_index, int current_plant_index);
+    void update_notes(int current_plant_index, int previous_plant_index);
+
+public:
+    ListWidget* plants_widget;
 
 private:
     vector<QString> plants_str_list();
@@ -63,7 +66,6 @@ private:
     QPushButton* color_btn;
     QTextEdit* notes_widget;
     QPushButton* add_var_btn;
-    ListWidget* plants_widget;
     QListView* var_widget;
     QColorDialog* color_dialog;
     QPushButton* del_plant_btn;

@@ -210,7 +210,7 @@ void PlantsWindow::update_btns_state()
     }
 }
 
-void PlantsWindow::update_notes(int previous_plant_index, int current_plant_index)
+void PlantsWindow::update_notes(int current_plant_index, int previous_plant_index)
 {
     //We save the note content of the previous plant
     if (previous_plant_index >= 0)

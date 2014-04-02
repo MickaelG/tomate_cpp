@@ -36,9 +36,9 @@ target_link_libraries(tomate_gui ${QT_LIBRARIES})
 add_executable(test ${CORE_SRC} src/test/test.cpp)
 target_link_libraries(test boost_unit_test_framework boost_date_time)
 
-add_executable(test_gui src/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC})
-target_link_libraries(test_gui boost_unit_test_framework boost_date_time)
-target_link_libraries(test_gui ${QT_LIBRARIES})
+add_executable(test_gui src/test/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC})
+target_link_libraries(test_gui boost_date_time)
+target_link_libraries(test_gui ${QT_LIBRARIES} ${QT_QTTEST_LIBRARY})
 #qt4_use_modules(test_gui Widgets)
 
 #Translation files
