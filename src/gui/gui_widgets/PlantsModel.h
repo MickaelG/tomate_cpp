@@ -73,24 +73,5 @@ private:
     Plots& plots;
 };
 
-class SubPlotsModel: public QAbstractListModel
-{
-    Q_OBJECT
-    
-public:
-    SubPlotsModel(Plots& plots, ListWidget* plots_widget, QWidget* parent = NULL);
-    SubPlotsModel(Plots& plots, QComboBox* plots_widget, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    int columnCount(const QModelIndex& model_index) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    
-private:
-    int get_plot_index() const;
-    Plots& plots;
-    ListWidget* plots_list_widget;
-    QComboBox* plots_combo_widget;
-    
-};
-
 #endif //GUI_PLANTSMODEL_H
 

@@ -54,25 +54,27 @@ PlotRepresentation::PlotRepresentation(Crops& crops, Plot& plot, QDate date) :
 
 void PlotRepresentation::update_draw(QDate date)
 {
-    Rectangle rect = plot.get_rect();
-    this->setRect(rect.get_x(), - rect.get_y() - rect.get_height(),
-                  rect.get_width(), rect.get_height());
-    for (Plot subd: plot.get_subplots())
+    Shape* shape = plot.get_shape();
+    this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
+                  shape->get_width(), shape->get_height());
+    for (Crop* p_crop: crops.find_crops(plot, fromQDate(date)))
     {
-        Crop& crop = crops.find_crop(subd, fromQDate(date));
-        SubdRepresentation *subd_repr = new SubdRepresentation(subd.get_rect(), crop, date);
-        subd_repr->setPos(rect.get_x(), -rect.get_y());
-        subd_repr->setParentItem(this);
-        subd_reprs.push_back(subd_repr);
+        Crop& crop = *p_crop;
+        CropSpaceRepr *crop_repr = new CropSpaceRepr(crop, date);
+        crop_repr->setPos(shape->get_min_x(), -shape->get_min_y());
+        crop_repr->setParentItem(this);
+        crop_reprs.push_back(crop_repr);
     }
 }
 //TODO: delete subd_repr
             
-SubdRepresentation::SubdRepresentation(Rectangle rect, Crop& crop, QDate date) :
-    rect(rect), crop(crop)
+CropSpaceRepr::CropSpaceRepr(Crop& crop, QDate date) :
+    crop(crop)
 {
-    this->setRect(get_rect().get_x(), - get_rect().get_y() - get_rect().get_height(),
-                  get_rect().get_width(), get_rect().get_height());
+    Shape* shape = crop.get_shape();
+    //TODO draw the real shape instead of a rect
+    this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
+                  shape->get_width(), shape->get_height());
     if (crop)
     {
         Plant& plant = crop.get_plant();
@@ -99,7 +101,7 @@ SubdRepresentation::SubdRepresentation(Rectangle rect, Crop& crop, QDate date) :
     }
 }
 
-Crop* SubdRepresentation::get_pcrop()
+Crop* CropSpaceRepr::get_pcrop()
 {
     return &crop;
 }
@@ -127,7 +129,7 @@ void WholeScene::draw_scene()
 {
     for(Plot plot: this->dataset.get_plots())
     {
-        if (plot.get_rect())
+        if (plot.get_shape())
         {
             PlotRepresentation *plot_repr = new PlotRepresentation(dataset.get_crops(),
                                                                    plot, date);
@@ -150,7 +152,7 @@ Crop* WholeScene::getCropAtPos(QPointF scene_pos)
     Crop* p_current_crop = 0;
     for (PlotRepresentation* plot_repr: plot_reprs)
     {
-        for (SubdRepresentation* subd_repr: plot_repr->subd_reprs)
+        for (CropSpaceRepr* subd_repr: plot_repr->crop_reprs)
         {
             QRectF subd_rect = subd_repr->sceneTransform().mapRect(subd_repr->boundingRect());
             if (subd_rect.contains(scene_pos))
@@ -172,7 +174,7 @@ void WholeScene::drawCropSelection()
     {
         for (PlotRepresentation* plot_repr: plot_reprs)
         {
-            for (SubdRepresentation* subd_repr: plot_repr->subd_reprs)
+            for (CropSpaceRepr* subd_repr: plot_repr->crop_reprs)
             {
                 if (subd_repr->get_pcrop() == selected_crop)
                 {

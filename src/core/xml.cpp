@@ -60,11 +60,6 @@ int xml_read_data(string filename, Dataset& dataset)
         float posx = elem_xml.attribute("posx").as_float(0);
         float posy = elem_xml.attribute("posy").as_float(0);
         Plot plot(key, name, descr, width, height, posx, posy);
-        for (xml_node subd_xml: elem_xml.children())
-        {
-            plot.add_subplot(subd_xml.attribute("width").as_float(-1), subd_xml.attribute("height").as_float(-1),
-                            subd_xml.attribute("posx").as_float(0), subd_xml.attribute("posy").as_float(0));
-        }
         dataset.add_plot(plot);
     }
 
@@ -159,28 +154,14 @@ int xml_write_data(string filename,const Dataset& dataset)
         elem_node.append_attribute("name") = plot.get_name().c_str();
         elem_node.append_attribute("descr") = plot.get_note().c_str();
 
-        float width = plot.get_rect().get_width();
-        float height = plot.get_rect().get_height();
+        float width = plot.get_shape()->get_width();
+        float height = plot.get_shape()->get_height();
         if (width > 0 && height > 0)
         {
             add_float_attribute(elem_node, "width", width);
             add_float_attribute(elem_node, "height", height);
-            add_float_attribute(elem_node, "posx", plot.get_rect().get_x());
-            add_float_attribute(elem_node, "posy", plot.get_rect().get_y());
-        }
-
-        for (Plot subd: plot.get_subplots())
-        {
-            xml_node subd_node = elem_node.append_child("subd");
-            width = subd.get_rect().get_width();
-            height = subd.get_rect().get_height();
-            if (width > 0 && height > 0)
-            {
-                add_float_attribute(subd_node, "width", width);
-                add_float_attribute(subd_node, "height", height);
-                add_float_attribute(subd_node, "posx", subd.get_rect().get_x());
-                add_float_attribute(subd_node, "posy", subd.get_rect().get_y());
-            }
+            add_float_attribute(elem_node, "posx", plot.get_shape()->get_min_x());
+            add_float_attribute(elem_node, "posy", plot.get_shape()->get_min_y());
         }
     }
     xml_node plant_node = root_node.append_child("plants");

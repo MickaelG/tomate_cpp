@@ -55,7 +55,6 @@ private slots:
     void update_plot_data(const QModelIndex& current_plot_mi, const QModelIndex& previous_plot_mi);
     void update_notes(int current_plot_index, int previous_plot_index);
     void update_phys(int current_plot_index, int previous_plot_index);
-    void update_subd(int current_plot_index, int previous_plot_index);
     void update_del_btn(int current_plot_index);
 
 private:
@@ -63,6 +62,5 @@ private:
     QTextEdit* notes_widget;
     ListWidget* plots_widget;
     PhysInput* phys_widget;
-    SubdWidget* subd_widget;
     QPushButton* del_plot_btn;
 };

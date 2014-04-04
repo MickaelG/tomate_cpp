@@ -8,19 +8,17 @@
 class Plot: public KeyName
 {
 private:
-    Rectangle geometry;
+    Shape* shape = 0;
     list<Plot> subplots;
 public:
     Plot();
-    Plot(string key, string name, string descr, Rectangle rect);
+    Plot(string key, string name, string descr, Shape *shape);
     Plot(string key, string name, string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
+    Plot(const Plot& plot);
+    ~Plot();
     void add_subplot(float width, float height, float posx, float posy);
-    void create_subplots(int nb_hor, int nb_vert);
-    Rectangle get_rect();
-    void set_rect(Rectangle rect);
-    const list<Plot>& get_subplots() const;
-    list<Plot>& get_subplots();
-    Plot& get_subplot(string key);
+    Shape *get_shape();
+    void set_shape(Shape *shape);
 };
 extern Plot NullPlot;
 

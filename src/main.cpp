@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     }
 
     string user_data_dir = data_home + "/tomate/";
-    string data_file = user_data_dir + "/data.sfg";
+    string data_file = user_data_dir + "/data_dynamic_subd.sfg";
 
     Dataset dataset;
     int res = xml_read_data(data_file, dataset);

@@ -227,14 +227,21 @@ void Crop::set_note(string note)
 {
     this->note = note;
 }
+
+Shape* Crop::get_shape()
+{
+    return shape;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // class Crops
 ///////////////////////////////////////////////////////////////////////////////
-Crop& Crops::find_crop(const Plot& plot, bg::date date)
+vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
 {
+    vector<Crop*> result;
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
     for (Crops::iterator it=this->begin(); it != this->end(); ++it)
     {
@@ -242,11 +249,11 @@ Crop& Crops::find_crop(const Plot& plot, bg::date date)
         {
            if (it->is_active_at_date(date) || it->is_planned_at_date(date))
            {
-               return *it;
+               result.push_back(&*it);
            }
         }
     }
-    return NullCrop;
+    return result;
 }
 
 bool Crops::is_used_plot(const Plot& plot) const

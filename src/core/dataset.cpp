@@ -74,10 +74,6 @@ Plot& Dataset::get_plot(string key)
         {
             return *it;
         }
-        if (it->get_subplot(key))
-        {
-            return it->get_subplot(key);
-        }
     }
     return NullPlot;
 }

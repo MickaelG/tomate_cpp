@@ -11,7 +11,7 @@ class PhysInput: public QWidget
     Q_OBJECT
 
 public:
-    PhysInput(Rectangle rect=Rectangle(-1,-1,-1,-1), bool editable=true, QWidget* parent=NULL);
+    PhysInput(Rectangle rect=Rectangle(0, 0, 100, 100), bool editable=true, QWidget* parent=NULL);
     void set_rect(Rectangle rect);
     Rectangle get_rect();
 

@@ -16,10 +16,10 @@ class Plot;
 #include "geometry.h"
 
 
-class SubdRepresentation: public QGraphicsRectItem
+class CropSpaceRepr: public QGraphicsRectItem
 {
 public:
-    SubdRepresentation(Rectangle rect, Crop& crop, QDate date);
+    CropSpaceRepr(Crop& crop, QDate date);
     Crop* get_pcrop();
     Rectangle get_rect() { return rect; };
 private:
@@ -33,7 +33,7 @@ class PlotRepresentation: public QGraphicsRectItem
 public:
     PlotRepresentation(Crops& crops, Plot& plot, QDate date);
     void update_draw(QDate date);
-    vector<SubdRepresentation*> subd_reprs;
+    vector<CropSpaceRepr*> crop_reprs;
 
 private:
     QMenu context_menu;
@@ -67,7 +67,7 @@ private:
     Dataset& dataset;
     QDate date;
     Crop* selected_crop;
-    SubdRepresentation* selected_subd_repr;
+    CropSpaceRepr* selected_subd_repr;
     vector<PlotRepresentation*> plot_reprs;
 };
 

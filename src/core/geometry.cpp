@@ -2,6 +2,52 @@
 #include "geometry.h"
 
 ///////////////////////////////////////////////////////////////////////////////
+/// class Shape
+///////////////////////////////////////////////////////////////////////////////
+float Shape::get_height() const
+{
+    return -1;
+}
+
+float Shape::get_width() const
+{
+    return -1;
+}
+
+float Shape::get_min_x() const
+{
+    return 0;
+}
+
+float Shape::get_min_y() const
+{
+    return 0;
+}
+
+Shape::operator bool() const
+{
+    return (get_width() != -1 && get_height() != -1);
+}
+
+Shape* Shape::clone()
+{
+    return new Shape(*this);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// class Polygon
+///////////////////////////////////////////////////////////////////////////////
+Polygon::Polygon(vector<float> points) :
+    points(points)
+{
+}
+
+Polygon::Polygon()
+{
+    points = vector<float>();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // class Rectangle
 ///////////////////////////////////////////////////////////////////////////////
 Rectangle::Rectangle(int width, int height, int posx, int posy) :
@@ -26,18 +72,18 @@ float Rectangle::get_height() const
     return height;
 }
 
-float Rectangle::get_x() const
+float Rectangle::get_min_x() const
 {
     return posx;
 }
 
-float Rectangle::get_y() const
+float Rectangle::get_min_y() const
 {
     return posy;
 }
 
-Rectangle::operator bool() const
+Shape* Rectangle::clone()
 {
-    return !(posx == -1);
+    return new Rectangle(*this);
 }
 ///////////////////////////////////////////////////////////////////////////////

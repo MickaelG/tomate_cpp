@@ -24,8 +24,6 @@ EditCropWidget::EditCropWidget(Dataset& dataset, QWidget* parent) :
     ui->plantInput->setModel(new PlantsModel(dataset.get_plants()));
     ui->varInput->setModel(new VarsModel(dataset.get_plants(), ui->plantInput));
     ui->plotInput->setModel(new PlotsModel(dataset.get_plots()));
-    ui->subplotInput->setModel(new SubPlotsModel(dataset.get_plots(), ui->plotInput));
-
     ui->enddateInput->setEnabled(false);
     ui->plannedenddateInput->setEnabled(false);
 }

@@ -35,6 +35,7 @@ class Crop
         string varkey;
         Plot* p_plot;
         list<CropAction> actions;
+        Shape* shape;
     public:
         Crop();
         Crop(bg::date start_date, bg::date end_date,
@@ -64,6 +65,7 @@ class Crop
         bool is_planned_at_date(bg::date date) const;
         bool is_in_year_started_by(bg::date date) const;
         string description() const;
+        Shape *get_shape();
 };
 extern Crop NullCrop;
 
@@ -72,7 +74,7 @@ class Crops: public list<Crop>
 {
     private:
     public:
-        Crop& find_crop(const Plot& plot, bg::date date);
+        vector<Crop*> find_crops(const Plot& plot, bg::date date);
         bool is_used_plot(const Plot& plot) const;
         bool is_used_plant(const Plant& plant) const;
 };

@@ -30,8 +30,6 @@ AddPlotDialog::AddPlotDialog(Plots& plots, QWidget* parent) :
 
     formLayout->addRow(tr("Name :"), nameInput);
     formLayout->addRow(physInput);
-    formLayout->addRow(tr("Horizontal subdivisions :"), horInput);
-    formLayout->addRow(tr("Vertical subdivisons :"), verInput);
 
     QPushButton* OKbutton = new QPushButton(tr("Add"));
     QPushButton* Canbutton = new QPushButton(tr("Cancel"));
@@ -48,11 +46,7 @@ void AddPlotDialog::add()
     QString name = nameInput->text();
     Plot& plot = plots.add_plot("", fromQString(name));
 
-    plot.set_rect(physInput->get_rect());
-
-    int nb_hor = horInput->text().toInt();
-    int nb_ver = verInput->text().toInt();
-    plot.create_subplots(nb_hor, nb_ver);
+    plot.set_shape(new Rectangle(physInput->get_rect()));
 
     emit list_updated();
     hide();
@@ -100,9 +94,6 @@ PlotsWindow::PlotsWindow(Plots& plots, QWidget* parent) :
     phys_widget = new PhysInput();
     details_layout->addWidget(phys_widget);
 
-    subd_widget = new SubdWidget();
-    details_layout->addWidget(subd_widget);
-
     QHBoxLayout* main_layout = new QHBoxLayout(this);
     main_layout->addLayout(plots_layout);
     main_layout->addLayout(details_layout);
@@ -128,7 +119,6 @@ void PlotsWindow::update_plot_data(const QModelIndex& current_plot_mi, const QMo
     int current_plot_index = current_plot_mi.row();
     update_notes(current_plot_index, previous_plot_index);
     update_phys(current_plot_index, previous_plot_index);
-    update_subd(current_plot_index, previous_plot_index);
     update_del_btn(current_plot_index);
     emit timeline_need_update();
 }
@@ -169,46 +159,17 @@ void PlotsWindow::update_phys(int current_plot_index, int previous_plot_index)
     //We save the note content of the previous plot
     if (previous_plot_index >= 0)
     {
-        plots.index(previous_plot_index).set_rect(phys_widget->get_rect());
+        //plots.index(previous_plot_index).set_shape(phys_widget->get_rect());
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        phys_widget->set_rect(plots.index(current_plot_index).get_rect());
+        //phys_widget->set_shape(plots.index(current_plot_index).get_shape());
         phys_widget->setDisabled(false);
     }
     else
     {
         phys_widget->setDisabled(true);
-    }
-}
-
-void PlotsWindow::update_subd(int current_plot_index, int previous_plot_index)
-{
-    //TODO: save changes on subplots
-    //if (previous_plot_index >= 0)
-    //{
-    //    QVector<Rectangle> all_rects = subd_widget->get_rects();
-    //    for (int rect_index = 0; rect_index < all_rects.size(); rect_index++)
-    //    {
-    //        plots.index(previous_plot_index).get_subplots().index(rect_index).set_rect(all_rects[rect_index]);
-    //    }
-    //}
-
-    if (current_plot_index >= 0)
-    {
-        QVector<Rectangle> all_rects;
-        for (Plot plot: plots.index(current_plot_index).get_subplots())
-        {
-            all_rects.push_back(plot.get_rect());
-        }
-        subd_widget->set_rects(all_rects);
-        subd_widget->setDisabled(false);
-    }
-    else
-    {
-        subd_widget->set_rects();
-        subd_widget->setDisabled(true);
     }
 }

@@ -32,10 +32,7 @@ PhysInput::PhysInput(Rectangle rect, bool editable, QWidget* parent):
     this->layout()->addWidget(new QLabel(tr("height:")));
     this->layout()->addWidget(height_widget);
 
-    if (rect)
-    {
-        set_rect(rect);
-    }
+    set_rect(rect);
 }
 
 Rectangle PhysInput::get_rect()
@@ -49,44 +46,8 @@ Rectangle PhysInput::get_rect()
 
 void PhysInput::set_rect(Rectangle rect)
 {
-    x_widget->setText(QString::number(rect.get_x()));
-    y_widget->setText(QString::number(rect.get_y()));
+    x_widget->setText(QString::number(rect.get_min_x()));
+    y_widget->setText(QString::number(rect.get_min_y()));
     width_widget->setText(QString::number(rect.get_width()));
     height_widget->setText(QString::number(rect.get_height()));
-}
-
-
-SubdWidget::SubdWidget(QWidget *parent, QVector<Rectangle> all_rects):
-    QWidget(parent)
-{
-    QGroupBox* group_box = new QGroupBox(tr("subdivisions"));
-    this->setLayout(new QVBoxLayout);
-    this->layout()->addWidget(group_box);
-    main_layout = new QVBoxLayout();
-    group_box->setLayout(main_layout);
-
-    this->set_rects(all_rects);
-
-}
-
-void SubdWidget::set_rects(QVector<Rectangle> all_rects)
-{
-    clear();
-
-    for (Rectangle rect: all_rects)
-    {
-        PhysInput* input = new PhysInput(rect, false);
-        inputs.push_back(input);
-        this->main_layout->addWidget(input);
-    }
-}
-
-void SubdWidget::clear()
-{
-    for (PhysInput* widget: inputs)
-    {
-        this->main_layout->removeWidget(widget);
-        delete widget;
-    }
-    inputs.clear();
 }

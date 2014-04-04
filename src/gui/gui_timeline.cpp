@@ -344,23 +344,20 @@ void WholeTimeScene::draw_scene()
     addItem(months);
     for (const Plot plot: dataset.get_plots())
     {
-        for (Plot square: plot.get_subplots())
-        {
-            //subdiv numbers on the left
-            QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(square.get_key()));
-            T->setPos(-40, y_pos + 8);
-            addItem(T);
+        //subdiv numbers on the left
+        QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(plot.get_name()));
+        T->setPos(-40, y_pos + 8);
+        addItem(T);
 
-            //actual timeline
-            for (Crop& crop: crops)
+        //actual timeline
+        for (Crop& crop: crops)
+        {
+            if (crop.get_plot().get_key() == plot.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
             {
-                if (crop.get_plot().get_key() == square.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
-                {
-                    CropTimeRepresentation* crop_repr = new CropTimeRepresentation(crop, date0);
-                    crop_repr->setY(y_pos);
-                    addItem(crop_repr);
-                    crop_reprs.push_back(crop_repr);
-                }
+                CropTimeRepresentation* crop_repr = new CropTimeRepresentation(crop, date0);
+                crop_repr->setY(y_pos);
+                addItem(crop_repr);
+                crop_reprs.push_back(crop_repr);
             }
             y_pos += SquareUnit + SubMargin;
         }
