@@ -78,7 +78,7 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
 
 void EditCropWidget::edit_crop()
 {
-    QString plot_key = ui->subplotInput->currentElem();
+    QString plot_key = ui->plotInput->currentElem();
     Plot& plot = dataset.get_plot(fromQString(plot_key));
     QString plant_key = ui->plantInput->currentElem();
     Plant& plant = dataset.get_plant(fromQString(plant_key));

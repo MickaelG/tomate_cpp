@@ -32,7 +32,7 @@ PhysInput::PhysInput(Rectangle rect, bool editable, QWidget* parent):
     this->layout()->addWidget(new QLabel(tr("height:")));
     this->layout()->addWidget(height_widget);
 
-    set_rect(rect);
+    set_shape(&rect);
 }
 
 Rectangle PhysInput::get_rect()
@@ -44,10 +44,10 @@ Rectangle PhysInput::get_rect()
     return Rectangle(width, height, posx, posy);
 }
 
-void PhysInput::set_rect(Rectangle rect)
+void PhysInput::set_shape(const Shape* shape)
 {
-    x_widget->setText(QString::number(rect.get_min_x()));
-    y_widget->setText(QString::number(rect.get_min_y()));
-    width_widget->setText(QString::number(rect.get_width()));
-    height_widget->setText(QString::number(rect.get_height()));
+    x_widget->setText(QString::number(shape->get_min_x()));
+    y_widget->setText(QString::number(shape->get_min_y()));
+    width_widget->setText(QString::number(shape->get_width()));
+    height_widget->setText(QString::number(shape->get_height()));
 }

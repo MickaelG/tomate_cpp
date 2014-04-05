@@ -57,7 +57,7 @@ void Crop::set_date(string which, bg::date date)
     }
 }
 
-Crop::Crop() : p_plant(0), p_plot(0)
+Crop::Crop() : p_plant(0), p_plot(0), shape(0)
 {
 }
 
@@ -68,7 +68,7 @@ Crop::Crop(bg::date start_date, bg::date end_date,
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
     varkey(varkey),
-    p_plant(&plant), p_plot(&plot), note(note)
+    p_plant(&plant), p_plot(&plot), note(note), shape(0)
 {
 }
 
@@ -77,7 +77,7 @@ Crop::Crop(bg::date start_date, bg::date end_date,
      Plot &plot, string note) :
     start_date(start_date), end_date(end_date),
     varkey(varkey),
-    p_plant(&plant), p_plot(&plot), note(note)
+    p_plant(&plant), p_plot(&plot), note(note), shape(0)
 {
 }
 
@@ -230,7 +230,15 @@ void Crop::set_note(string note)
 
 Shape* Crop::get_shape()
 {
-    return shape;
+    if (shape)
+    {
+        return shape;
+    }
+    else
+    {
+        return get_plot().get_shape();
+    }
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

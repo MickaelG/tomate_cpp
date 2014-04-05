@@ -12,7 +12,7 @@ class PhysInput: public QWidget
 
 public:
     PhysInput(Rectangle rect=Rectangle(0, 0, 100, 100), bool editable=true, QWidget* parent=NULL);
-    void set_rect(Rectangle rect);
+    void set_shape(const Shape* shape);
     Rectangle get_rect();
 
 private:
@@ -20,23 +20,6 @@ private:
     QLineEdit* y_widget;
     QLineEdit* width_widget;
     QLineEdit* height_widget;
-};
-
-class SubdWidget: public QWidget
-{
-    Q_OBJECT
-
-public:
-    SubdWidget(QWidget* parent=NULL, QVector<Rectangle> all_rects=QVector<Rectangle>());
-    void set_rects(QVector<Rectangle> all_rects=QVector<Rectangle>());
-    void clear();
-    QVector<Rectangle> get_rects();
-
-private:
-    QVBoxLayout* main_layout;
-    QVector<PhysInput*> inputs;
-
-
 };
 
 #endif //GUI_PHYS_INPUT_H

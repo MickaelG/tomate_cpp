@@ -72,6 +72,11 @@ CropSpaceRepr::CropSpaceRepr(Crop& crop, QDate date) :
     crop(crop)
 {
     Shape* shape = crop.get_shape();
+    if (!shape)
+    {
+        return;
+    }
+
     //TODO draw the real shape instead of a rect
     this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
                   shape->get_width(), shape->get_height());

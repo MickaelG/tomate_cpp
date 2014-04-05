@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<sfg v="0.1">
+  <plots>
+    <plot key="0" name="WoSubPlots" descr="a plot without subplots" />
+    <plot key="1" name="Plot1" descr="first plot" width="120" height="120" posx="0" posy="0" />
+    <plot key="2" name="Plot2" descr="second plot" width="120" height="120" posx="0" posy="150" />
+    <plot key="3" name="neg_plot" descr="plot with neg pos" width="120" height="120" posx="-200" posy="-150" />
+    <plot key="4" name="non_phys_plot" descr="plot without phys" />
+  </plots>
+  <plants>
+    <plant key="la" name="Laitue" color="#DDDDDD" />
+    <plant key="ca" name="Carotte" color="#ff5500" note="Description carotte">
+      <var key="1" name="de Colmar à coeur rouge" />
+    </plant>
+    <plant key="hn" name="Haricot nain">
+      <var key="1" name="triomphe de Farcy" />
+    </plant>
+  </plants>
+  <crops>
+    <crop start_date="2011-05-11" end_date="2011-06-05" plot="0" plant="la">
+      <action date="2011-05-11" note="semis commentaire" />
+    </crop>
+    <crop start_date="2011-05-23" plot="0" plant="ca" var="1">
+      <action date="2011-05-23" note="semis commentaire 2" />
+    </crop>
+    <crop start_date="2011-04-09" end_date="2011-08-28" plot="1" plant="la">
+      <action date="2011-04-09" note="semis commentaire 1" />
+      <action date="2011-05-23" note="commentaire 2" />
+    </crop>
+    <crop planned_start_date="2013-05-15" planned_end_date="2013-07-15" plot="2" plant="hn" />
+    <crop start_date="2013-04-02" end_date="2013-08-28" planned_start_date="2013-04-01" planned_end_date="2013-05-15" plot="1" plant="hn" var="1" note="note quelconque" />
+  </crops>
+</sfg>

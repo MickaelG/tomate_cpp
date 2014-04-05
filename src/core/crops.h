@@ -11,6 +11,7 @@ using namespace std;
 
 class Plot;
 class Plant;
+class Shape;
 
 class CropAction
 {

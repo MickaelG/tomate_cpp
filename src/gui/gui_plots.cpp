@@ -159,13 +159,14 @@ void PlotsWindow::update_phys(int current_plot_index, int previous_plot_index)
     //We save the note content of the previous plot
     if (previous_plot_index >= 0)
     {
-        //plots.index(previous_plot_index).set_shape(phys_widget->get_rect());
+        plots.index(previous_plot_index).set_shape(new Rectangle(phys_widget->get_rect()));
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        //phys_widget->set_shape(plots.index(current_plot_index).get_shape());
+        Shape* shape = plots.index(current_plot_index).get_shape();
+        phys_widget->set_shape(shape);
         phys_widget->setDisabled(false);
     }
     else
