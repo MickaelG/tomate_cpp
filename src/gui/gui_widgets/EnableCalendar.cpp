@@ -8,7 +8,7 @@ EnableCalendar::EnableCalendar(QWidget *parent) :
     ui->setupUi(this);
     QObject::connect(ui->checkbox, SIGNAL(stateChanged(int)), this, SLOT(updateState()));
     QObject::connect(ui->calendar, SIGNAL(dateChanged(QDate)), this, SIGNAL(dateChanged(QDate)));
-    ui->calendar->setDate(QDate::currentDate());
+    setSelectedDate(QDate::currentDate());
 }
 
 EnableCalendar::~EnableCalendar()
