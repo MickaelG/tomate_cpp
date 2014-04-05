@@ -1,48 +1,44 @@
 
 v0.2
-- Vue spatiale pas mise à jour qd on modifie une culture
-- corriger les "fail writing data file"
+X Vue spatiale pas mise à jour qd on modifie une culture
+X corriger les "fail writing data file" => remp mkdir par boost::create_directories
 - Répertoire données cross-platforme
 - Compilation et test sous windows
 - ajouter les unités de longueurs
-- Une culture de 0 jours n'est pas modifiable dans la vue temporelle
+- Quand une culture est sélectionnée, tab sélectionne la suivante
 - Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur les vues spatiales et temporelles
-- gérer les planches avec le même nom
-- pouvoir renommer des planches
-- pouvoir renommer des plantes
-- expliciter le concept de subdivision
-- Expliciter la méthode pour ajouter des cultures au début
-
-v0.3
-- livrer un fichier de donné pré-rempli
-- tester les .ui de QtCreator
-- Label dans la vue temporelle pour connaitre les planches et les subd
-- Pouvoir modifier les cultures à partir de la vue spatiale
-- Par défaut, end, et planned_end devraient être désactivés
-- Expliquer ce qu'il faut faire pour supprimer un plot avec des plantations dessus
+O expliciter le concept de subdivision
+X Expliciter la méthode pour ajouter des cultures au début
+X tester les .ui de QtCreator
+O Label dans la vue temporelle pour connaitre les planches et les subd
+X Pouvoir modifier les cultures à partir de la vue spatiale
+O Par défaut, end, et planned_end devraient être désactivés
+X pouvoir éditer des plantations dans la space view
 - pouvoir supprimer des plantations
-- pouvoir bouger les plantations à la souris dans la time view, en tirant sur les côtés pour changer les dates
-- pouvoir éditer des plantations dans la space view
-- pouvoir bouger des plantations à la souris dans la space view
-- afficher la fenêtre d'édition des cultures dans la fenêtre de la time view
-- édition du jardin dans la space-view
+X Les calendriers désactivés doivent être à la date d'aujourd'hui
 
 v0.4
-- Passage à Qt5
-- Encarts wikipedia pour les plantes
 - subdivision dynamiques et non-rectangulaires (use case: 
     une planche avec 4 rangs de carottes, 3 de patates, 1/2 de radis, 1/2 de salade
     une planche avec 4 concombres, et un pied de potimarron.)
+- livrer un fichier de donné pré-rempli
+- Expliquer ce qu'il faut faire pour supprimer un plot avec des plantations dessus
+- pouvoir bouger des plantations à la souris dans la space view
+- Passage à Qt5
 - annuler les actions
 - planches non-rectangulaires
 - spécifier les planches de manière graphique
-- Les subdivisions ne sont pas modifiables
 - Mesurer le coverage du test
+- pouvoir bouger les plantations à la souris dans la time view, en tirant sur les côtés pour changer les dates
+- pouvoir renommer des planches
+- pouvoir renommer des plantes
 
 
 v1.0
 - Vue "calendrier", avec la liste des choses faites et à faire
-- base de données légumes: periode semis / récolte, entretien, espace entre les rangs et entre les plants, besoin en nutriments et en ensoleillement, résistance au vent
+- base de données légumes: periode semis / récolte, temps de culture, entretien,
+  espace entre les rangs et entre les plants, besoin en nutriments et en ensoleillement, résistance au vent
+- Encarts wikipedia pour les plantes
 
 
 v10.0

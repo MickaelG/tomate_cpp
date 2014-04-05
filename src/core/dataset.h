@@ -3,10 +3,7 @@
 #ifndef DATASET_H
 #define DATASET_H
 
-#include <list>
 #include <string>
-#include <exception>
-#include <stdexcept>
 using namespace std;
 
 #include <boost/date_time.hpp>
