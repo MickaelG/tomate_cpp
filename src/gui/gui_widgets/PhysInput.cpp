@@ -6,7 +6,7 @@
 #include <QGroupBox>
 
 
-PhysInput::PhysInput(Rectangle rect, bool editable, QWidget* parent):
+PhysInput::PhysInput(QWidget* parent, Rectangle rect, bool editable):
     QWidget(parent)
 {
     this->setLayout(new QHBoxLayout);
@@ -46,8 +46,18 @@ Rectangle PhysInput::get_rect()
 
 void PhysInput::set_shape(const Shape* shape)
 {
-    x_widget->setText(QString::number(shape->get_min_x()));
-    y_widget->setText(QString::number(shape->get_min_y()));
-    width_widget->setText(QString::number(shape->get_width()));
-    height_widget->setText(QString::number(shape->get_height()));
+    if (shape)
+    {
+        x_widget->setText(QString::number(shape->get_min_x()));
+        y_widget->setText(QString::number(shape->get_min_y()));
+        width_widget->setText(QString::number(shape->get_width()));
+        height_widget->setText(QString::number(shape->get_height()));
+    }
+    else
+    {
+        x_widget->setText("0");
+        y_widget->setText("0");
+        width_widget->setText("-1");
+        height_widget->setText("-1");
+    }
 }

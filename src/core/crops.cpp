@@ -64,12 +64,16 @@ Crop::Crop() : p_plant(0), p_plot(0), shape(0)
 Crop::Crop(bg::date start_date, bg::date end_date,
      bg::date planned_start_date, bg::date planned_end_date,
      Plant &plant, string varkey,
-     Plot &plot, string note) :
+     Plot &plot, string note, Rectangle rect) :
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
     varkey(varkey),
     p_plant(&plant), p_plot(&plot), note(note), shape(0)
 {
+    if (! (rect.get_width() < 0))
+    {
+        set_shape(new Rectangle(rect));
+    }
 }
 
 Crop::Crop(bg::date start_date, bg::date end_date,
@@ -230,15 +234,30 @@ void Crop::set_note(string note)
 
 Shape* Crop::get_shape()
 {
+    if (!shape)
+    {
+        Shape* plot_shape = get_plot().get_shape();
+        if (plot_shape)
+        {
+            shape = new Rectangle(plot_shape->get_width(), plot_shape->get_height(), 0, 0);
+        }
+        else
+        {
+            shape = new Rectangle(-1, -1, 0, 0);
+        }
+    }
+    return shape;
+}
+
+void Crop::set_shape(Shape* in_shape)
+{
     if (shape)
     {
-        return shape;
+        delete shape;
+        shape = NULL;
     }
-    else
-    {
-        return get_plot().get_shape();
-    }
-
+    shape = in_shape;
+    shape->fit_in_plot(p_plot->get_shape());
 }
 
 ///////////////////////////////////////////////////////////////////////////////

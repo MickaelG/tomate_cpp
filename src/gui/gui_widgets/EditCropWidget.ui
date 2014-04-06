@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>647</width>
+    <width>660</width>
     <height>108</height>
    </rect>
   </property>
@@ -31,11 +31,7 @@
       </widget>
      </item>
      <item>
-      <widget class="ComboBoxKey" name="subplotInput">
-       <property name="toolTip">
-        <string>Subdivision</string>
-       </property>
-      </widget>
+      <widget class="PhysInput" name="shapeInput"/>
      </item>
      <item>
       <widget class="QPushButton" name="EditPlotsBtn">
@@ -191,6 +187,11 @@
    <class>ComboBoxKey</class>
    <extends>QComboBox</extends>
    <header>ComboBoxKey.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PhysInput</class>
+   <extends>QLineEdit</extends>
+   <header>PhysInput.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -98,6 +98,38 @@ BOOST_AUTO_TEST_CASE(is_active)
     
 }
 
+BOOST_AUTO_TEST_CASE(crop_shape)
+{
+    Dataset data;
+    Plot& plot = data.get_plots().add_plot("pn", "plot_nom", "une jolie planche", 2,3,8,9);
+    Plant& plant = data.add_plant(Plant("pl", "plant_name"));
+    Crop crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), plant, "", plot, "first crop");
+    //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), -1);
+    plot.set_shape(new Rectangle(100, 120, 50, 20));
+    //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 100);
+
+    crop.set_shape(new Rectangle(20, 30, 10, 11));
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 20);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_height(), 30);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_x(), 10);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_y(), 11);
+
+    crop.set_shape(new Rectangle(70, 70, 55, 65));
+    //Crops are limited to plot boundary
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 45);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_height(), 55);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_x(), 55);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_y(), 65);
+
+    crop.set_shape(new Rectangle(70, 70, 150, 150));
+    //Crops are limited to plot boundary
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 10);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_height(), 10);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_x(), 90);
+    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_y(), 110);
+
+}
+
 BOOST_AUTO_TEST_CASE(find_crop)
 {
     Dataset data;

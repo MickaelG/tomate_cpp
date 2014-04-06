@@ -14,9 +14,7 @@ EditCropWidget::EditCropWidget(Dataset& dataset, QWidget* parent) :
     ui->setupUi(this);
 
     QObject::connect(ui->plantInput, SIGNAL(currentIndexChanged(int)), ui->varInput->model(), SIGNAL(layoutChanged()));
-    QObject::connect(ui->plotInput, SIGNAL(currentIndexChanged(int)), ui->subplotInput->model(), SIGNAL(layoutChanged()));
     QObject::connect(ui->plantInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initVarInput()));
-    QObject::connect(ui->plotInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initSubplotInput()));
     QObject::connect(this, SIGNAL(update_plant_plot()), ui->plantInput->model(), SIGNAL(layoutChanged()));
     QObject::connect(this, SIGNAL(update_plant_plot()), ui->plotInput->model(), SIGNAL(layoutChanged()));
     QObject::connect(ui->AddButton, SIGNAL(clicked()), this, SLOT(edit_crop()));
@@ -35,12 +33,6 @@ EditCropWidget::~EditCropWidget()
 }
 
 
-
-void EditCropWidget::initSubplotInput()
-{
-    ui->subplotInput->setCurrentIndex(-1);
-    ui->subplotInput->setCurrentIndex(0);
-}
 void EditCropWidget::initVarInput()
 {
     ui->varInput->setCurrentIndex(-1);
@@ -64,7 +56,7 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
             ui->varInput->setCurrentElem(toQString(p_crop->get_varkey()));
         }
         ui->plotInput->setCurrentElem(toQString(p_crop->get_plot().get_key()).split("-")[0]);
-        ui->subplotInput->setCurrentElem(toQString(p_crop->get_plot().get_key()));
+        ui->shapeInput->set_shape(p_crop->get_shape());
         ui->noteInput->setText(toQString(p_crop->get_note()));
         //ui->AddButton->hide();
         ui->AddButton->setText(tr("Apply changes"));
@@ -80,6 +72,8 @@ void EditCropWidget::edit_crop()
 {
     QString plot_key = ui->plotInput->currentElem();
     Plot& plot = dataset.get_plot(fromQString(plot_key));
+    Rectangle rect = ui->shapeInput->get_rect();
+
     QString plant_key = ui->plantInput->currentElem();
     Plant& plant = dataset.get_plant(fromQString(plant_key));
     QString var_key = ui->varInput->currentElem();
@@ -88,6 +82,7 @@ void EditCropWidget::edit_crop()
     QDate end_date = ui->enddateInput->selectedDate();
     QDate planned_start_date = ui->plannedstartdateInput->selectedDate();
     QDate planned_end_date = ui->plannedenddateInput->selectedDate();
+
     QString note = ui->noteInput->text();
     if (!p_crop)
     {
@@ -102,6 +97,7 @@ void EditCropWidget::edit_crop()
         p_crop->set_date("planned_start", fromQDate(planned_start_date));
         p_crop->set_date("planned_end", fromQDate(planned_end_date));
         p_crop->set_plot(plot);
+        p_crop->set_shape(new Rectangle(rect));
         p_crop->set_plant(plant);
         p_crop->set_varkey(fromQString(var_key));
         p_crop->set_note(fromQString(note));

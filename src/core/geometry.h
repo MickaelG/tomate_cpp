@@ -15,6 +15,7 @@ public:
     virtual float get_height() const;
     virtual float get_min_x() const;
     virtual float get_min_y() const;
+    virtual void fit_in_plot(const Shape* parent_shape);
     explicit operator bool() const;
     virtual Shape* clone();
 };
@@ -40,6 +41,7 @@ public:
     float get_height() const;
     float get_min_x() const;
     float get_min_y() const;
+    virtual void fit_in_plot(const Shape* parent_shape);
     Shape* clone();
 };
 

@@ -105,7 +105,14 @@ int xml_read_data(string filename, Dataset& dataset)
             std::cout << "Error: plot " << plotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
             continue;
         }
-        Crop crop(start_date, end_date, planned_start_date, planned_end_date, plant, varkey, plot, note);
+
+        float width = elem_xml.attribute("width").as_float(-1);
+        float height = elem_xml.attribute("height").as_float(-1);
+        float posx = elem_xml.attribute("posx").as_float(0);
+        float posy = elem_xml.attribute("posy").as_float(0);
+        Rectangle rect(width, height, posx, posy);
+
+        Crop crop(start_date, end_date, planned_start_date, planned_end_date, plant, varkey, plot, note, rect);
         for (xml_node action_xml: elem_xml.children())
         {
             bg::date date = get_date(action_xml, "date");
@@ -144,7 +151,7 @@ int xml_write_data(string filename,const Dataset& dataset)
     xml_document doc;
 
     xml_node root_node = doc.append_child("sfg");
-    root_node.append_attribute("v") = "0.1";
+    root_node.append_attribute("v") = "0.2";
 
     xml_node plot_node = root_node.append_child("plots");
     for (Plot plot: dataset.get_plots())
@@ -158,10 +165,10 @@ int xml_write_data(string filename,const Dataset& dataset)
         float height = plot.get_shape()->get_height();
         if (width > 0 && height > 0)
         {
-            add_float_attribute(elem_node, "width", width);
-            add_float_attribute(elem_node, "height", height);
             add_float_attribute(elem_node, "posx", plot.get_shape()->get_min_x());
             add_float_attribute(elem_node, "posy", plot.get_shape()->get_min_y());
+            add_float_attribute(elem_node, "width", width);
+            add_float_attribute(elem_node, "height", height);
         }
     }
     xml_node plant_node = root_node.append_child("plants");
@@ -190,9 +197,27 @@ int xml_write_data(string filename,const Dataset& dataset)
         {
             add_date_attribute(elem_node, which_date + "_date", crop.get_date(which_date));
         }
-        elem_node.append_attribute("plot") = crop.get_plot().get_key().c_str();
         elem_node.append_attribute("plant") = crop.get_plant().get_key().c_str();
         add_str_attribute(elem_node, "var", crop.get_varkey());
+
+        elem_node.append_attribute("plot") = crop.get_plot().get_key().c_str();
+
+        float width = crop.get_shape()->get_width();
+        float height = crop.get_shape()->get_height();
+        float posx = crop.get_shape()->get_min_x();
+        float posy = crop.get_shape()->get_min_y();
+        float plot_width = crop.get_plot().get_shape()->get_width();
+        float plot_height = crop.get_plot().get_shape()->get_height();
+        if (width > 0 && height > 0 &&
+            (posx != 0 || posy != 0 || width != plot_width || height != plot_height))
+
+        {
+            add_float_attribute(elem_node, "posx", posx);
+            add_float_attribute(elem_node, "posy", posy);
+            add_float_attribute(elem_node, "width", width);
+            add_float_attribute(elem_node, "height", height);
+        }
+
         add_str_attribute(elem_node, "note", crop.get_note());
 
         for (CropAction act: crop.get_actions())

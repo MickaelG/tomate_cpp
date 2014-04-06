@@ -24,7 +24,6 @@ public:
 private slots:
     void set_crop_values(Crop* p_crop);
     void edit_crop();
-    void initSubplotInput();
     void initVarInput();
 
     void on_EditPlantsBtn_clicked();

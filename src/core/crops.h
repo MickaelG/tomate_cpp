@@ -12,6 +12,7 @@ using namespace std;
 class Plot;
 class Plant;
 class Shape;
+#include "geometry.h"
 
 class CropAction
 {
@@ -42,7 +43,7 @@ class Crop
         Crop(bg::date start_date, bg::date end_date,
              bg::date planned_start_date, bg::date planned_end_date,
              Plant &plant, string varkey,
-             Plot &plot, string note = "");
+             Plot &plot, string note = "", Rectangle rect=Rectangle());
         Crop(bg::date start_date, bg::date end_date,
              Plant &plant, string varkey,
              Plot &plot, string note = "");
@@ -67,6 +68,7 @@ class Crop
         bool is_in_year_started_by(bg::date date) const;
         string description() const;
         Shape *get_shape();
+        void set_shape(Shape* in_shape);
 };
 extern Crop NullCrop;
 

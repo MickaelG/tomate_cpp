@@ -26,7 +26,7 @@ AddPlotDialog::AddPlotDialog(Plots& plots, QWidget* parent) :
     verInput = new QLineEdit();
     verInput->setValidator(new QIntValidator(1, 20, this));
     verInput->setText("1");
-    physInput = new PhysInput(Rectangle(100, 100, 0, 0));
+    physInput = new PhysInput(this, Rectangle(100, 100, 0, 0));
 
     formLayout->addRow(tr("Name :"), nameInput);
     formLayout->addRow(physInput);
