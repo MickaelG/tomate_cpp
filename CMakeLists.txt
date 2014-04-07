@@ -14,7 +14,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/src/core/ ${CMAKE_SOURCE_DIR}/lib/
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
-find_package(Boost 1.54 COMPONENTS date_time filesystem system unit_test_framework REQUIRED)
+find_package(Boost 1.53 COMPONENTS date_time filesystem system unit_test_framework REQUIRED)
 
 find_package(Qt4 4.8)
 include(${QT_USE_FILE})
