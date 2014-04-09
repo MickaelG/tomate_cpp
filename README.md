@@ -34,5 +34,9 @@ http://software.opensuse.org/download.html?project=home%3Aclaudex&package=tomate
 - Add crops by right-clicking in the "Time view" tab.
 - You can see the state of the garden at any date in the "Space view" tab. By default, this date is today. You can select an other date by clicking in the "months line" in the time view. The red line shows the date selected for space view.
 
+# Mailing list #
+Send any of your comment, bug or idea to tomate@librelist.com
+You can also subscribe to this list to be informed about new features and new versions.
+
 # License #
 Tomate is licensed under GPL.
