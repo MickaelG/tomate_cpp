@@ -4,7 +4,6 @@ using namespace std;
 
 class Plants;
 class Plant;
-class ListWidget;
 class PlantsModel;
 
 #include <QWidget>
@@ -22,7 +21,7 @@ class AddDialog: public QDialog
     Q_OBJECT
 
 public:
-   AddDialog(Plants& plants, QWidget* parent=NULL);
+   AddDialog(PlantsModel *plants_model, QWidget* parent=NULL);
 
 signals:
     void list_updated();
@@ -32,9 +31,7 @@ private slots:
     virtual void add_elem(QString name) = 0;
     
 protected:
-    Plants& plants;
-private:
-    QLineEdit* keyInput;
+    PlantsModel* plants_model;
     QLineEdit* nameInput;
 };
 
@@ -43,7 +40,7 @@ class PlantsWindow: public QDialog
     Q_OBJECT
 
 public:
-    PlantsWindow(Plants& plants, QWidget* parent = NULL);
+    PlantsWindow(PlantsModel *plants_model, QWidget* parent = NULL);
     Plant& selected_plant();
 
 signals:
@@ -58,11 +55,10 @@ private slots:
     void update_notes(int current_plant_index, int previous_plant_index);
 
 public:
-    ListWidget* plants_widget;
+    QListView* plants_widget;
 
 private:
-    vector<QString> plants_str_list();
-    Plants& plants;
+    PlantsModel* plants_model;
     QPushButton* color_btn;
     QTextEdit* notes_widget;
     QPushButton* add_var_btn;

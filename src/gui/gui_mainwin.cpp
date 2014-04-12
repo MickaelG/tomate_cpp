@@ -5,6 +5,8 @@
 #include "gui_plots.h"
 #include "gui_spaceview.h"
 #include "gui_timeline.h"
+#include "PlantsModel.h"
+#include "PlotsModel.h"
 #include "EditCropWidget.h"
 
 #include "xml.h"
@@ -14,6 +16,9 @@
 
 QWidget* createTabsWidget(Dataset& data)
 {
+    PlantsModel* plants_model = new PlantsModel(data.get_plants());
+    PlotsModel* plots_model = new PlotsModel(data.get_plots());
+
     QTabWidget* tab_widget = new QTabWidget;
 
     SpaceViewWindow* spacewidget = new SpaceViewWindow(data);
@@ -22,10 +27,10 @@ QWidget* createTabsWidget(Dataset& data)
     TimelineWindow* timewidget = new TimelineWindow(data);
     tab_widget->addTab(timewidget, QObject::tr("Time view"));
 
-    PlantsWindow* plantswidget = new PlantsWindow(data.get_plants());
-    PlotsWindow* plotswidget = new PlotsWindow(data.get_plots());
+    PlantsWindow* plantswidget = new PlantsWindow(plants_model);
+    PlotsWindow* plotswidget = new PlotsWindow(plots_model);
 
-    EditCropWidget* edit_crop_widget = new EditCropWidget(data);
+    EditCropWidget* edit_crop_widget = new EditCropWidget(data, plants_model, plots_model);
 
     QObject::connect(plantswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
     QObject::connect(plantswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update_draw()));

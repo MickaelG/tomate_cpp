@@ -1,33 +1,32 @@
 
-#ifndef GUI_PLANTSMODEL_H
-#define GUI_PLANTSMODEL_H
+#ifndef GUI_PLOTSMODEL_H
+#define GUI_PLOTSMODEL_H
 
 #include <QAbstractListModel>
 #include <QComboBox>
 
-class Plants;
+class Plots;
+class Plot;
 
-
-class PlantsModel: public QAbstractListModel
+class PlotsModel: public QAbstractListModel
 {
     Q_OBJECT
     
 public:
-    PlantsModel(Plants& plants, QWidget* parent = NULL);
+    PlotsModel(Plots& plots, QWidget* parent = NULL);
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool removeRows (int row, int count, const QModelIndex & parent = QModelIndex() );
-    Plants& get_plants();
-    void addPlant(QString plant_name);
-    void addVar(const QModelIndex& plant_mi, QString var_name);
-    const QModelIndex plantIndex(int plant_index);
+    Plots& get_plots();
+    Plot& addPlot(QString plot_name);
+    const QModelIndex plotIndex(int plot_index);
     QModelIndex index (int row, int column, const QModelIndex & parent = QModelIndex() ) const;
     QModelIndex parent(const QModelIndex &index) const;
 
 private:
-    Plants& plants;
+    Plots& plots;
 };
 
-#endif //GUI_PLANTSMODEL_H
+#endif //GUI_PLOTSMODEL_H
 

@@ -14,6 +14,9 @@ public:
     QString currentElem();
     void setCurrentElem(QString key);
 
+public slots:
+    void setVarRootModelIndex(int plant_index);
+
 };
 
 #endif //GUI_COMBOBOXKEY_H

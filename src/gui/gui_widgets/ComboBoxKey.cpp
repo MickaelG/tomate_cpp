@@ -33,3 +33,16 @@ QString ComboBoxKey::currentElem()
         return QString();
     }
 }
+
+void ComboBoxKey::setVarRootModelIndex(int plant_index)
+{
+    setRootModelIndex(model()->index(plant_index, 0));
+    if (count() == 0)
+    {
+        setCurrentIndex(-1);
+    }
+    else
+    {
+        setCurrentIndex(0);
+    }
+}

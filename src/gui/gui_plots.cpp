@@ -4,17 +4,16 @@
 
 #include "plots.h"
 #include "plot.h"
-#include "gui_widgets/ListWidget.h"
-#include "gui_widgets/PlantsModel.h"
 #include "gui_widgets/PhysInput.h"
+#include "PlotsModel.h"
 
 #include <QFormLayout>
 #include <QDialogButtonBox>
 #include <QLabel>
 
 
-AddPlotDialog::AddPlotDialog(Plots& plots, QWidget* parent) :
-  plots(plots), QDialog(parent)
+AddPlotDialog::AddPlotDialog(PlotsModel* plots_model, QWidget* parent) :
+  plots_model(plots_model), QDialog(parent)
 {
     setModal(true);
     QFormLayout* formLayout = new QFormLayout(this);
@@ -46,7 +45,7 @@ AddPlotDialog::AddPlotDialog(Plots& plots, QWidget* parent) :
 void AddPlotDialog::add()
 {
     QString name = nameInput->text();
-    Plot& plot = plots.add_plot("", fromQString(name));
+    Plot& plot = plots_model->addPlot(name);
 
     plot.set_rect(physInput->get_rect());
 
@@ -59,17 +58,18 @@ void AddPlotDialog::add()
 }
 
 
-PlotsWindow::PlotsWindow(Plots& plots, QWidget* parent) :
-  QDialog(parent), plots(plots)
+PlotsWindow::PlotsWindow(PlotsModel *plots_model, QWidget* parent) :
+  QDialog(parent), plots_model(plots_model)
 {
     setModal(true);
 
     QVBoxLayout* plots_layout = new QVBoxLayout();
-    plots_widget = new ListWidget(new PlotsModel(plots));
+    plots_widget = new QListView(this);
+    plots_widget->setModel(plots_model);
     plots_layout->addWidget(plots_widget);
 
     QPushButton* add_plot_btn = new QPushButton(tr("Add a plot"));
-    AddPlotDialog* add_plot = new AddPlotDialog(plots);
+    AddPlotDialog* add_plot = new AddPlotDialog(plots_model);
     QObject::connect(add_plot_btn, SIGNAL(clicked()), add_plot, SLOT(show()));
     plots_layout->addWidget(add_plot_btn);
 
@@ -113,7 +113,7 @@ PlotsWindow::PlotsWindow(Plots& plots, QWidget* parent) :
 Plot& PlotsWindow::selected_plot()
 {
     int plot_index = plots_widget->selectionModel()->currentIndex().row();
-    return plots.index(plot_index);
+    return plots_model->get_plots().index(plot_index);
 }
 
 void PlotsWindow::delete_plot()
@@ -135,7 +135,7 @@ void PlotsWindow::update_plot_data(const QModelIndex& current_plot_mi, const QMo
 
 void PlotsWindow::update_del_btn(int current_plot_index)
 {
-    if (plots.is_used(current_plot_index)) {
+    if (plots_model->get_plots().is_used(current_plot_index)) {
         del_plot_btn->setEnabled(false);
     } else {
         del_plot_btn->setEnabled(true);
@@ -148,13 +148,13 @@ void PlotsWindow::update_notes(int current_plot_index, int previous_plot_index)
     if (previous_plot_index >= 0)
     {
         QString text = notes_widget->toPlainText();
-        plots.index(previous_plot_index).set_note(fromQString(text));
+        plots_model->get_plots().index(previous_plot_index).set_note(fromQString(text));
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        QString text = toQString(plots.index(current_plot_index).get_note());
+        QString text = toQString(plots_model->get_plots().index(current_plot_index).get_note());
         notes_widget->setPlainText(text);
         notes_widget->setDisabled(false);
     }
@@ -169,13 +169,13 @@ void PlotsWindow::update_phys(int current_plot_index, int previous_plot_index)
     //We save the note content of the previous plot
     if (previous_plot_index >= 0)
     {
-        plots.index(previous_plot_index).set_rect(phys_widget->get_rect());
+        plots_model->get_plots().index(previous_plot_index).set_rect(phys_widget->get_rect());
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        phys_widget->set_rect(plots.index(current_plot_index).get_rect());
+        phys_widget->set_rect(plots_model->get_plots().index(current_plot_index).get_rect());
         phys_widget->setDisabled(false);
     }
     else
@@ -199,7 +199,7 @@ void PlotsWindow::update_subd(int current_plot_index, int previous_plot_index)
     if (current_plot_index >= 0)
     {
         QVector<Rectangle> all_rects;
-        for (Plot plot: plots.index(current_plot_index).get_subplots())
+        for (Plot plot: plots_model->get_plots().index(current_plot_index).get_subplots())
         {
             all_rects.push_back(plot.get_rect());
         }

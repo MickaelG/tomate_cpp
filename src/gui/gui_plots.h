@@ -1,8 +1,7 @@
 
 class Plot;
 class Plots;
-class ListWidget;
-class PlantModel;
+class PlotsModel;
 class PhysInput;
 class SubdWidget;
 
@@ -21,7 +20,7 @@ class AddPlotDialog: public QDialog
     Q_OBJECT
 
 public:
-   AddPlotDialog(Plots& plots, QWidget* parent=NULL);
+   AddPlotDialog(PlotsModel *plots_model, QWidget* parent=NULL);
 
 signals:
     void list_updated();
@@ -30,7 +29,7 @@ private slots:
     void add();
     
 private:
-    Plots& plots;
+    PlotsModel* plots_model;
     QLineEdit* nameInput;
     PhysInput* physInput;
     QLineEdit* verInput;
@@ -42,7 +41,7 @@ class PlotsWindow: public QDialog
     Q_OBJECT
 
 public:
-    PlotsWindow(Plots& plots, QWidget* parent = NULL);
+    PlotsWindow(PlotsModel* plots_model, QWidget* parent = NULL);
     Plot& selected_plot();
 
 signals:
@@ -59,9 +58,9 @@ private slots:
     void update_del_btn(int current_plot_index);
 
 private:
-    Plots& plots;
+    PlotsModel* plots_model;
     QTextEdit* notes_widget;
-    ListWidget* plots_widget;
+    QListView* plots_widget;
     PhysInput* phys_widget;
     SubdWidget* subd_widget;
     QPushButton* del_plot_btn;
