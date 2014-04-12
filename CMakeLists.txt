@@ -14,7 +14,7 @@ include_directories( ${CMAKE_SOURCE_DIR}/src/core/ ${CMAKE_SOURCE_DIR}/lib/
 # Instruct CMake to run moc automatically when needed.
 set(CMAKE_AUTOMOC ON)
 
-find_package(Boost 1.54 COMPONENTS date_time filesystem system unit_test_framework REQUIRED)
+find_package(Boost 1.53 COMPONENTS date_time filesystem system unit_test_framework REQUIRED)
 
 find_package(Qt4 4.8)
 include(${QT_USE_FILE})
@@ -36,7 +36,7 @@ target_link_libraries(tomate_gui ${QT_LIBRARIES})
 add_executable(test ${CORE_SRC} src/test/test.cpp)
 target_link_libraries(test boost_unit_test_framework boost_date_time)
 
-add_executable(test_gui src/test/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC})
+add_executable(test_gui src/test/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} ${ui_FORMS_HEADERS})
 target_link_libraries(test_gui boost_date_time)
 target_link_libraries(test_gui ${QT_LIBRARIES} ${QT_QTTEST_LIBRARY})
 #qt4_use_modules(test_gui Widgets)

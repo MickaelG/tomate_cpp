@@ -10,13 +10,16 @@
 
 class Dataset;
 class Crop;
+class PlantsModel;
+class PlotsModel;
 
 class EditCropWidget: public QWidget
 {
     Q_OBJECT
 
 public:
-    EditCropWidget(Dataset& dataset, QWidget* parent=NULL);
+    EditCropWidget(Dataset& dataset, PlantsModel *plants_model,
+                   PlotsModel *plots_model, QWidget* parent=NULL);
     ~EditCropWidget();
     void set_default_values();
     Ui::EditCropWidget *ui;
@@ -24,15 +27,13 @@ public:
 private slots:
     void set_crop_values(Crop* p_crop);
     void edit_crop();
-    void initVarInput();
-
-    void on_EditPlantsBtn_clicked();
 
 signals:
     void dataset_changed();
-    void update_plant_plot();
     
 private:
+    PlantsModel* plants_model;
+    PlotsModel* plots_model;
     Dataset& dataset;
     Crop* p_crop;
 };

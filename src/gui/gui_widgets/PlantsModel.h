@@ -6,42 +6,7 @@
 #include <QComboBox>
 
 class Plants;
-class KeyNames;
-class Plots;
-class ListWidget;
 
-class KeyNamesModel: public QAbstractListModel
-{
-    Q_OBJECT
-    
-public:
-    KeyNamesModel(KeyNames& data_list, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    int columnCount(const QModelIndex& index) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    
-private:
-    KeyNames& data_list;
-};
-
-class VarsModel: public QAbstractListModel
-{
-    Q_OBJECT
-    
-public:
-    VarsModel(Plants& plants, ListWidget* plants_widget, QWidget* parent = NULL);
-    VarsModel(Plants& plants, QComboBox* plants_widget, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    int columnCount(const QModelIndex& model_index) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    
-private:
-    int get_plant_index() const;
-    Plants& plants;
-    ListWidget* plants_list_widget;
-    QComboBox* plants_combo_widget;
-    
-};
 
 class PlantsModel: public QAbstractListModel
 {
@@ -49,28 +14,19 @@ class PlantsModel: public QAbstractListModel
     
 public:
     PlantsModel(Plants& plants, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    int columnCount(const QModelIndex& index) const;
-    QVariant data(const QModelIndex& index, int role) const;
+    int rowCount(const QModelIndex& parent = QModelIndex()) const;
+    int columnCount(const QModelIndex& parent = QModelIndex()) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     bool removeRows (int row, int count, const QModelIndex & parent = QModelIndex() );
+    Plants& get_plants();
+    void addPlant(QString plant_name);
+    void addVar(const QModelIndex& plant_mi, QString var_name);
+    const QModelIndex plantIndex(int plant_index);
+    QModelIndex index (int row, int column, const QModelIndex & parent = QModelIndex() ) const;
+    QModelIndex parent(const QModelIndex &index) const;
 
 private:
     Plants& plants;
-};
-
-class PlotsModel: public QAbstractListModel
-{
-    Q_OBJECT
-    
-public:
-    PlotsModel(Plots& plots, QWidget* parent = NULL);
-    int rowCount(const QModelIndex& model_index) const;
-    int columnCount(const QModelIndex& index) const;
-    QVariant data(const QModelIndex& index, int role) const;
-    bool removeRows (int row, int count, const QModelIndex & parent = QModelIndex() );
-
-private:
-    Plots& plots;
 };
 
 #endif //GUI_PLANTSMODEL_H

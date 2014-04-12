@@ -3,25 +3,28 @@
 
 #include "gui_utils.h"
 #include "PlantsModel.h"
+#include "PlotsModel.h"
 
 #include "dataset.h"
 #include "plot.h"
 
-EditCropWidget::EditCropWidget(Dataset& dataset, QWidget* parent) :
-    QWidget(parent), dataset(dataset), p_crop(0),
-    ui(new Ui::EditCropWidget)
+EditCropWidget::EditCropWidget(Dataset& dataset, PlantsModel* plants_model,
+                               PlotsModel* plots_model, QWidget* parent) :
+    QWidget(parent), dataset(dataset), p_crop(0), plants_model(plants_model),
+    plots_model(plots_model), ui(new Ui::EditCropWidget)
 {
     ui->setupUi(this);
 
-    QObject::connect(ui->plantInput, SIGNAL(currentIndexChanged(int)), ui->varInput->model(), SIGNAL(layoutChanged()));
-    QObject::connect(ui->plantInput, SIGNAL(currentIndexChanged(int)), this, SLOT(initVarInput()));
-    QObject::connect(this, SIGNAL(update_plant_plot()), ui->plantInput->model(), SIGNAL(layoutChanged()));
-    QObject::connect(this, SIGNAL(update_plant_plot()), ui->plotInput->model(), SIGNAL(layoutChanged()));
+    ui->plantInput->setModel(plants_model);
+    ui->varInput->setModel(plants_model);
+    ui->varInput->setVarRootModelIndex(0);
+    QObject::connect(ui->plantInput, SIGNAL(currentIndexChanged(int)),
+                     ui->varInput, SLOT(setVarRootModelIndex(int)));
+
+    ui->plotInput->setModel(plots_model);
+
     QObject::connect(ui->AddButton, SIGNAL(clicked()), this, SLOT(edit_crop()));
 
-    ui->plantInput->setModel(new PlantsModel(dataset.get_plants()));
-    ui->varInput->setModel(new VarsModel(dataset.get_plants(), ui->plantInput));
-    ui->plotInput->setModel(new PlotsModel(dataset.get_plots()));
     ui->enddateInput->setEnabled(false);
     ui->plannedenddateInput->setEnabled(false);
 }
@@ -32,17 +35,8 @@ EditCropWidget::~EditCropWidget()
     delete ui;
 }
 
-
-void EditCropWidget::initVarInput()
-{
-    ui->varInput->setCurrentIndex(-1);
-    ui->varInput->setCurrentIndex(0);
-}
-
 void EditCropWidget::set_crop_values(Crop* p_crop)
 {
-    emit update_plant_plot();
-
     this->p_crop = p_crop;
     if (p_crop)
     {
@@ -103,9 +97,4 @@ void EditCropWidget::edit_crop()
         p_crop->set_note(fromQString(note));
     }
     emit dataset_changed();
-}
-
-void EditCropWidget::on_EditPlantsBtn_clicked()
-{
-
 }

@@ -3,7 +3,6 @@
 #include "gui_utils.h"
 
 #include "plants.h"
-#include "gui_widgets/ListWidget.h"
 #include "gui_widgets/PlantsModel.h"
 
 #include <QColorDialog>
@@ -13,12 +12,11 @@
 
 
 
-AddDialog::AddDialog(Plants& plants, QWidget* parent) :
-  plants(plants), QDialog(parent)
+AddDialog::AddDialog(PlantsModel* plants_model, QWidget* parent) :
+  plants_model(plants_model), QDialog(parent)
 {
     setModal(true);
     QFormLayout* formLayout = new QFormLayout(this);
-    keyInput = new QLineEdit();
     nameInput = new QLineEdit();
     formLayout->addRow(tr("Name :"), nameInput);
     QPushButton* OKbutton = new QPushButton(tr("Add"));
@@ -36,7 +34,6 @@ void AddDialog::add()
 {
     QString name = nameInput->text();
     add_elem(name);
-    emit list_updated();
     hide();
 }
 
@@ -44,70 +41,59 @@ void AddDialog::add()
 class AddPlantDialog: public AddDialog
 {
 public:
-    AddPlantDialog(Plants& plants);
+    AddPlantDialog(PlantsModel* plants_model, QWidget* parent=NULL);
     void add_elem(QString name);
 
 };
 
-AddPlantDialog::AddPlantDialog(Plants& plants): AddDialog(plants)
+AddPlantDialog::AddPlantDialog(PlantsModel *plants_model, QWidget *parent): AddDialog(plants_model, parent)
 {
 }
 
 void AddPlantDialog::add_elem(QString name)
 {
-    plants.add_plant("", fromQString(name));
+    plants_model->addPlant(name);
 }
 
 
 class AddVarDialog: public AddDialog
 {
 public:
-    AddVarDialog(Plants& plants, ListWidget* plants_widget, QWidget* parent=NULL);
+    AddVarDialog(PlantsModel* plants_model, QListView* plants_widget, QWidget* parent=NULL);
     void add_elem(QString name);
     
 private:
-    ListWidget* plants_widget;
+    QListView* plants_widget;
 };
 
 
-AddVarDialog::AddVarDialog(Plants& plants, ListWidget* plants_widget, QWidget* parent) :
-  plants_widget(plants_widget), AddDialog(plants, parent)
+AddVarDialog::AddVarDialog(PlantsModel *plants_model, QListView* plants_widget, QWidget* parent) :
+  plants_widget(plants_widget), AddDialog(plants_model, parent)
 {
 }
 
 
 void AddVarDialog::add_elem(QString name)
 {
-    int plant_index = plants_widget->index();
-    plants.index(plant_index).add_var("", fromQString(name));
+    const QModelIndex& plant_index = plants_widget->selectionModel()->currentIndex();
+    plants_model->addVar(plant_index, name);
 }
 
-vector<QString> PlantsWindow::plants_str_list()
-{
-    vector<QString> result;
-    
-    for (Plants::iterator it = plants.begin(); it !=plants.end(); ++it)
-    {
-        result.push_back(toQString(it->get_name()));
-    }
-    return result;
-}
 
-PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
-  QDialog(parent), plants(plants)
+PlantsWindow::PlantsWindow(PlantsModel* plants_model, QWidget* parent) :
+  QDialog(parent), plants_model(plants_model)
 {
     setModal(true);
 
     color_dialog = new QColorDialog;
     QVBoxLayout* plants_layout = new QVBoxLayout();
-    vector<QString> plants_str = plants_str_list();
-    plants_widget = new ListWidget(new PlantsModel(plants));
-    //plants_widget = new ListWidget(new KeyNamesModel(plants));
+    plants_widget = new QListView(this);
+    plants_widget->setModel(plants_model);
     plants_layout->addWidget(plants_widget);
     QPushButton* add_plant_btn = new QPushButton(tr("Add a plant"));
     del_plant_btn = new QPushButton(tr("Delete plant"));
     del_plant_btn->setEnabled(false);
-    AddDialog* add_plant = new AddPlantDialog(plants);
+    AddDialog* add_plant = new AddPlantDialog(plants_model);
     QObject::connect(add_plant_btn, SIGNAL(clicked()), add_plant, SLOT(show()));
     QObject::connect(del_plant_btn, SIGNAL(clicked()), this, SLOT(delete_plant()));
     plants_layout->addWidget(add_plant_btn);
@@ -118,18 +104,17 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
     QObject::connect(close_btn, SIGNAL(clicked()), this, SLOT(accept()));
 
     QVBoxLayout* var_layout = new QVBoxLayout();
-    var_widget = new QListView();
-    var_widget->setModel(new VarsModel(plants, plants_widget));
+    var_widget = new QListView(this);
+    var_widget->setModel(plants_model);
+    var_widget->setRootIndex(plants_model->index(0,0));
     var_layout->addWidget(var_widget);
     add_var_btn = new QPushButton(tr("Add a variety"));
-    AddVarDialog* add_var = new AddVarDialog(plants, plants_widget);
+    AddVarDialog* add_var = new AddVarDialog(plants_model, plants_widget);
     QObject::connect(add_var_btn, SIGNAL(clicked()), add_var, SLOT(show()));
     var_layout->addWidget(add_var_btn);
 
-    QObject::connect(add_var, SIGNAL(list_updated()), var_widget->model(), SIGNAL(layoutChanged()));
-    QObject::connect(add_plant, SIGNAL(list_updated()), plants_widget->model(), SIGNAL(layoutChanged()));
     QObject::connect(plants_widget->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
-                     var_widget->model(), SIGNAL(layoutChanged()));
+                     var_widget, SLOT(setRootIndex(const QModelIndex&)));
     QObject::connect(plants_widget->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)),
                      this, SLOT(update_plant_data(const QModelIndex&, const QModelIndex&)));
 
@@ -157,7 +142,7 @@ PlantsWindow::PlantsWindow(Plants& plants, QWidget* parent) :
 Plant& PlantsWindow::selected_plant()
 {
     int plant_index = plants_widget->selectionModel()->currentIndex().row();
-    return plants.index(plant_index);
+    return plants_model->get_plants().index(plant_index);
 }
 
 void PlantsWindow::set_color()
@@ -187,7 +172,7 @@ void PlantsWindow::update_plant_data(const QModelIndex& current_plant_mi, const 
 
 void PlantsWindow::update_del_btn(int current_plant_index)
 {
-    if (plants.is_used(current_plant_index)) {
+    if (plants_model->get_plants().is_used(current_plant_index)) {
         del_plant_btn->setEnabled(false);
     } else {
         del_plant_btn->setEnabled(true);
@@ -196,7 +181,8 @@ void PlantsWindow::update_del_btn(int current_plant_index)
 
 void PlantsWindow::update_btns_state()
 {
-    if (plants_widget->index() < 0)
+    int plant_index = plants_widget->selectionModel()->currentIndex().row();
+    if (plant_index < 0)
     {
         add_var_btn->setDisabled(true);
         color_btn->setDisabled(true);
@@ -216,13 +202,13 @@ void PlantsWindow::update_notes(int current_plant_index, int previous_plant_inde
     if (previous_plant_index >= 0)
     {
         QString text = notes_widget->toPlainText();
-        plants.index(previous_plant_index).set_note(fromQString(text));
+        plants_model->get_plants().index(previous_plant_index).set_note(fromQString(text));
     }
 
     //and get the notes for the new plant
     if (current_plant_index >= 0)
     {
-        QString text = toQString(plants.index(current_plant_index).get_note());
+        QString text = toQString(plants_model->get_plants().index(current_plant_index).get_note());
         notes_widget->setPlainText(text);
     }
 }
