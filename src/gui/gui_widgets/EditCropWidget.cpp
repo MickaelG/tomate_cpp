@@ -69,9 +69,9 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
 void EditCropWidget::edit_crop()
 {
     QString plot_key = ui->subplotInput->currentElem();
-    Plot& plot = dataset.get_plot(fromQString(plot_key));
+    Plot* p_plot = dataset.get_pplot(fromQString(plot_key));
     QString plant_key = ui->plantInput->currentElem();
-    Plant& plant = dataset.get_plant(fromQString(plant_key));
+    Plant* p_plant = dataset.get_pplant(fromQString(plant_key));
     QString var_key = ui->varInput->currentElem();
     
     QDate start_date = ui->startdateInput->selectedDate();
@@ -83,7 +83,7 @@ void EditCropWidget::edit_crop()
     {
         Crop crop = dataset.add_crop(Crop(fromQDate(start_date), fromQDate(end_date),
                                           fromQDate(planned_start_date), fromQDate(planned_end_date),
-                                          plant, fromQString(var_key), plot, fromQString(note)));
+                                          p_plant, fromQString(var_key), p_plot, fromQString(note)));
     }
     else
     {
@@ -91,8 +91,8 @@ void EditCropWidget::edit_crop()
         p_crop->set_date("end", fromQDate(end_date));
         p_crop->set_date("planned_start", fromQDate(planned_start_date));
         p_crop->set_date("planned_end", fromQDate(planned_end_date));
-        p_crop->set_plot(plot);
-        p_crop->set_plant(plant);
+        p_crop->set_plot(*p_plot);
+        p_crop->set_plant(*p_plant);
         p_crop->set_varkey(fromQString(var_key));
         p_crop->set_note(fromQString(note));
     }

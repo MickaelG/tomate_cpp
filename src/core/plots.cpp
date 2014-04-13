@@ -37,7 +37,7 @@ Plot& Plots::index(int data_index)
     }
     else
     {
-        return NullPlot;
+        throw invalid_argument("Index must not be negative");
     }
 }
 
@@ -52,9 +52,9 @@ Plot& Plots::add_plot(string key, string name, string descr, float width, float 
 
 Plot& Plots::add_plot(Plot plot)
 {
-    if (get_plot(plot.get_key()))
+    if (get_pplot(plot.get_key()))
     {
-        return NullPlot;
+        throw invalid_argument("Plot already exists in plot list");
     }
     push_back(plot);
     return back();
@@ -82,14 +82,31 @@ void Plots::delete_plot(Plot& plot)
 
 Plot& Plots::get_plot(string key)
 {
+    Plot* pplot = get_pplot(key);
+    if (pplot)
+    {
+        return *pplot;
+    }
+    else
+    {
+        throw invalid_argument("Plot with required key does not exist");
+    }
+}
+
+Plot* Plots::get_pplot(string key)
+{
     for (Plots::iterator it=this->begin(); it != this->end(); ++it)
     {
         if (it->get_key() == key)
         {
-            return *it;
+            return &(*it);
+        }
+        if (it->get_psubplot(key))
+        {
+            return it->get_psubplot(key);
         }
     }
-    return NullPlot;
+    return NULL;
 }
 
 bool Plots::is_used(int in_index) const

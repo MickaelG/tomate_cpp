@@ -4,6 +4,8 @@
 #include "plot.h"
 #include "plant.h"
 
+#include <stdexcept>
+
 ///////////////////////////////////////////////////////////////////////////////
 // class Crop
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,21 +65,21 @@ Crop::Crop() : p_plant(0), p_plot(0)
 
 Crop::Crop(bg::date start_date, bg::date end_date,
      bg::date planned_start_date, bg::date planned_end_date,
-     Plant &plant, string varkey,
-     Plot &plot, string note) :
+     Plant* p_plant, string varkey,
+     Plot* p_plot, string note) :
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
     varkey(varkey),
-    p_plant(&plant), p_plot(&plot), note(note)
+    p_plant(p_plant), p_plot(p_plot), note(note)
 {
 }
 
 Crop::Crop(bg::date start_date, bg::date end_date,
-     Plant &plant, string varkey,
-     Plot &plot, string note) :
+     Plant* p_plant, string varkey,
+     Plot* p_plot, string note) :
     start_date(start_date), end_date(end_date),
     varkey(varkey),
-    p_plant(&plant), p_plot(&plot), note(note)
+    p_plant(p_plant), p_plot(p_plot), note(note)
 {
 }
 
@@ -89,7 +91,22 @@ string Crop::description() const
                                     " planned_end:"   + bg::to_simple_string(get_date("planned_end"));
 }
 
-Plant& Crop::get_plant() const
+Plant* Crop::get_pplant() const
+{
+    return p_plant;
+}
+
+Plant& Crop::get_plant()
+{
+    if (p_plant)
+    {
+        return *p_plant;
+    } else {
+        throw logic_error("Plant is not yet defined for crop");
+    }
+}
+
+const Plant& Crop::get_plant() const
 {
     if (p_plant)
     {
@@ -97,14 +114,29 @@ Plant& Crop::get_plant() const
     } else {
         return NullPlant;
     }
-};
+}
 
 void Crop::set_plant(Plant& plant)
 {
     p_plant = &plant;
 }
 
-Plot& Crop::get_plot() const
+Plot* Crop::get_pplot() const
+{
+    return p_plot;
+}
+
+Plot& Crop::get_plot()
+{
+    if (p_plot)
+    {
+        return *p_plot;
+    } else {
+        throw logic_error("Plot is not yet defined for crop");
+    }
+}
+
+const Plot& Crop::get_plot() const
 {
     if (p_plot)
     {
@@ -112,7 +144,7 @@ Plot& Crop::get_plot() const
     } else {
         return NullPlot;
     }
-};
+}
 
 void Crop::set_plot(Plot& plot)
 {

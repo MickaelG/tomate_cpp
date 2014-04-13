@@ -5,7 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // class Plot
 ///////////////////////////////////////////////////////////////////////////////
-Plot NullPlot;
+const Plot NullPlot;
 
 Plot::Plot()
 {
@@ -65,16 +65,16 @@ void Plot::create_subplots(int nb_hor, int nb_vert)
    }
 }
 
-Plot& Plot::get_subplot(string key)
+Plot* Plot::get_psubplot(string key)
 {
     for (Plots::iterator it=subplots.begin(); it != subplots.end(); ++it)
     {
         if (it->get_key() == key)
         {
-            return *it;
+            return &(*it);
         }
 
     }
-    return NullPlot;
+    return NULL;
 }
 ///////////////////////////////////////////////////////////////////////////////

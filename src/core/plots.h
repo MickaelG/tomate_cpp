@@ -4,6 +4,7 @@
 
 #include <list>
 #include <string>
+#include <stdexcept>
 using namespace std;
 
 #include "plot.h"
@@ -22,6 +23,7 @@ public:
     void delete_plot(int index);
     void delete_plot(Plot& plot);
     Plot& get_plot(string key);
+    Plot* get_pplot(string key);
     bool is_used(int index) const;
     bool is_used(const Plot& plot) const;
 

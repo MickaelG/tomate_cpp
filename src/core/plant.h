@@ -28,7 +28,7 @@ class Plant: public KeyName
         void set_color_str(string color);
         Vars& get_vars();
 };
-extern Plant NullPlant;
+extern const Plant NullPlant;
 
 
 #endif //PLANT_H

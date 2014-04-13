@@ -34,6 +34,11 @@ Plant& Dataset::get_plant(string key)
     return get_plants().get_plant(key);
 }
 
+Plant* Dataset::get_pplant(string key)
+{
+    return get_plants().get_pplant(key);
+}
+
 void Dataset::set_filename(string in_filename)
 {
     filename = in_filename;
@@ -68,17 +73,11 @@ Crops& Dataset::get_crops() {
 //TODO: search hierarchically without running through all subplots
 Plot& Dataset::get_plot(string key)
 {
-    for (Plots::iterator it=plots.begin(); it != plots.end(); ++it)
-    {
-        if (it->get_key() == key)
-        {
-            return *it;
-        }
-        if (it->get_subplot(key))
-        {
-            return it->get_subplot(key);
-        }
-    }
-    return NullPlot;
+    return get_plots().get_plot(key);
+}
+
+Plot* Dataset::get_pplot(string key)
+{
+    return get_plots().get_pplot(key);
 }
 ///////////////////////////////////////////////////////////////////////////////

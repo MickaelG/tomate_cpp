@@ -20,8 +20,8 @@ public:
     void set_rect(Rectangle rect);
     const list<Plot>& get_subplots() const;
     list<Plot>& get_subplots();
-    Plot& get_subplot(string key);
+    Plot* get_psubplot(string key);
 };
-extern Plot NullPlot;
+extern const Plot NullPlot;
 
 #endif //PLOT_H

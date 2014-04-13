@@ -21,7 +21,7 @@ Plant& Plants::index(int data_index)
     }
     else
     {
-        return NullPlant;
+        throw invalid_argument("Index must not be negative");
     }
 }
 
@@ -45,9 +45,9 @@ Plant& Plants::add_plant(string key, string name)
     {
         key = to_string(size());
     }
-    if (get_plant(key))
+    if (get_pplant(key))
     {
-        return NullPlant;
+        throw invalid_argument("Plant already exists in plot list");
     }
     push_back(Plant(key, name));
     return back();
@@ -55,14 +55,27 @@ Plant& Plants::add_plant(string key, string name)
 
 Plant& Plants::get_plant(string key)
 {
+    Plant* pplant = get_pplant(key);
+    if (pplant)
+    {
+        return *pplant;
+    }
+    else
+    {
+        throw invalid_argument("Plant with required key does not exist");
+    }
+}
+
+Plant* Plants::get_pplant(string key)
+{
     for (Plants::iterator it=this->begin(); it != this->end(); ++it)
     {
         if (it->get_key() == key)
         {
-            return *it;
+            return &(*it);
         }
     }
-    return NullPlant;
+    return NULL;
 }
 
 int Plants::delete_plant(string key)
