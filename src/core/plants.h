@@ -14,6 +14,7 @@ public:
     const Plant& index(int data_index) const;
     Plant& add_plant(string key, string name);
     Plant& get_plant(string key);
+    Plant* get_pplant(string key);
     int delete_plant(string key);
     int delete_plant(int index);
     int delete_plant(Plant& plant);

@@ -42,16 +42,23 @@ class Crop
         Crop();
         Crop(bg::date start_date, bg::date end_date,
              bg::date planned_start_date, bg::date planned_end_date,
-             Plant &plant, string varkey,
-             Plot &plot, string note = "", Rectangle rect=Rectangle());
+             Plant *p_plant, string varkey,
+             Plot *p_plot, string note = "", Rectangle rect=Rectangle());
         Crop(bg::date start_date, bg::date end_date,
-             Plant &plant, string varkey,
-             Plot &plot, string note = "");
+             Plant* p_plant, string varkey,
+             Plot* p_plot, string note = "");
         string str_descr() const;
-        Plant& get_plant() const;
+
+        Plant* get_pplant() const;
+        Plant& get_plant();
+        const Plant& get_plant() const;
         void set_plant(Plant& plant);
-        Plot& get_plot() const;
+
+        Plot& get_plot();
+        const Plot& get_plot() const;
+        Plot* get_pplot() const;
         void set_plot(Plot& plot);
+
         bg::date get_date(string which) const;
         void set_date(string which, bg::date date);
         bg::date get_virtual_end_date() const;

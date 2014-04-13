@@ -20,6 +20,6 @@ public:
     Shape *get_shape();
     void set_shape(Shape *shape);
 };
-extern Plot NullPlot;
+extern const Plot NullPlot;
 
 #endif //PLOT_H

@@ -28,7 +28,9 @@ class Dataset
         Plot& add_plot(Plot& plot);
         void set_filename(string in_filename);
         Plant& get_plant(string key);
+        Plant* get_pplant(string key);
         Plot& get_plot(string key);
+        Plot* get_pplot(string key);
         const Plots& get_plots() const;
         const Plants& get_plants() const;
         const Crops& get_crops() const;

@@ -93,14 +93,14 @@ int xml_read_data(string filename, Dataset& dataset)
         string varkey = elem_xml.attribute("var").value();
         string note = elem_xml.attribute("note").value();
 
-        Plant& plant = dataset.get_plant(plantkey);
-        if (!plant)
+        Plant* p_plant = dataset.get_pplant(plantkey);
+        if (!p_plant)
         {
             std::cout << "Error: plant " << plantkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
             continue;
         }
-        Plot& plot = dataset.get_plot(plotkey);
-        if (!plot)
+        Plot* p_plot = dataset.get_pplot(plotkey);
+        if (!p_plot)
         {
             std::cout << "Error: plot " << plotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
             continue;
@@ -112,7 +112,7 @@ int xml_read_data(string filename, Dataset& dataset)
         float posy = elem_xml.attribute("posy").as_float(0);
         Rectangle rect(width, height, posx, posy);
 
-        Crop crop(start_date, end_date, planned_start_date, planned_end_date, plant, varkey, plot, note, rect);
+        Crop crop(start_date, end_date, planned_start_date, planned_end_date, p_plant, varkey, p_plot, note, rect);
         for (xml_node action_xml: elem_xml.children())
         {
             bg::date date = get_date(action_xml, "date");
