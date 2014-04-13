@@ -8,7 +8,7 @@
 class Plot: public KeyName
 {
 private:
-    Shape* shape = 0;
+    Shape* shape;
     list<Plot> subplots;
 public:
     Plot();

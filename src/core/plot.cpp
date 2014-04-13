@@ -17,7 +17,7 @@ Plot::Plot(string key, string name, string descr, Shape* shape) :
 }
 
 Plot::Plot(string key, string name, string descr, float width, float height, float posx, float posy) :
-    KeyName(key, name, descr)
+    KeyName(key, name, descr), shape(NULL)
 {
     shape = new Rectangle(width, height, posx, posy);
 }
@@ -42,6 +42,10 @@ Plot::~Plot()
 
 Shape* Plot::get_shape()
 {
+    if (!shape)
+    {
+        shape = new Rectangle(-1, -1, 0, 0);
+    }
     return shape;
 }
 

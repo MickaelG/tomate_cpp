@@ -7,7 +7,6 @@
 #include "plant.h"
 #include "xml.h"
 
-
 BOOST_AUTO_TEST_CASE(crops)
 {
     Plant plant("to", "tomate");
@@ -38,10 +37,10 @@ string slurp(ifstream& in) {
 BOOST_AUTO_TEST_CASE(xml)
 {
     Dataset dataset;
-    xml_read_data("../testfiles/data_dyn.sfg", dataset);
+    xml_read_data("../testfiles/data_v0.2.sfg", dataset);
     BOOST_CHECK(dataset.get_plot("1").get_name() == "Plot1");
     xml_write_data("data_out.sfg", dataset);
-    ifstream ifs1("../testfiles/data_dyn.sfg");
+    ifstream ifs1("../testfiles/data_v0.2.sfg");
     ifstream ifs2("data_out.sfg");
     string str1;
     string str2;
@@ -51,6 +50,21 @@ BOOST_AUTO_TEST_CASE(xml)
     BOOST_CHECK(!(ifs1 && ifs2));
 }
 
+BOOST_AUTO_TEST_CASE(xml_conv_from_01)
+{
+    Dataset dataset;
+    xml_read_data("../testfiles/data_v0.1.sfg", dataset);
+    BOOST_CHECK(dataset.get_plot("1").get_name() == "Plot1");
+    xml_write_data("data_out.sfg", dataset);
+    ifstream ifs1("../testfiles/data_v0.1.out_v0.2.sfg");
+    ifstream ifs2("data_out.sfg");
+    string str1;
+    string str2;
+    while(getline(ifs1, str1) && getline(ifs2, str2)) {
+        BOOST_REQUIRE_EQUAL(str1, str2);
+    }
+    BOOST_CHECK(!(ifs1 && ifs2));
+}
 
 BOOST_AUTO_TEST_CASE(is_active)
 {
@@ -103,9 +117,10 @@ BOOST_AUTO_TEST_CASE(crop_shape)
     Dataset data;
     Plot& plot = data.get_plots().add_plot("pn", "plot_nom", "une jolie planche", 2,3,8,9);
     Plant& plant = data.add_plant(Plant("pl", "plant_name"));
-    Crop crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), plant, "", plot, "first crop");
+    Crop crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), &plant, "", &plot, "first crop");
     //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), -1);
-    plot.set_shape(new Rectangle(100, 120, 50, 20));
+    Rectangle *rect = new Rectangle(100, 120, 50, 20);
+    plot.set_shape(rect);
     //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 100);
 
     crop.set_shape(new Rectangle(20, 30, 10, 11));

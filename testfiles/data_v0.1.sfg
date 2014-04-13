@@ -3,8 +3,8 @@
   <plots>
     <plot key="0" name="WoSubPlots" descr="a plot without subplots" />
     <plot key="1" name="Plot1" descr="first plot" width="120" height="120" posx="0" posy="0">
-      <subd width="40" height="40" posx="80" posy="0" />
-      <subd width="40" height="40" posx="80" posy="40" />
+      <subd width="35" height="38" posx="80" posy="40" />
+      <subd width="38" height="40" posx="80" posy="0" />
       <subd width="40" height="40" posx="80" posy="80" />
       <subd width="40" height="40" posx="40" posy="80" />
       <subd width="40" height="40" posx="0" posy="80" />
@@ -15,8 +15,8 @@
     </plot>
     <plot key="2" name="Plot2" descr="second plot" width="120" height="120" posx="0" posy="150">
       <subd width="40" height="40" posx="80" posy="0" />
-      <subd width="40" height="40" posx="80" posy="40" />
       <subd width="40" height="40" posx="80" posy="80" />
+      <subd width="40" height="40" posx="80" posy="40" />
       <subd width="40" height="40" posx="40" posy="80" />
       <subd width="40" height="40" posx="0" posy="80" />
       <subd width="40" height="40" posx="0" posy="40" />

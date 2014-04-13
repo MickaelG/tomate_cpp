@@ -101,10 +101,6 @@ Plot* Plots::get_pplot(string key)
         {
             return &(*it);
         }
-        if (it->get_psubplot(key))
-        {
-            return it->get_psubplot(key);
-        }
     }
     return NULL;
 }

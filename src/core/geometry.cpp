@@ -88,6 +88,11 @@ float Rectangle::get_min_y() const
 
 void Rectangle::fit_in_plot(const Shape* parent_shape)
 {
+    if (!parent_shape || parent_shape->get_width() < 0)
+    {
+        return;
+    }
+
     if (posx > parent_shape->get_width())
     {
         posx = parent_shape->get_width() - 10;
@@ -111,6 +116,7 @@ void Rectangle::fit_in_plot(const Shape* parent_shape)
 
 Shape* Rectangle::clone()
 {
-    return new Rectangle(*this);
+    Rectangle* shape = new Rectangle(*this);
+    return shape;
 }
 ///////////////////////////////////////////////////////////////////////////////

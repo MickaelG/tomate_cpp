@@ -289,7 +289,10 @@ void Crop::set_shape(Shape* in_shape)
         shape = NULL;
     }
     shape = in_shape;
-    shape->fit_in_plot(p_plot->get_shape());
+    if (p_plot)
+    {
+        shape->fit_in_plot(p_plot->get_shape());
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
