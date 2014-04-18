@@ -48,7 +48,8 @@ int PlantsModel::rowCount(const QModelIndex& parent) const
         {
             Plants::iterator it = plants.begin();
             advance(it, plant_index);
-            return it->get_vars().size();
+            int var_size = it->get_vars().size();
+            return var_size;
         }
         return 0;
     }
@@ -91,6 +92,9 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
                     advance(it, plant_index);
                     Vars vars = it->get_vars();
                     Vars::iterator itv = vars.begin();
+                    if (index.row() > vars.size()-1) {
+                        return QVariant(QString("ERROR"));
+                    }
                     advance(itv, index.row());
                     return QVariant(toQString(itv->get_name()));
                 }

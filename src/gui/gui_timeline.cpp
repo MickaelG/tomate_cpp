@@ -161,12 +161,11 @@ MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWi
 
 
 WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
-    dataset(dataset)
+    dataset(dataset), selected_crop(NULL), selected_crop_repr(NULL)
 {
     //context_menu = new QMenu;
     //context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
     date = QDate::currentDate();
-    selected_crop_repr = 0;
     draw_scene();
 }
 

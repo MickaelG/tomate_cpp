@@ -8,6 +8,9 @@
 #include "dataset.h"
 #include "plot.h"
 
+#include <QMessageBox>
+#include <string>
+
 EditCropWidget::EditCropWidget(Dataset& dataset, PlantsModel* plants_model,
                                PlotsModel* plots_model, QWidget* parent) :
     QWidget(parent), dataset(dataset), p_crop(0), plants_model(plants_model),
@@ -28,9 +31,12 @@ EditCropWidget::EditCropWidget(Dataset& dataset, PlantsModel* plants_model,
                      ui->subplotInput, SLOT(setVarRootModelIndex(int)));
 
     QObject::connect(ui->AddButton, SIGNAL(clicked()), this, SLOT(edit_crop()));
+    QObject::connect(ui->DelButton, SIGNAL(clicked()), this, SLOT(delete_crop()));
 
     ui->enddateInput->setEnabled(false);
     ui->plannedenddateInput->setEnabled(false);
+
+    ui->DelButton->setEnabled(false);
 }
 
 
@@ -54,14 +60,18 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
             ui->varInput->setCurrentElem(toQString(p_crop->get_varkey()));
         }
         ui->plotInput->setCurrentElem(toQString(p_crop->get_plot().get_key()).split("-")[0]);
-        ui->subplotInput->setCurrentElem(toQString(p_crop->get_plot().get_key()));
+        std::string toto = p_crop->get_pplot()->get_key();
+        QString subplotkey = toQString(toto);
+        ui->subplotInput->setCurrentElem(subplotkey);
         ui->noteInput->setText(toQString(p_crop->get_note()));
         //ui->AddButton->hide();
         ui->AddButton->setText(tr("Apply changes"));
+        ui->DelButton->setEnabled(true);
     } else {
         //set_default_values();
         //ui->AddButton->show();
         ui->AddButton->setText(tr("Add this crop"));
+        ui->DelButton->setEnabled(false);
     }
 }
 
@@ -97,4 +107,21 @@ void EditCropWidget::edit_crop()
         p_crop->set_note(fromQString(note));
     }
     emit dataset_changed();
+}
+
+void EditCropWidget::delete_crop()
+{
+   if (p_crop)
+   {
+       int result = QMessageBox::question(NULL, QObject::tr("Delete crop"),
+                             QObject::tr("Are you sure you want to delete the crop ?"),
+                             QMessageBox::Yes | QMessageBox::No);
+
+       if (result == QMessageBox::Yes) {
+           dataset.get_crops().delete_crop(*p_crop);
+           p_crop = NULL;
+           set_crop_values(p_crop);
+           emit dataset_changed();
+       }
+   }
 }

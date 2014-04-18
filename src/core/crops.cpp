@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // class Crop
 ///////////////////////////////////////////////////////////////////////////////
-Crop NullCrop;
+const Crop NullCrop;
 string Crop::str_descr() const
 {
     return p_plant->get_name();
@@ -91,7 +91,7 @@ string Crop::description() const
                                     " planned_end:"   + bg::to_simple_string(get_date("planned_end"));
 }
 
-Plant* Crop::get_pplant() const
+Plant* Crop::get_pplant()
 {
     return p_plant;
 }
@@ -121,7 +121,7 @@ void Crop::set_plant(Plant& plant)
     p_plant = &plant;
 }
 
-Plot* Crop::get_pplot() const
+Plot* Crop::get_pplot()
 {
     return p_plot;
 }
@@ -259,13 +259,18 @@ void Crop::set_note(string note)
 {
     this->note = note;
 }
+
+bool operator==(const Crop& elem1, const Crop& elem2)
+{
+    return (&elem1 == &elem2);
+}
 ///////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // class Crops
 ///////////////////////////////////////////////////////////////////////////////
-Crop& Crops::find_crop(const Plot& plot, bg::date date)
+Crop* Crops::find_pcrop(const Plot& plot, bg::date date)
 {
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
     for (Crops::iterator it=this->begin(); it != this->end(); ++it)
@@ -274,11 +279,11 @@ Crop& Crops::find_crop(const Plot& plot, bg::date date)
         {
            if (it->is_active_at_date(date) || it->is_planned_at_date(date))
            {
-               return *it;
+               return &(*it);
            }
         }
     }
-    return NullCrop;
+    return NULL;
 }
 
 bool Crops::is_used_plot(const Plot& plot) const
@@ -309,5 +314,11 @@ bool Crops::is_used_plant(const Plant& plant) const
         }
     }
     return false;
+}
+
+bool Crops::delete_crop(Crop& crop)
+{
+    remove(crop);
+    return true;
 }
 ///////////////////////////////////////////////////////////////////////////////

@@ -19,12 +19,12 @@ class Plot;
 class SubdRepresentation: public QGraphicsRectItem
 {
 public:
-    SubdRepresentation(Rectangle rect, Crop& crop, QDate date);
+    SubdRepresentation(Rectangle rect, Crop *p_crop, QDate date);
     Crop* get_pcrop();
     Rectangle get_rect() { return rect; };
 private:
     Rectangle rect;
-    Crop& crop;
+    Crop* p_crop;
 };
 
 

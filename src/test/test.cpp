@@ -106,21 +106,30 @@ BOOST_AUTO_TEST_CASE(find_crop)
     data.add_crop(Crop(bg::date(), bg::date(), bg::date(2012, 12, 1), bg::date(2013, 2, 9), &plant, "", &plot, "third, planned crop"));
     data.add_crop(Crop(bg::date(2012, 10, 02), bg::date(2012, 12, 10), &plant, "", &plot2, "other crop"));
     
-    Crop& crop0 = data.get_crops().find_crop(plot, bg::date(2012, 11, 1));
-    BOOST_CHECK_EQUAL(crop0.get_note(), "second crop");
-    BOOST_CHECK( crop0 );
-    Crop& crop1 = data.get_crops().find_crop(plot, bg::date(2012, 9, 1));
-    BOOST_CHECK_EQUAL(crop1.get_note(), "first crop");
-    BOOST_CHECK( crop1 );
-    const Crop& crop2 = data.get_crops().find_crop(plot, bg::date(2012, 11, 21));
-    BOOST_CHECK( !crop2 );
-    BOOST_CHECK_EQUAL(crop2.get_plant().get_name(), "");
-    Crop& crop3 = data.get_crops().find_crop(plot2, bg::date(2012, 11, 21));
-    BOOST_CHECK( crop3 );
-    BOOST_CHECK_EQUAL(crop3.get_note(), "other crop");
-    Crop crop4 = data.get_crops().find_crop(plot, bg::date(2012, 12, 21));
-    BOOST_CHECK( crop4 );
-    BOOST_CHECK_EQUAL(crop4.get_note(), "third, planned crop");
+    Crop* p_crop0 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
+    BOOST_CHECK_EQUAL(p_crop0->get_note(), "second crop");
+    BOOST_CHECK( p_crop0 );
+    Crop* p_crop1 = data.get_crops().find_pcrop(plot, bg::date(2012, 9, 1));
+    BOOST_CHECK_EQUAL(p_crop1->get_note(), "first crop");
+    BOOST_CHECK( p_crop1 );
+    const Crop* p_crop2 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 21));
+    BOOST_CHECK( !p_crop2 );
+    Crop* p_crop3 = data.get_crops().find_pcrop(plot2, bg::date(2012, 11, 21));
+    BOOST_CHECK( p_crop3 );
+    BOOST_CHECK_EQUAL(p_crop3->get_note(), "other crop");
+    Crop* p_crop4 = data.get_crops().find_pcrop(plot, bg::date(2012, 12, 21));
+    BOOST_CHECK( p_crop4 );
+    BOOST_CHECK_EQUAL(p_crop4->get_note(), "third, planned crop");
+
+    //delete_plot
+    Crop* p_crop5 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
+    BOOST_CHECK( p_crop5 );
+    data.get_crops().delete_crop(*p_crop5);
+    Crop* p_crop6 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
+    BOOST_CHECK( !p_crop6 );
+    Crop* p_crop7 = data.get_crops().find_pcrop(plot2, bg::date(2012, 11, 21));
+    BOOST_CHECK( p_crop7 );
+    BOOST_CHECK_EQUAL(p_crop7->get_note(), "other crop");
 }
 
 BOOST_AUTO_TEST_CASE(plots)

@@ -59,8 +59,8 @@ void PlotRepresentation::update_draw(QDate date)
                   rect.get_width(), rect.get_height());
     for (Plot subd: plot.get_subplots())
     {
-        Crop& crop = crops.find_crop(subd, fromQDate(date));
-        SubdRepresentation *subd_repr = new SubdRepresentation(subd.get_rect(), crop, date);
+        Crop* p_crop = crops.find_pcrop(subd, fromQDate(date));
+        SubdRepresentation *subd_repr = new SubdRepresentation(subd.get_rect(), p_crop, date);
         subd_repr->setPos(rect.get_x(), -rect.get_y());
         subd_repr->setParentItem(this);
         subd_reprs.push_back(subd_repr);
@@ -68,14 +68,14 @@ void PlotRepresentation::update_draw(QDate date)
 }
 //TODO: delete subd_repr
             
-SubdRepresentation::SubdRepresentation(Rectangle rect, Crop& crop, QDate date) :
-    rect(rect), crop(crop)
+SubdRepresentation::SubdRepresentation(Rectangle rect, Crop* p_crop, QDate date) :
+    rect(rect), p_crop(p_crop)
 {
     this->setRect(get_rect().get_x(), - get_rect().get_y() - get_rect().get_height(),
                   get_rect().get_width(), get_rect().get_height());
-    if (crop)
+    if (p_crop)
     {
-        Plant& plant = crop.get_plant();
+        Plant& plant = p_crop->get_plant();
         QString text = toQString(plant.get_name());
         //text = re.sub("\s+", "\n", text)
         QGraphicsSimpleTextItem *textw =  new QGraphicsSimpleTextItem(text);
@@ -88,7 +88,7 @@ SubdRepresentation::SubdRepresentation(Rectangle rect, Crop& crop, QDate date) :
         QString color_str = toQString(plant.get_color_str());
         if (color_str == "") { color_str = "#FF00FF"; }
         QColor color = QColor(color_str);
-        if (crop.is_planned_at_date(fromQDate(date)) && !crop.is_active_at_date(fromQDate(date)))
+        if (p_crop->is_planned_at_date(fromQDate(date)) && !p_crop->is_active_at_date(fromQDate(date)))
         {
             this->setBrush(QBrush(color, Qt::BDiagPattern));
         }
@@ -101,7 +101,7 @@ SubdRepresentation::SubdRepresentation(Rectangle rect, Crop& crop, QDate date) :
 
 Crop* SubdRepresentation::get_pcrop()
 {
-    return &crop;
+    return p_crop;
 }
 
 WholeScene::WholeScene(Dataset& dataset) : dataset(dataset)
@@ -155,7 +155,7 @@ Crop* WholeScene::getCropAtPos(QPointF scene_pos)
             QRectF subd_rect = subd_repr->sceneTransform().mapRect(subd_repr->boundingRect());
             if (subd_rect.contains(scene_pos))
             {
-                if (subd_repr->get_pcrop() != &NullCrop)
+                if (subd_repr->get_pcrop())
                 {
                     p_current_crop = subd_repr->get_pcrop();
                 }

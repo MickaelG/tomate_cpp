@@ -46,14 +46,14 @@ class Crop
              Plot* p_plot, string note = "");
         string str_descr() const;
 
-        Plant* get_pplant() const;
+        Plant* get_pplant();
         Plant& get_plant();
         const Plant& get_plant() const;
         void set_plant(Plant& plant);
 
         Plot& get_plot();
         const Plot& get_plot() const;
-        Plot* get_pplot() const;
+        Plot* get_pplot();
         void set_plot(Plot& plot);
 
         bg::date get_date(string which) const;
@@ -72,16 +72,19 @@ class Crop
         bool is_in_year_started_by(bg::date date) const;
         string description() const;
 };
-extern Crop NullCrop;
+extern const Crop NullCrop;
+
+bool operator==(const Crop&, const Crop&);
 
 
 class Crops: public list<Crop>
 {
     private:
     public:
-        Crop& find_crop(const Plot& plot, bg::date date);
+        Crop* find_pcrop(const Plot& plot, bg::date date);
         bool is_used_plot(const Plot& plot) const;
         bool is_used_plant(const Plant& plant) const;
+        bool delete_crop(Crop& crop);
 };
 
 #endif //CROPS_H
