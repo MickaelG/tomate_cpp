@@ -45,7 +45,7 @@ int PlotsModel::rowCount(const QModelIndex& parent) const
     else
     {
         int plot_index =  parent.row();
-        if (plot_index >= 0)
+        if (plot_index >= 0 && plot_index < plots.size())
         {
             Plots::iterator it = plots.begin();
             advance(it, plot_index);

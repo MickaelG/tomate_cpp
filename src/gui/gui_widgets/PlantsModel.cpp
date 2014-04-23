@@ -44,7 +44,7 @@ int PlantsModel::rowCount(const QModelIndex& parent) const
     else
     {
         int plant_index =  parent.row();
-        if (plant_index >= 0)
+        if (plant_index >= 0 && plant_index < plants.size())
         {
             Plants::iterator it = plants.begin();
             advance(it, plant_index);
