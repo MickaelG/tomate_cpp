@@ -4,6 +4,7 @@
 #include <QValidator>
 #include <QLabel>
 #include <QGroupBox>
+#include <QScrollArea>
 
 
 PhysInput::PhysInput(Rectangle rect, bool editable, QWidget* parent):
@@ -62,11 +63,20 @@ SubdWidget::SubdWidget(QWidget *parent, QVector<Rectangle> all_rects):
     QGroupBox* group_box = new QGroupBox(tr("subdivisions"));
     this->setLayout(new QVBoxLayout);
     this->layout()->addWidget(group_box);
+
+    group_box->setMinimumHeight(250);
+
     main_layout = new QVBoxLayout();
-    group_box->setLayout(main_layout);
+
+    QWidget* main_w = new QWidget();
+    group_box->setLayout(new QVBoxLayout());
+    QScrollArea* scroll_area = new QScrollArea();
+    scroll_area->setWidgetResizable(true);
+    scroll_area->setWidget(main_w);
+    group_box->layout()->addWidget(scroll_area);
+    main_w->setLayout(main_layout);
 
     this->set_rects(all_rects);
-
 }
 
 void SubdWidget::set_rects(QVector<Rectangle> all_rects)
