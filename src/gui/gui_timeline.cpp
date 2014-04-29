@@ -394,10 +394,11 @@ void WholeTimeSceneView::update_draw()
 
 void WholeTimeSceneView::update_rect()
 {
-    int x = sceneRect().x();
-    int y = sceneRect().y();
-    int width = sceneRect().width();
-    int height = sceneRect().height();
+    QRectF itemsRect = scene()->itemsBoundingRect();
+    int x = itemsRect.x();
+    int y = itemsRect.y();
+    int width = itemsRect.width();
+    int height = itemsRect.height();
     this->setSceneRect(x - Margin, y - Margin,
                       width + 2 * Margin, height + 2 * Margin);
     this->setAlignment(Qt::AlignTop);
