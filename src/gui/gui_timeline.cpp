@@ -273,6 +273,7 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         selectCrop(p_current_crop_repr);
         emit crop_selected(selected_crop);
     }
+    QGraphicsScene::mousePressEvent(event);
 }
 
 void WholeTimeScene::next_year() {
