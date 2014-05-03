@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
     string data_file = user_data_dir + "/data_dynamic_subd.sfg";
 
     Dataset dataset;
-    int res = xml_read_data(data_file, dataset);
+    //int res = xml_read_data(data_file, dataset);
+    int res = xml_read_data(user_data_dir + "/data.sfg", dataset);
     bool new_file = false;
     if (res == -1)
     {
