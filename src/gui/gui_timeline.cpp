@@ -358,8 +358,8 @@ void WholeTimeScene::draw_scene()
                 crop_repr->setY(y_pos);
                 addItem(crop_repr);
                 crop_reprs.push_back(crop_repr);
+                y_pos += SquareUnit + SubMargin;
             }
-            y_pos += SquareUnit + SubMargin;
         }
         y_pos += Margin;
     }
