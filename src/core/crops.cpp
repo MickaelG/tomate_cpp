@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // class Crop
 ///////////////////////////////////////////////////////////////////////////////
-Crop NullCrop;
+const Crop NullCrop;
 string Crop::str_descr() const
 {
     return p_plant->get_name();
@@ -95,7 +95,7 @@ string Crop::description() const
                                     " planned_end:"   + bg::to_simple_string(get_date("planned_end"));
 }
 
-Plant* Crop::get_pplant() const
+Plant* Crop::get_pplant()
 {
     return p_plant;
 }
@@ -125,7 +125,7 @@ void Crop::set_plant(Plant& plant)
     p_plant = &plant;
 }
 
-Plot* Crop::get_pplot() const
+Plot* Crop::get_pplot()
 {
     return p_plot;
 }
@@ -295,6 +295,11 @@ void Crop::set_shape(Shape* in_shape)
     }
 }
 
+bool operator==(const Crop& elem1, const Crop& elem2)
+{
+    return (&elem1 == &elem2);
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -346,5 +351,11 @@ bool Crops::is_used_plant(const Plant& plant) const
         }
     }
     return false;
+}
+
+bool Crops::delete_crop(Crop& crop)
+{
+    remove(crop);
+    return true;
 }
 ///////////////////////////////////////////////////////////////////////////////

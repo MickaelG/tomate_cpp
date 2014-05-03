@@ -19,12 +19,12 @@ class Plot;
 class CropSpaceRepr: public QGraphicsRectItem
 {
 public:
-    CropSpaceRepr(Crop& crop, QDate date);
+    CropSpaceRepr(Crop* p_crop, QDate date);
     Crop* get_pcrop();
     Rectangle get_rect() { return rect; };
 private:
     Rectangle rect;
-    Crop& crop;
+    Crop* p_crop;
 };
 
 

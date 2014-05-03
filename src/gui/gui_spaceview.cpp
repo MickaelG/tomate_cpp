@@ -59,8 +59,7 @@ void PlotRepresentation::update_draw(QDate date)
                   shape->get_width(), shape->get_height());
     for (Crop* p_crop: crops.find_crops(plot, fromQDate(date)))
     {
-        Crop& crop = *p_crop;
-        CropSpaceRepr *crop_repr = new CropSpaceRepr(crop, date);
+        CropSpaceRepr *crop_repr = new CropSpaceRepr(p_crop, date);
         crop_repr->setPos(shape->get_min_x(), -shape->get_min_y());
         crop_repr->setParentItem(this);
         crop_reprs.push_back(crop_repr);
@@ -68,10 +67,10 @@ void PlotRepresentation::update_draw(QDate date)
 }
 //TODO: delete subd_repr
             
-CropSpaceRepr::CropSpaceRepr(Crop& crop, QDate date) :
-    crop(crop)
+CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
+    p_crop(p_crop)
 {
-    Shape* shape = crop.get_shape();
+    Shape* shape = p_crop->get_shape();
     if (!shape)
     {
         return;
@@ -80,14 +79,14 @@ CropSpaceRepr::CropSpaceRepr(Crop& crop, QDate date) :
     //TODO draw the real shape instead of a rect
     this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
                   shape->get_width(), shape->get_height());
-    if (crop)
+    if (p_crop)
     {
-        Plant& plant = crop.get_plant();
+        Plant& plant = p_crop->get_plant();
         QString text = toQString(plant.get_name());
         //text = re.sub("\s+", "\n", text)
         QGraphicsSimpleTextItem *textw =  new QGraphicsSimpleTextItem(text);
         QFont font = textw->font();
-        font.setPointSize(6);
+        font.setPointSize(int(this->boundingRect().width()/10));
         font.setWeight(25);
         textw->setFont(font);
         center_text(textw, this->boundingRect());
@@ -95,7 +94,7 @@ CropSpaceRepr::CropSpaceRepr(Crop& crop, QDate date) :
         QString color_str = toQString(plant.get_color_str());
         if (color_str == "") { color_str = "#FF00FF"; }
         QColor color = QColor(color_str);
-        if (crop.is_planned_at_date(fromQDate(date)) && !crop.is_active_at_date(fromQDate(date)))
+        if (p_crop->is_planned_at_date(fromQDate(date)) && !p_crop->is_active_at_date(fromQDate(date)))
         {
             this->setBrush(QBrush(color, Qt::BDiagPattern));
         }
@@ -108,7 +107,7 @@ CropSpaceRepr::CropSpaceRepr(Crop& crop, QDate date) :
 
 Crop* CropSpaceRepr::get_pcrop()
 {
-    return &crop;
+    return p_crop;
 }
 
 WholeScene::WholeScene(Dataset& dataset) : dataset(dataset)
@@ -162,7 +161,7 @@ Crop* WholeScene::getCropAtPos(QPointF scene_pos)
             QRectF subd_rect = subd_repr->sceneTransform().mapRect(subd_repr->boundingRect());
             if (subd_rect.contains(scene_pos))
             {
-                if (subd_repr->get_pcrop() != &NullCrop)
+                if (subd_repr->get_pcrop())
                 {
                     p_current_crop = subd_repr->get_pcrop();
                 }

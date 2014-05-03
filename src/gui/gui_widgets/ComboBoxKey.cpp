@@ -9,9 +9,9 @@ ComboBoxKey::ComboBoxKey(QWidget *parent) :
 
 void ComboBoxKey::setCurrentElem(QString key)
 {
-    for (int i=0; i < model()->rowCount(); i++)
+    for (int i=0; i < model()->rowCount(rootModelIndex()); i++)
     {
-        QModelIndex index = model()->index(i, 1);  // column 1 contains keys
+        QModelIndex index = model()->index(i, 1, rootModelIndex());  // column 1 contains keys
         if(index.data().toString() == key)
         {
             setCurrentIndex(i);
@@ -23,9 +23,9 @@ void ComboBoxKey::setCurrentElem(QString key)
 
 QString ComboBoxKey::currentElem()
 {
-    if (model()->rowCount() > 0)
+    if (model()->rowCount(rootModelIndex()) > 0)
     {
-        QModelIndex index = model()->index(currentIndex(), 1);  // column 1 contains keys
+        QModelIndex index = model()->index(currentIndex(), 1, rootModelIndex());  // column 1 contains keys
         return index.data().toString();
     }
     else

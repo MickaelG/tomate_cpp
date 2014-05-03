@@ -4,6 +4,7 @@
 #include <QValidator>
 #include <QLabel>
 #include <QGroupBox>
+#include <QScrollArea>
 
 
 PhysInput::PhysInput(QWidget* parent, Rectangle rect, bool editable):

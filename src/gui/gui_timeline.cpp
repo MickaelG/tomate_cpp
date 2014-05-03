@@ -161,12 +161,11 @@ MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWi
 
 
 WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
-    dataset(dataset)
+    dataset(dataset), selected_crop(NULL), selected_crop_repr(NULL)
 {
     //context_menu = new QMenu;
     //context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
     date = QDate::currentDate();
-    selected_crop_repr = 0;
     draw_scene();
 }
 
@@ -274,6 +273,7 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         selectCrop(p_current_crop_repr);
         emit crop_selected(selected_crop);
     }
+    QGraphicsScene::mousePressEvent(event);
 }
 
 void WholeTimeScene::next_year() {
@@ -392,10 +392,11 @@ void WholeTimeSceneView::update_draw()
 
 void WholeTimeSceneView::update_rect()
 {
-    int x = sceneRect().x();
-    int y = sceneRect().y();
-    int width = sceneRect().width();
-    int height = sceneRect().height();
+    QRectF itemsRect = scene()->itemsBoundingRect();
+    int x = itemsRect.x();
+    int y = itemsRect.y();
+    int width = itemsRect.width();
+    int height = itemsRect.height();
     this->setSceneRect(x - Margin, y - Margin,
                       width + 2 * Margin, height + 2 * Margin);
     this->setAlignment(Qt::AlignTop);
