@@ -39,7 +39,7 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget*
 {
     QString text = toQString(crop.get_plant().get_name());
 
-    QDate start_date = toQDate(crop.get_date("planned_start"));
+    QDate start_date = toQDate(crop.get_virtual_planned_start_date());
     QDate end_date = toQDate(crop.get_virtual_planned_end_date());
     if (start_date > end_date) {
         std::cout << "Error with crop " << crop.get_plant().get_name() << std::endl;

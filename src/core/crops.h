@@ -59,6 +59,7 @@ class Crop
         bg::date get_date(string which) const;
         void set_date(string which, bg::date date);
         bg::date get_virtual_end_date() const;
+        bg::date get_virtual_planned_start_date() const;
         bg::date get_virtual_planned_end_date() const;
         void add_action(bg::date date, string note);
         list<CropAction>& get_actions();

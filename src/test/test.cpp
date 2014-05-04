@@ -92,7 +92,17 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop4.is_planned_at_date(bg::date(2012, 10, 01)));
     BOOST_CHECK(crop4.is_planned_at_date(bg::date(2012, 11, 21)));
     BOOST_CHECK(!crop4.is_planned_at_date(bg::date(2012, 11, 23)));
-    
+
+    //Crop with star date and planned end
+    Crop crop5(bg::date(2012, 10, 15), bg::date(), bg::date(), bg::date(2012, 11, 22), &plant, "", &plot);
+    BOOST_CHECK(!crop5.is_active_at_date(bg::date(2012, 10, 14)));
+    BOOST_CHECK(crop5.is_active_at_date(bg::date(2012, 10, 16)));
+    BOOST_CHECK(crop5.is_active_at_date(bg::date(2012, 11, 27)));
+    BOOST_CHECK(!crop5.is_planned_at_date(bg::date(2012, 10, 14)));
+    BOOST_CHECK(crop5.is_planned_at_date(bg::date(2012, 10, 16)));
+    BOOST_CHECK(crop5.is_planned_at_date(bg::date(2012, 11, 21)));
+    BOOST_CHECK(!crop5.is_planned_at_date(bg::date(2012, 11, 23)));
+
 }
 
 BOOST_AUTO_TEST_CASE(find_crop)

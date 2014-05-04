@@ -199,8 +199,8 @@ bool Crop::is_active_at_date(bg::date date) const
 bool Crop::is_planned_at_date(bg::date date) const
 {
     bool result;
-    if ((~planned_start_date.is_not_a_date() && date > planned_start_date) &&
-        (~planned_end_date.is_not_a_date() && date < planned_end_date))
+    if ((~get_virtual_planned_start_date().is_not_a_date() && date > get_virtual_planned_start_date()) &&
+        (~get_virtual_planned_end_date().is_not_a_date() && date < get_virtual_planned_end_date()))
     {
         result = true;
     }
@@ -235,6 +235,18 @@ bg::date Crop::get_virtual_end_date() const
     else
     {
         return end_date;
+    }
+}
+
+bg::date Crop::get_virtual_planned_start_date() const
+{
+    if ( planned_start_date.is_not_a_date() && (!planned_end_date.is_not_a_date()) )
+    {
+        return start_date;
+    }
+    else
+    {
+        return planned_start_date;
     }
 }
 
