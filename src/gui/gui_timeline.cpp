@@ -206,6 +206,7 @@ void WholeTimeScene::drawCropSelection()
         //selected_pen.setColor(QColor("#444444"));
         selected_crop_repr->get_global_rect()->setPen(selected_pen);
     }
+    emit crop_selected(selected_crop);
 }
 
 void WholeTimeScene::removeCropSelection()
@@ -221,6 +222,57 @@ void WholeTimeScene::selectCrop(Crop* p_crop)
     removeCropSelection();
     selected_crop_repr = 0;
     selected_crop = p_crop;
+    drawCropSelection();
+}
+
+void WholeTimeScene::selectNextCrop(bool reverse)
+{
+    removeCropSelection();
+    if (!selected_crop)
+    {
+        if (crop_reprs.size() > 0)
+        {
+          if (reverse)
+          {
+            selected_crop_repr = crop_reprs.back();
+          }
+          else
+          {
+            selected_crop_repr = crop_reprs[0];
+          }
+          selected_crop = selected_crop_repr->get_pcrop();
+        }
+    }
+    else
+    {
+        int curr_index = find(crop_reprs.begin(), crop_reprs.end(), selected_crop_repr) - crop_reprs.begin();
+        int next_index;
+        if (reverse)
+        {
+            next_index = curr_index - 1;
+        }
+        else
+        {
+            next_index = curr_index + 1;
+        }
+        if (next_index < crop_reprs.size() && next_index >= 0)
+        {
+            selected_crop_repr = crop_reprs[next_index];
+            selected_crop = selected_crop_repr->get_pcrop();
+        }
+        else if (crop_reprs.size() > 0)
+        {
+            if (reverse)
+            {
+                selected_crop_repr = crop_reprs.back();
+            }
+            else
+            {
+                selected_crop_repr = crop_reprs[0];
+            }
+            selected_crop = selected_crop_repr->get_pcrop();
+        }
+    }
     drawCropSelection();
 }
 
@@ -271,9 +323,21 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     else {
         CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
         selectCrop(p_current_crop_repr);
-        emit crop_selected(selected_crop);
     }
     QGraphicsScene::mousePressEvent(event);
+}
+
+void WholeTimeScene::keyPressEvent(QKeyEvent* keyEvent)
+{
+    cout << "Coucou" << hex << keyEvent->key() << endl;
+    if (keyEvent->key() == Qt::Key_Tab)
+    {
+        selectNextCrop();
+    }
+    else if (keyEvent->key() == Qt::Key_Backtab)
+    {
+        selectNextCrop(true);
+    }
 }
 
 void WholeTimeScene::next_year() {
@@ -404,7 +468,6 @@ void WholeTimeSceneView::update_rect()
                       width + 2 * Margin, height + 2 * Margin);
     this->setAlignment(Qt::AlignTop);
 }
-
 
 TimelineWindow::TimelineWindow(Dataset& dataset, QWidget* parent) :
     view(dataset, this)

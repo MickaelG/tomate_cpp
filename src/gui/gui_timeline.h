@@ -48,10 +48,12 @@ public:
     void clear_scene();
     CropTimeRepresentation* getCropReprAtPos(QPointF scene_pos);
     void selectCrop(CropTimeRepresentation *p_crop_repr);
+    void selectNextCrop(bool reverse=false);
     void drawCropSelection();
     void removeCropSelection();
     //void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
+    void keyPressEvent(QKeyEvent* keyEvent);
 
 public slots:
     void selectCrop(Crop *p_crop);
