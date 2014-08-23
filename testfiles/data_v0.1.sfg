@@ -69,5 +69,6 @@
     </crop>
     <crop planned_start_date="2013-05-15" planned_end_date="2013-07-15" plot="2-2" plant="hn" />
     <crop start_date="2013-04-02" end_date="2013-08-28" planned_start_date="2013-04-01" planned_end_date="2013-05-15" plot="1-2" plant="hn" var="1" note="note quelconque" />
+    <crop start_date="2013-05-15" planned_start_date="2013-07-15" plot="2-3" plant="hn" />
   </crops>
 </sfg>

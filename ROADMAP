@@ -6,7 +6,8 @@ X corriger les "fail writing data file" => remp mkdir par boost::create_director
 - Compilation et test sous windows
 - ajouter les unités de longueurs
 - Quand une culture est sélectionnée, tab sélectionne la suivante
-- Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur les vues spatiales et temporelles
+- Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue spatiale
+X Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue temporelle
 O expliciter le concept de subdivision
 X Expliciter la méthode pour ajouter des cultures au début
 X tester les .ui de QtCreator
@@ -14,7 +15,7 @@ O Label dans la vue temporelle pour connaitre les planches et les subd
 X Pouvoir modifier les cultures à partir de la vue spatiale
 O Par défaut, end, et planned_end devraient être désactivés
 X pouvoir éditer des plantations dans la space view
-- pouvoir supprimer des plantations
+X pouvoir supprimer des plantations
 X Les calendriers désactivés doivent être à la date d'aujourd'hui
 
 v0.4
