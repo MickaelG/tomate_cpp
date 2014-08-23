@@ -29,5 +29,6 @@
     </crop>
     <crop planned_start_date="2013-05-15" planned_end_date="2013-07-15" plant="hn" plot="2" posx="80" posy="80" width="40" height="40" />
     <crop start_date="2013-04-02" end_date="2013-08-28" planned_start_date="2013-04-01" planned_end_date="2013-05-15" plant="hn" var="1" plot="1" posx="80" posy="0" width="38" height="40" note="note quelconque" />
+    <crop start_date="2013-05-15" planned_start_date="2013-07-15" plant="hn" plot="2" posx="80" posy="40" width="40" height="40" />
   </crops>
 </sfg>
