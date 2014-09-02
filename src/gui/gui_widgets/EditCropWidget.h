@@ -31,7 +31,8 @@ private slots:
 
 signals:
     void dataset_changed();
-    
+    void select_crop(Crop* p_crop);
+
 private:
     PlantsModel* plants_model;
     PlotsModel* plots_model;

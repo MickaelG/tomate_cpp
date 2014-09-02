@@ -11,7 +11,7 @@ class PhysInput: public QWidget
     Q_OBJECT
 
 public:
-    PhysInput(QWidget* parent=NULL, Rectangle rect=Rectangle(0, 0, 100, 100), bool editable=true);
+    PhysInput(QWidget* parent=NULL, Rectangle rect=Rectangle(100, 100, 0, 0), bool editable=true);
     void set_shape(const Shape* shape);
     Rectangle get_rect();
 

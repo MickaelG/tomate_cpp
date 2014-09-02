@@ -90,7 +90,8 @@ void EditCropWidget::edit_crop()
     {
         Crop crop = dataset.add_crop(Crop(fromQDate(start_date), fromQDate(end_date),
                                           fromQDate(planned_start_date), fromQDate(planned_end_date),
-                                          p_plant, fromQString(var_key), p_plot, fromQString(note)));
+                                          p_plant, fromQString(var_key), p_plot, fromQString(note),
+                                          rect));
     }
     else
     {
@@ -119,6 +120,7 @@ void EditCropWidget::delete_crop()
            dataset.get_crops().delete_crop(*p_crop);
            p_crop = NULL;
            set_crop_values(p_crop);
+           emit select_crop(NULL);
            emit dataset_changed();
        }
    }

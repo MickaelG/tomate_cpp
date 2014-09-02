@@ -41,6 +41,9 @@ QWidget* createTabsWidget(Dataset& data)
     QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), timewidget, SLOT(update_draw()));
     QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), spacewidget, SLOT(update_draw()));
 
+    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), timewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
+    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), spacewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
+
     //Date of the spacewidget
     QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(current_date_changed(QDate)), spacewidget->get_view()->get_scene(), SLOT(set_date(QDate)));
 
