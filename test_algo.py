@@ -51,16 +51,6 @@ class Rectangle:
                 return False
         return True
 
-    def is_part(self, other):
-        """
-        Returns true if the partition is a part of a crop.
-        Returns false is partition is the full crop or not in the crop
-        """
-        if self.is_inside(other):
-            if self.tuple != other.tuple:
-                return True
-        return False
-
 
 class Partition(Rectangle):
     def __init__(self, x, y, width, height):
@@ -90,66 +80,52 @@ class Partition(Rectangle):
         return Partition(x, y, x2-x, y2-y)
 
 
-def all_perms(inlist):
-    if len(inlist) <=1:
-        yield inlist
-    else:
-        for perm in all_perms(inlist[1:]):
-            for i in range(len(inlist)):
-                yield perm[:i] + inlist[0:1] + perm[i:]
-
-
-def list_combinations(inlist, partial_parts):
-    """
-    All permutations of inlist with the first element kept first
-    """
-    print("list_combination - %i - %i" % (len(inlist), len(partial_parts)))
-    if len(partial_parts) <= 2:
-        yield inlist
-        return
-    if len(partial_parts) > 8:  # Don't do nothing if there are too many partial
-        yield inlist
-        return
-
-
-    nonpartial = []
-    for part in inlist:
-        if part not in partial_parts:
-            nonpartial.append(part)
-    assert len(nonpartial) + len(partial_parts) == len(inlist)
-
-    for perm in all_perms(partial_parts[1:]):
-        result = [partial_parts[0]] + perm + nonpartial
-        yield result
-
-
 def sort_partitions(partitions, crops, plot):
     crops_in_part = {}
-    partial_parts_for_crop = {}
-    all_partial_parts = set()
+    #partial_parts_for_crop = {}
+    #all_partial_parts = set()
     for (ipart, partition) in enumerate(partitions):
         for crop in crops:
-            if partition.is_part(crop):
-                crops_in_part.get(partition, []).append(crop)
-                partial_parts_for_crop.get(crop, []).append(partition)
-                all_partial_parts.add(partition)
+            if partition.is_inside(crop):
+                if partition not in crops_in_part:
+                    crops_in_part[partition] = set()
+                crops_in_part[partition].add(crop)
+                #partial_parts_for_crop.get(crop, []).append(partition)
+                #all_partial_parts.add(partition)
 
-    min_nb_split = None
+    grouped_partitions = []
+    #step 1: group parts that contain the same set of crops
+    for part in partitions:
+        if part not in crops_in_part:  # Part without any crop. we create a new
+                                       # group with this part only
+            grouped_partitions.append([part])
+            continue
+        added = False
+        for group in grouped_partitions:
+            ref_part = group[0]
+            if ref_part not in crops_in_part:
+                continue
+            if crops_in_part[ref_part] == crops_in_part[part]:
+                group.append(part)
+                added = True
+                break
+        if not added:
+            grouped_partitions.append([part])
 
-    print("DEBUG: new sort")
-    for partproposal in list_combinations(partitions, list(all_partial_parts)):
-        nb_split = 0
-        for crop in crops:
-            timerepr = get_timerepr(partproposal, crop, plot)
-            nb_split += len(timerepr) - 1
-        assert nb_split >= 0
-        print("DEBUG: testing comb. nb_split = %i" % (nb_split))
-        if nb_split == 0:
-            return partproposal
-        if min_nb_split is None or nb_split < min_nb_split:
-            print("pick")
-            min_nb_split = nb_split
-            result = partproposal
+    #step 2: order groups
+    result = grouped_partitions.pop(0)
+    while grouped_partitions:
+        if result[-1] not in crops_in_part:
+            result.extend(grouped_partitions.pop(0))
+            continue
+        for (igroup, group) in enumerate(grouped_partitions):
+            # Another group has common crop with the current one. we put it
+            # just after
+            if group[0] in crops_in_part and crops_in_part[group[0]] & crops_in_part[result[-1]]:
+                result.extend(grouped_partitions.pop(igroup))
+                break
+        else:
+            result.extend(grouped_partitions.pop(0))
 
     return result
 
@@ -346,10 +322,7 @@ def get_split_partitions(partition1, partition2):
 
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] == "test":
-        test()
-    else:
-        run()
+    test()
 
 
 def write_svg(plot, crops, filename, partitions=None):
@@ -383,12 +356,9 @@ class TestPartitions(unittest.TestCase):
         self.assertTrue(Partition(75, 80, 25, 10).is_inside(Partition(0, 0, 100, 90)))
         self.assertFalse(Partition(76, 80, 25, 10).is_inside(Partition(0, 0, 100, 90)))
         self.assertTrue(Rectangle(15, 10, 25, 30).is_inside(Rectangle(10, 10, 30, 30)))
-        self.assertTrue(Rectangle(15, 10, 25, 30).is_part(Rectangle(10, 10, 30, 30)))
         self.assertTrue(Rectangle(10, 10, 30, 30).is_inside(Rectangle(10, 10, 30, 30)))
-        self.assertFalse(Rectangle(10, 10, 30, 30).is_part(Rectangle(10, 10, 30, 30)))
 
 class TestAll(unittest.TestCase):
-    @unittest.skip
     def test10_vertical(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 100),
@@ -401,7 +371,6 @@ class TestAll(unittest.TestCase):
         write_svg(plot, crops, "test10.svg")
         self.assertEqual(timeoffsets, [0, 0.25, 0.60, 0.80, 0.70])
 
-    @unittest.skip
     def test20_vertical_plus(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 100),
@@ -415,7 +384,6 @@ class TestAll(unittest.TestCase):
         write_svg(plot, crops, "test20.svg", partitions)
         self.assertEqual(timeoffsets, [0, 0.25, 0.60, 0.70, 0.80, 0.60])
 
-    @unittest.skip
     def test21_vertical_plus(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 100),
@@ -429,7 +397,6 @@ class TestAll(unittest.TestCase):
         write_svg(plot, crops, "test21.svg")
         self.assertEqual(timeoffsets, [0, 0.25, 0.60, 0.75, 0.80, 0.60])
 
-    @unittest.skip
     def test25_vertical_plus(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 100),
@@ -442,12 +409,15 @@ class TestAll(unittest.TestCase):
         timereprs = [crop.timerepr for crop in crops]
         write_svg(plot, crops, "test25.svg", partitions)
         self.assertEqual(timereprs, [[(0.0, 0.25)], [(0.25, 0.25)],
-                                     [(0.6, 0.05), (0.7, 0.05)],
-                                     [(0.65, 0.05), (0.75, 0.05)],
-                                     [(0.8, 0.2)], [(0.7, 0.2)]])
+                                     [(0.6, 0.1)], [(0.7, 0.1)],
+                                     [(0.8, 0.2)],
+                                     [(0.65, 0.1), (0.8, 0.1)]])
+        #self.assertEqual(timereprs, [[(0.0, 0.25)], [(0.25, 0.25)],
+        #                             [(0.6, 0.05), (0.7, 0.05)],
+        #                             [(0.65, 0.05), (0.75, 0.05)],
+        #                             [(0.8, 0.2)], [(0.7, 0.2)]])
 
 
-    @unittest.skip
     def test30_squares(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 25),
@@ -466,7 +436,6 @@ class TestAll(unittest.TestCase):
         write_svg(plot, crops, "test30.svg", partitions)
         self.assertEqual(timeoffsets, [0.0, 0.9375, 0.625, 0.5625, 0.375, 0.4375, 0.875, 0.0625, 0.75, 0.25])
 
-    @unittest.skip
     def test31_squares(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 25),
@@ -482,7 +451,6 @@ class TestAll(unittest.TestCase):
         write_svg(plot, crops, "test31.svg", partitions)
         self.assertEqual(timeoffsets, [0.0, 0.9375, 0.625, 0.5625, 0.4375, 0.875, 0.25])
 
-    @unittest.skip
     def test35_squares(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 100, 0, 0, 25, 25),
@@ -494,11 +462,10 @@ class TestAll(unittest.TestCase):
         fill_timeoffsets(plot, crops)
         timereprs = [crop.timerepr for crop in crops]
         write_svg(plot, crops, "test35.svg")
-        self.assertEqual(timereprs, [[(0.0, 0.0625)], [(0.9375, 0.0625)],
-                                     [(0.625, 0.125)], [(0.625, 0.0625)],
-                                     [(0.6875, 0.0625)], [(0.0, 1.0)]])
+        self.assertEqual(timereprs, [[(0.0, 1/16)], [(1-1/16, 1/16)],
+                                     [(1-3/16, 1/8)], [(1-3/16, 1/16)],
+                                     [(1-2/16, 1/16)], [(0.0, 1.0)]])
 
-    @unittest.skip
     def test36_squares(self):
         plot = Plot(90, 90)
         crops = []
@@ -512,7 +479,6 @@ class TestAll(unittest.TestCase):
                                      [(1/9, 1/9)], [(4/9, 1/9)], [(7/9, 1/9)],
                                      [(2/9, 1/9)], [(5/9, 1/9)], [(8/9, 1/9)]])
 
-    @unittest.skip
     def test37_squares(self):
         plot = Plot(90, 90)
         crops = []
@@ -526,7 +492,7 @@ class TestAll(unittest.TestCase):
         self.assertEqual(timereprs, [[(0.0, 1/9)], [(1/3, 1/9)], [(2/3, 1/9)],
                                      [(1/9, 1/9)], [(4/9, 1/9)], [(7/9, 1/9)],
                                      [(2/9, 1/9)], [(5/9, 1/9)], [(8/9, 1/9)],
-                                     [(0, 0)]])
+                                     [(3/36, 1/18), (15/36, 1/18)]])
 
     def test38_squares(self):
         plot = Plot(100, 100)
@@ -543,7 +509,6 @@ class TestAll(unittest.TestCase):
         #                             [(2/9, 1/9)], [(5/9, 1/9)], [(8/9, 1/9)],
         #                             [(0, 0)]])
 
-    @unittest.skip
     def test40_crosses(self):
         plot = Plot(100, 100)
         crops = [Crop(plot, 0, 49, 0, 0, 50, 100),
@@ -553,8 +518,9 @@ class TestAll(unittest.TestCase):
         partitions = fill_timeoffsets(plot, crops)
         timereprs = [crop.timerepr for crop in crops]
         write_svg(plot, crops, "test40.svg", partitions)
-        self.assertEqual(timereprs, [[(0.0, 0.25), (0.5, 0.25)], [(0.25, 0.25), (0.75, 0.25)],
-                                     [(0.5, 0.5)], [(0.0, 0.5)]])
+        #self.assertEqual(timereprs, [[(0.0, 0.25), (0.5, 0.25)], [(0.25, 0.25), (0.75, 0.25)],
+        #                             [(0.5, 0.5)], [(0.0, 0.5)]])
+        self.assertEqual(timereprs, [[(0.0, 0.25), (0.75, 0.25)], [(0.25, 0.5)], [(0.5, 0.5)], [(0.0, 0.5)]])
 
 
 def test():
