@@ -16,8 +16,8 @@ Tomate is a garden planning and reporting tool for a kitchen garden, developped 
 ![Tomate space view](/screenshots/tomate_spaceview.png "space view")
 
 # Installation #
-Install dependencies for compilation: libqt4-dev, libboost-date-time-dev and libboost-test-dev 
 
+Install dependencies for compilation: libqt4-dev, libboost-date-time-dev, libboost-filesystem and libboost-test-dev
 
     git clone http://github.com/MickaelG/tomate_cpp
     cd tomate_cpp
