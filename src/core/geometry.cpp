@@ -1,41 +1,16 @@
 
 #include "geometry.h"
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// class Shape
 ///////////////////////////////////////////////////////////////////////////////
-float Shape::get_height() const
-{
-    return -1;
-}
-
-float Shape::get_width() const
-{
-    return -1;
-}
-
-float Shape::get_min_x() const
-{
-    return 0;
-}
-
-float Shape::get_min_y() const
-{
-    return 0;
-}
-
-void Shape::fit_in_plot(const Shape* parent_shape)
-{
-}
-
 Shape::operator bool() const
 {
     return (get_width() != -1 && get_height() != -1);
-}
-
-Shape* Shape::clone()
-{
-    return new Shape(*this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -55,7 +30,9 @@ Polygon::Polygon()
 // class Rectangle
 ///////////////////////////////////////////////////////////////////////////////
 Rectangle::Rectangle(int width, int height, int posx, int posy) :
-    width(width), height(height), posx(posx), posy(posy) {}
+    width(width), height(height), posx(posx), posy(posy)
+{
+}
 
 
 Rectangle::Rectangle()
@@ -64,6 +41,12 @@ Rectangle::Rectangle()
     height = 0;
     posx = 0;
     posy = 0;
+}
+
+Rectangle::Rectangle(Shape& shape) :
+    width(shape.get_width()), height(shape.get_height()),
+    posx(shape.get_min_x()), posy(shape.get_min_y())
+{
 }
 
 float Rectangle::get_width() const
@@ -84,6 +67,21 @@ float Rectangle::get_min_x() const
 float Rectangle::get_min_y() const
 {
     return posy;
+}
+
+float Rectangle::get_max_x() const
+{
+    return posx + width;
+}
+
+float Rectangle::get_max_y() const
+{
+    return posy + height;
+}
+
+float Rectangle::get_area() const
+{
+    return width * height;
 }
 
 void Rectangle::fit_in_plot(const Shape* parent_shape)
@@ -111,6 +109,82 @@ void Rectangle::fit_in_plot(const Shape* parent_shape)
     else if (posy + height  > parent_shape->get_height())
     {
         height = parent_shape->get_height() - posy;
+    }
+}
+
+bool Rectangle::is_inside(const Rectangle& other) const
+{
+    if (posx < other.posx || posy < other.posy) {
+        return false;
+    }
+    if (posx + width > other.posx + other.width ||
+        posy + height > other.posy + other.height) {
+        return false;
+    }
+    return true;
+}
+
+bool Rectangle::overlaps(const Rectangle& other) const
+{
+    if (posx >= other.posx + other.width || posy >= other.posy + other.height) {
+        return false;
+    }
+    if (other.posx >= posx + width || other.posy >= posy + height) {
+        return false;
+    }
+    return true;
+}
+
+Rectangle Rectangle::intersection(const Rectangle& other) const
+{
+    if (!overlaps(other)) {
+        return Rectangle(-1, -1, 0, 0);
+    }
+    int x = max(posx, other.posx);
+    int y = max(posy, other.posy);
+    int x2 = min(get_max_x(), other.get_max_x());
+    int y2 = min(get_max_y(), other.get_max_y());
+    return Rectangle(x2-x, y2-y, x, y);
+}
+
+set<Rectangle> get_split_partitions(const Rectangle& first, const Rectangle& other)
+{
+    set<Rectangle> result;
+    if (!first.overlaps(other)) {
+        cerr << "get_split_partitions called on non-overlaping rects" << endl;
+        return result;
+    }
+    if (first.is_inside(other) || other.is_inside(first)) {
+        vector< float > y_points;
+        y_points.push_back(first.get_min_y());
+        y_points.push_back(first.get_max_y());
+        y_points.push_back(other.get_min_y());
+        y_points.push_back(other.get_max_y());
+        sort(y_points.begin(), y_points.end());
+
+        vector< float > x_points;
+        x_points.push_back(first.get_min_x());
+        x_points.push_back(first.get_max_x());
+        x_points.push_back(other.get_min_x());
+        x_points.push_back(other.get_max_x());
+        sort(x_points.begin(), x_points.end());
+
+        for (int ix = 0; ix < x_points.size(); ++ix) {
+            for (int iy = 0; iy < y_points.size(); ++iy) {
+                result.insert(Rectangle(x_points[ix], y_points[iy],
+                                        x_points[ix+1] - x_points[ix],
+                                        y_points[iy+1] - y_points[iy]));
+            }
+        }
+        return result;
+    } else {
+        Rectangle intersect = first.intersection(other);
+        assert(intersect.is_inside(first) && intersect.is_inside(other));
+        set<Rectangle> splitpart = get_split_partitions(first, intersect);
+        result.insert(splitpart.begin(), splitpart.end());
+        splitpart = get_split_partitions(other, intersect);
+        result.insert(splitpart.begin(), splitpart.end());
+        return result;
     }
 }
 

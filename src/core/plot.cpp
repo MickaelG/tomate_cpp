@@ -49,6 +49,11 @@ Shape* Plot::get_shape()
     return shape;
 }
 
+const Shape* Plot::get_shape() const
+{
+    return shape;
+}
+
 void Plot::set_shape(Shape* in_shape)
 {
     if (shape)

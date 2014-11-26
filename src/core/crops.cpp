@@ -293,6 +293,11 @@ Shape* Crop::get_shape()
     return shape;
 }
 
+const Shape* Crop::get_shape() const
+{
+    return shape;
+}
+
 void Crop::set_shape(Shape* in_shape)
 {
     if (shape)

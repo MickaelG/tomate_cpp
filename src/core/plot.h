@@ -17,7 +17,8 @@ public:
     Plot(const Plot& plot);
     ~Plot();
     void add_subplot(float width, float height, float posx, float posy);
-    Shape *get_shape();
+    Shape* get_shape();
+    const Shape* get_shape() const;
     void set_shape(Shape *shape);
 };
 extern const Plot NullPlot;

@@ -76,6 +76,7 @@ class Crop
         bool is_in_year_started_by(bg::date date) const;
         string description() const;
         Shape *get_shape();
+        const Shape* get_shape() const;
         void set_shape(Shape* in_shape);
 };
 extern const Crop NullCrop;
