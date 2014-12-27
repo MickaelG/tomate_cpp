@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <set>
+#include <iostream>
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -40,7 +41,7 @@ private:
     int posx, posy;
 public:
     Rectangle();
-    Rectangle(int width, int height, int posx, int posy);
+    Rectangle(int posx, int posy, int width, int height);
     Rectangle(Shape& shape);
     float get_width() const;
     float get_height() const;
@@ -54,9 +55,12 @@ public:
     bool overlaps(const Rectangle& other) const;
     Rectangle intersection(const Rectangle& other) const;
     Shape* clone();
+    string str() const;
 };
 
-set<Rectangle> get_split_partitions(const Rectangle& first, const Rectangle& other);
+set<Rectangle> compute_non_overlapping_rects(const Rectangle& first, const Rectangle& other);
+
+std::ostream& operator<<(std::ostream& stream, const Rectangle& rect);
 
 
 inline bool operator==(const Rectangle& lhs, const Rectangle& rhs)

@@ -29,7 +29,7 @@ Polygon::Polygon()
 ///////////////////////////////////////////////////////////////////////////////
 // class Rectangle
 ///////////////////////////////////////////////////////////////////////////////
-Rectangle::Rectangle(int width, int height, int posx, int posy) :
+Rectangle::Rectangle(int posx, int posy, int width, int height) :
     width(width), height(height), posx(posx), posy(posy)
 {
 }
@@ -138,20 +138,22 @@ bool Rectangle::overlaps(const Rectangle& other) const
 Rectangle Rectangle::intersection(const Rectangle& other) const
 {
     if (!overlaps(other)) {
-        return Rectangle(-1, -1, 0, 0);
+        return Rectangle(0, 0, -1, -1);
     }
     int x = max(posx, other.posx);
     int y = max(posy, other.posy);
     int x2 = min(get_max_x(), other.get_max_x());
     int y2 = min(get_max_y(), other.get_max_y());
-    return Rectangle(x2-x, y2-y, x, y);
+    return Rectangle(x, y, x2-x, y2-y);
 }
 
-set<Rectangle> get_split_partitions(const Rectangle& first, const Rectangle& other)
+set<Rectangle> compute_non_overlapping_rects(const Rectangle& first, const Rectangle& other)
 {
     set<Rectangle> result;
     if (!first.overlaps(other)) {
-        cerr << "get_split_partitions called on non-overlaping rects" << endl;
+        cerr << __func__ << " called on non-overlaping rects: " << first.str() << " / " << other.str() << endl;
+        result.insert(first);
+        result.insert(other);
         return result;
     }
     if (first.is_inside(other) || other.is_inside(first)) {
@@ -161,6 +163,7 @@ set<Rectangle> get_split_partitions(const Rectangle& first, const Rectangle& oth
         y_points.push_back(other.get_min_y());
         y_points.push_back(other.get_max_y());
         sort(y_points.begin(), y_points.end());
+        y_points.erase( unique( y_points.begin(), y_points.end() ), y_points.end() );
 
         vector< float > x_points;
         x_points.push_back(first.get_min_x());
@@ -168,9 +171,10 @@ set<Rectangle> get_split_partitions(const Rectangle& first, const Rectangle& oth
         x_points.push_back(other.get_min_x());
         x_points.push_back(other.get_max_x());
         sort(x_points.begin(), x_points.end());
+        x_points.erase( unique( x_points.begin(), x_points.end() ), x_points.end() );
 
-        for (int ix = 0; ix < x_points.size(); ++ix) {
-            for (int iy = 0; iy < y_points.size(); ++iy) {
+        for (int ix = 0; ix < x_points.size() - 1; ++ix) {
+            for (int iy = 0; iy < y_points.size() - 1; ++iy) {
                 result.insert(Rectangle(x_points[ix], y_points[iy],
                                         x_points[ix+1] - x_points[ix],
                                         y_points[iy+1] - y_points[iy]));
@@ -180,12 +184,22 @@ set<Rectangle> get_split_partitions(const Rectangle& first, const Rectangle& oth
     } else {
         Rectangle intersect = first.intersection(other);
         assert(intersect.is_inside(first) && intersect.is_inside(other));
-        set<Rectangle> splitpart = get_split_partitions(first, intersect);
+        set<Rectangle> splitpart = compute_non_overlapping_rects(first, intersect);
         result.insert(splitpart.begin(), splitpart.end());
-        splitpart = get_split_partitions(other, intersect);
+        splitpart = compute_non_overlapping_rects(other, intersect);
         result.insert(splitpart.begin(), splitpart.end());
         return result;
     }
+}
+
+std::ostream& operator<<(std::ostream& stream, const Rectangle& rect)
+{
+   stream << "Rectangle(";
+   stream << rect.get_min_x() << ", ";
+   stream << rect.get_min_y() << ", ";
+   stream << rect.get_width() << ", ";
+   stream << rect.get_height() << ")";
+   return stream;
 }
 
 Shape* Rectangle::clone()
@@ -193,4 +207,11 @@ Shape* Rectangle::clone()
     Rectangle* shape = new Rectangle(*this);
     return shape;
 }
+
+string Rectangle::str() const
+{
+    return "(" + to_string(posx) + ", " + to_string(posy) + ", " +
+           to_string(width) + ", " + to_string(height) + ")";
+}
+
 ///////////////////////////////////////////////////////////////////////////////

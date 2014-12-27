@@ -156,7 +156,7 @@ int xml_read_data(string filename, Dataset& dataset)
                 continue;
             }
         }
-        Rectangle rect(width, height, posx, posy);
+        Rectangle rect(posx, posy, width, height);
 
         Crop crop(start_date, end_date, planned_start_date, planned_end_date, p_plant, varkey, p_plot, note, rect);
         for (xml_node action_xml: elem_xml.children())

@@ -5,6 +5,8 @@
 #include "dataset.h"
 #include "plot.h"
 
+#include "partitionset.h"
+
 #include <QGraphicsSceneContextMenuEvent>
 #include <QGraphicsProxyWidget>
 #include <QGridLayout>
@@ -16,6 +18,7 @@ int Margin = 20;
 int SubMargin = 5;
 int PixPerDay = 3;
 int SquareUnit = 30;
+int PlotHeight = 200;
 
 
 int date_to_pos(QDate date, QDate date0)
@@ -34,46 +37,41 @@ QDate pos_to_date(int pos, QDate date0)
 }
 
 
-CropTimeRepresentation::CropTimeRepresentation(Crop& crop, QDate date0, QWidget* parent) :
+CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float, float> >& y_coords, QDate date0, QWidget* parent) :
     date0(date0), crop(crop)
 {
     QString text = toQString(crop.get_plant().get_name());
 
-    QDate start_date = toQDate(crop.get_virtual_planned_start_date());
-    QDate end_date = toQDate(crop.get_virtual_planned_end_date());
-    if (start_date > end_date) {
+    QDate p_start_date = toQDate(crop.get_virtual_planned_start_date());
+    QDate p_end_date = toQDate(crop.get_virtual_planned_end_date());
+    if (p_start_date > p_end_date) {
         std::cout << "Error with crop " << crop.get_plant().get_name() << std::endl;
     }
-    QGraphicsRectItem* acrect = create_rect(start_date, end_date, true);
-    if (acrect) {
-        this->addToGroup(acrect);
-    }
-    
-    start_date = toQDate(crop.get_date("start"));
-    end_date = toQDate(crop.get_virtual_end_date());
-    QGraphicsRectItem* plrect = create_rect(start_date, end_date, false);
-    if (plrect)
-    {
-        this->addToGroup(plrect);
-    }
+    QDate start_date = toQDate(crop.get_date("start"));
+    QDate end_date = toQDate(crop.get_virtual_end_date());
 
-    QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
-    center_text(textw, this->boundingRect());
-    textw->setParentItem(this);
-    global_rect = new QGraphicsRectItem(boundingRect());
-    this->addToGroup(global_rect);
+    for (pair<float, float> yc: y_coords) {
+        add_rect(p_start_date, p_end_date, yc.first, yc.second, true);
+        add_rect(start_date, end_date, yc.first, yc.second, false);
+
+        QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
+        center_text(textw, this->boundingRect());
+        textw->setParentItem(this);
+        global_rect = new QGraphicsRectItem(boundingRect());
+        this->addToGroup(global_rect);
+    }
 }
 
 
-QGraphicsRectItem* CropTimeRepresentation::create_rect(QDate start_date, QDate end_date, bool planned)
+void CropTimeRepresentation::add_rect(QDate start_date, QDate end_date, float ypos, float height, bool planned)
 {
     if (!(start_date.isValid() && end_date.isValid()))
     {
-        return NULL;
+        return;
     }
     if (start_date > date0.addYears(1) || end_date < date0)
     {
-        return NULL;
+        return;
     }
     if (start_date < date0) { start_date = date0.addDays(-3); }
     if (end_date > date0.addYears(1)) { end_date = date0.addYears(1).addDays(3); }
@@ -82,9 +80,7 @@ QGraphicsRectItem* CropTimeRepresentation::create_rect(QDate start_date, QDate e
     int x1 = date_to_pos(end_date, this->date0);
     int width = x1 - x0;
 
-    int y = 0;
-    int height = SquareUnit;
-    QGraphicsRectItem* rect = new QGraphicsRectItem(x0, y, width, height);
+    QGraphicsRectItem* rect = new QGraphicsRectItem(x0, PlotHeight * ypos, width, PlotHeight * height);
     QString color_str = toQString(crop.get_plant().get_color_str());
     //TODO: handle default color in dataset
     if (color_str == "") { color_str = "#FF00FF"; }
@@ -99,7 +95,7 @@ QGraphicsRectItem* CropTimeRepresentation::create_rect(QDate start_date, QDate e
     }
     rect->setPen(QPen(Qt::NoPen));
     
-    return rect;
+    this->addToGroup(rect);
 }
 
 
@@ -414,18 +410,27 @@ void WholeTimeScene::draw_scene()
         addItem(T);
 
         //actual timeline
+        list<Crop*> current_crops;
+
         for (Crop& crop: crops)
         {
             if (crop.get_plot().get_key() == plot.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
             {
-                CropTimeRepresentation* crop_repr = new CropTimeRepresentation(crop, date0);
-                crop_repr->setY(y_pos);
-                addItem(crop_repr);
-                crop_reprs.push_back(crop_repr);
-                y_pos += SquareUnit + SubMargin;
+                current_crops.push_back(&crop);
             }
         }
-        y_pos += Margin;
+
+        list<Rectangle> partitions = compute_partitions(current_crops, plot);
+
+        for (Crop* crop_p: current_crops)
+        {
+            list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
+            CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*crop_p, ycoords, date0);
+            crop_repr->setY(y_pos);
+            addItem(crop_repr);
+            crop_reprs.push_back(crop_repr);
+        }
+        y_pos += Margin + PlotHeight;
     }
     draw_date_line(date, y_pos);
     drawCropSelection();

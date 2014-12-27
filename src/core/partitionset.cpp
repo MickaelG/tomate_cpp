@@ -4,24 +4,62 @@
 #include "crops.h"
 #include "plot.h"
 
-PartitionSet::PartitionSet(Plot &plot) :
-    m_plot(plot)
+#include <algorithm>
+using namespace std;
+
+static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> crops, bool isvertical = true);
+static bool remove_partitions_overlaps(set<Rectangle>& partitions);
+
+template <typename T>
+std::ostream& operator<<(std::ostream& stream, const std::list<T>& list)
 {
+    stream << "[";
+    bool first = true;
+    for (const T& item : list)
+    {
+        if (!first)
+            stream << ", ";
+        else
+            first = false;
+        stream << item;
+    }
+    stream << "]";
+    return stream;
 }
 
-void PartitionSet::compute_partitions(list<Crop*> l_crops)
+template <typename T>
+std::ostream& operator<<(std::ostream& stream, const std::set<T>& list)
+{
+    stream << "{";
+    bool first = true;
+    for (const T& item : list)
+    {
+        if (!first)
+            stream << ", ";
+        else
+            first = false;
+        stream << item;
+    }
+    stream << "}";
+    return stream;
+}
+
+list<Rectangle> compute_partitions(const list<Crop*>& l_crops, const Plot& plot)
 {
     int vertical = 0;
     int horizontal = 0;
-    Shape* plot_shape_p = m_plot.get_shape();
+    const Shape* plot_shape_p = plot.get_shape();
 
+    set<Rectangle> partitions;
+
+    //Create a partition for each different crop
     for (Crop* crop_p: l_crops) {
         Shape* crop_shape_p = crop_p->get_shape();
         if (crop_shape_p->get_width() == plot_shape_p->get_width() &&
             crop_shape_p->get_height() == plot_shape_p->get_height()) {
             continue;
         }
-        m_partitions.insert(Rectangle(*crop_shape_p));
+        partitions.insert(Rectangle(*crop_shape_p));
         if (crop_shape_p->get_width() == plot_shape_p->get_width()) {
             horizontal += 1;
         }
@@ -30,13 +68,13 @@ void PartitionSet::compute_partitions(list<Crop*> l_crops)
         }
     }
 
-    remove_partitions_overlaps(m_partitions);
+    remove_partitions_overlaps(partitions);
 
     //Add partitions for empty parts of the plot
-    set< Rectangle > empty_parts;
-    Rectangle allpart(plot_shape_p->get_width(), plot_shape_p->get_height(), 0, 0);
-    for (Rectangle realpart: m_partitions) {
-        set<Rectangle> splitparts = get_split_partitions(realpart, allpart);
+    set<Rectangle> empty_parts;
+    Rectangle allpart(0, 0, plot_shape_p->get_width(), plot_shape_p->get_height());
+    for (Rectangle realpart: partitions) {
+        set<Rectangle> splitparts = compute_non_overlapping_rects(realpart, allpart);
         empty_parts.insert(splitparts.begin(), splitparts.end());
     }
     remove_partitions_overlaps(empty_parts);
@@ -44,10 +82,10 @@ void PartitionSet::compute_partitions(list<Crop*> l_crops)
     set< Rectangle > empty_parts2;
     for (auto emptpart: empty_parts) {
         bool remove = false;
-        for (auto realpart: m_partitions) {
+        for (auto realpart: partitions) {
             if (emptpart.is_inside(realpart)) {
                 remove = true;
-                continue;
+                break;
             }
         }
         if (!remove) {
@@ -56,27 +94,48 @@ void PartitionSet::compute_partitions(list<Crop*> l_crops)
     }
     empty_parts = empty_parts2;
 
-    m_partitions.insert(empty_parts.begin(), empty_parts.end());
+    partitions.insert(empty_parts.begin(), empty_parts.end());
 
-    m_vertical = (vertical > horizontal);
+    list<Rectangle> lpartitions = sort_partitions(partitions, l_crops, (vertical>horizontal));
+
+    return lpartitions;
 }
 
+bool is_before_vert(const Rectangle &a, const Rectangle &b)
+{
+    if (a.get_min_x() < b.get_min_x()) return true;
+    if (a.get_min_x() == b.get_min_x() && a.get_min_y() < b.get_min_y()) return true;
+    if (a.get_min_x() == b.get_min_x() && a.get_min_y() == b.get_min_y() && a.get_width() < b.get_width()) return true;
+    if (a.get_min_x() == b.get_min_x() && a.get_min_y() == b.get_min_y() && a.get_width() == b.get_width() && a.get_height() < b.get_height()) return true;
+    return false;
+}
 
-void PartitionSet::remove_partitions_overlaps(set< Rectangle >& partitions)
+bool is_before_hori(const Rectangle &a, const Rectangle &b)
+{
+    if (a.get_min_y() < b.get_min_y()) return true;
+    if (a.get_min_y() == b.get_min_y() && a.get_min_x() < b.get_min_x()) return true;
+    if (a.get_min_y() == b.get_min_y() && a.get_min_x() == b.get_min_x() && a.get_height() < b.get_height()) return true;
+    if (a.get_min_y() == b.get_min_y() && a.get_min_x() == b.get_min_x() && a.get_height() == b.get_height() && a.get_width() < b.get_width()) return true;
+    return false;
+}
+
+static bool remove_partitions_overlaps(set<Rectangle>& partitions)
 {
     bool overlap = true;
     int loops = 0;
     while (overlap) {
+        overlap = false;
         auto part1_it = partitions.begin();
-        auto part2_it = partitions.begin();
+        set<Rectangle>::iterator part2_it;
         for (; part1_it != partitions.end(); ++part1_it) {
-            Rectangle part1 = *part1_it;
-            for (auto part2_it = partitions.begin(); part2_it != partitions.end(); ++part2_it) {
-                Rectangle part2 = *part2_it;
-                if (part1 == part2) {
+            const Rectangle& part1(*part1_it);
+            for (part2_it = partitions.begin(); part2_it != partitions.end(); ++part2_it) {
+                const Rectangle& part2(*part2_it);
+                if (&part1 == &part2) {
                     continue;
                 }
                 if (part1.overlaps(part2)) {
+                    //cout << "DEBUG: overlap found between " << part1 << " and " << part2 << endl;
                     overlap = true;
                     break;
                 }
@@ -86,23 +145,26 @@ void PartitionSet::remove_partitions_overlaps(set< Rectangle >& partitions)
             }
         }
         if (overlap) {
-            set< Rectangle > newparts = get_split_partitions(*part1_it, *part2_it);
-            partitions.erase(part1_it);
-            partitions.erase(part2_it);
+            const Rectangle& part1 = *part1_it;
+            const Rectangle& part2 = *part2_it;
+            set< Rectangle > newparts = compute_non_overlapping_rects(part1, part2);
+            partitions.erase(part1);
+            partitions.erase(part2);
             partitions.insert(newparts.begin(), newparts.end());
         }
         loops += 1;
         if (loops > 200) {
             cerr << "Too many loops in remove_partitions_overlaps" << endl;
-            return;
+            return false;
         }
     }
+    return true;
 }
 
-list<Rectangle> PartitionSet::sort_partitions(list<Crop*> crops)
+static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> crops, bool isvertical)
 {
     map<Rectangle, set<Crop*> > crops_in_part;
-    for (Rectangle partition: m_partitions) {
+    for (Rectangle partition: partitions) {
         for (Crop* crop_p: crops) {
             if (partition.is_inside(*crop_p->get_shape())) {
                 crops_in_part[partition].insert(crop_p);
@@ -110,9 +172,17 @@ list<Rectangle> PartitionSet::sort_partitions(list<Crop*> crops)
         }
     }
 
+    //First default sort
+    list<Rectangle> lpartitions(partitions.begin(), partitions.end());
+    if (isvertical) {
+      lpartitions.sort(is_before_vert);
+    } else {
+      lpartitions.sort(is_before_hori);
+    }
+
     list< list< Rectangle> >grouped_partitions;
     //step 1: group parts that contain the same set of crops
-    for (Rectangle part: m_partitions) {
+    for (Rectangle part: lpartitions) {
         set<Crop*> mycrops = crops_in_part[part];
         if (mycrops.empty()) { // Part without any crop. we create a new
                                // group with this part only
@@ -122,7 +192,7 @@ list<Rectangle> PartitionSet::sort_partitions(list<Crop*> crops)
             continue;
         }
         bool added = false;
-        for (list<Rectangle> group: grouped_partitions) {
+        for (list<Rectangle>& group: grouped_partitions) {
             Rectangle ref_part = group.front();
             if (crops_in_part[ref_part].empty()) {
                 continue;
@@ -160,7 +230,7 @@ list<Rectangle> PartitionSet::sort_partitions(list<Crop*> crops)
             vector<Crop*> common_crops;
             set_intersection(crops_in_group.begin(), crops_in_group.end(),
                              crops_in_last.begin(), crops_in_last.end(),
-                             common_crops.begin());
+                             back_inserter(common_crops));
             if (!common_crops.empty()) {
                 break;
             }

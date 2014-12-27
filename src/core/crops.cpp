@@ -283,11 +283,11 @@ Shape* Crop::get_shape()
         Shape* plot_shape = get_plot().get_shape();
         if (plot_shape)
         {
-            shape = new Rectangle(plot_shape->get_width(), plot_shape->get_height(), 0, 0);
+            shape = new Rectangle(0, 0, plot_shape->get_width(), plot_shape->get_height());
         }
         else
         {
-            shape = new Rectangle(-1, -1, 0, 0);
+            shape = new Rectangle(0, 0, -1, -1);
         }
     }
     return shape;

@@ -19,7 +19,7 @@ Plot::Plot(string key, string name, string descr, Shape* shape) :
 Plot::Plot(string key, string name, string descr, float width, float height, float posx, float posy) :
     KeyName(key, name, descr), shape(NULL)
 {
-    shape = new Rectangle(width, height, posx, posy);
+    shape = new Rectangle(posx, posy, width, height);
 }
 
 Plot::Plot(const Plot& plot) :
@@ -44,7 +44,7 @@ Shape* Plot::get_shape()
 {
     if (!shape)
     {
-        shape = new Rectangle(-1, -1, 0, 0);
+        shape = new Rectangle(0, 0, -1, -1);
     }
     return shape;
 }

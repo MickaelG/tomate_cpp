@@ -8,18 +8,9 @@ using namespace std;
 class Plot;
 class Crop;
 
-class PartitionSet
-{
-public:
-    PartitionSet(Plot& plot);
-    void compute_partitions(list<Crop*> l_crops);
-    void remove_partitions_overlaps(set<Rectangle>& partitions);
-    list<Rectangle> sort_partitions(list<Crop*> crops);
-
-private:
-    Plot& m_plot;
-    set< Rectangle > m_partitions;
-    bool m_vertical;
-};
 
 list< pair<float, float> > compute_timerepr(const Crop& crop, const list<Rectangle>& partitions);
+list<Rectangle> compute_partitions(const list<Crop*>& l_crops, const Plot& plot);
+
+bool is_before_vert(const Rectangle &a, const Rectangle &b);
+bool is_before_hori(const Rectangle &a, const Rectangle &b);

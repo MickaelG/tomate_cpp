@@ -42,7 +42,7 @@ Rectangle PhysInput::get_rect()
     int posy = y_widget->text().toInt();
     int width = width_widget->text().toInt();
     int height = height_widget->text().toInt();
-    return Rectangle(width, height, posx, posy);
+    return Rectangle(posx, posy, width, height);
 }
 
 void PhysInput::set_shape(const Shape* shape)
