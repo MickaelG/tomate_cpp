@@ -22,27 +22,25 @@
 <context>
     <name>AddPlotDialog</name>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="30"/>
+        <location filename="src/gui/gui_plots.cpp" line="24"/>
         <source>Name :</source>
         <translation>Nom :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="32"/>
         <source>Horizontal subdivisions :</source>
-        <translation>Divisions horizontales :</translation>
+        <translation type="obsolete">Divisions horizontales :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="33"/>
         <source>Vertical subdivisons :</source>
-        <translation>Divisions verticales :</translation>
+        <translation type="obsolete">Divisions verticales :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="35"/>
+        <location filename="src/gui/gui_plots.cpp" line="27"/>
         <source>Add</source>
         <translation>Ajouter</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="36"/>
+        <location filename="src/gui/gui_plots.cpp" line="28"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
@@ -105,13 +103,13 @@
 <context>
     <name>EditCropWidget</name>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="68"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="62"/>
         <source>Apply changes</source>
         <translation>Modifier</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="180"/>
-        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="73"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="176"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="67"/>
         <source>Add this crop</source>
         <translation>Ajouter la culture</translation>
     </message>
@@ -121,97 +119,96 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="142"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="22"/>
         <source>Plot:</source>
         <translation>Planche :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="149"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="29"/>
         <source>Plot</source>
         <translation>Planche</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="156"/>
         <source>Subdivision</source>
-        <translation>Subdivision</translation>
+        <translation type="obsolete">Subdivision</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="163"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="39"/>
         <source>Edit plots</source>
         <translation>Modifier les planches</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="110"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="138"/>
         <source>Plant:</source>
         <translation>Plante :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="117"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="145"/>
         <source>Plant</source>
         <translation>Plante</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="124"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="152"/>
         <source>Variety</source>
         <translation>Variété</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="131"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="159"/>
         <source>Edit plants</source>
         <translation>Modifier les plantes</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="22"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="50"/>
         <source>Planned:</source>
         <translation>Plannifiée :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="32"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="60"/>
         <source>Start</source>
         <translation>Début</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="42"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="70"/>
         <source>Planned start date</source>
         <translation>Début plannifié</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="49"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="77"/>
         <source>Planned end date</source>
         <translation>Fin plannifiée</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="56"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="84"/>
         <source>Start date</source>
         <translation>Date de départ</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="63"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="91"/>
         <source>Actual:</source>
         <translation>Réelle :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="73"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="101"/>
         <source>End date</source>
         <translation>Date de fin</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="80"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="108"/>
         <source>End</source>
         <translation>Fin</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="92"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="120"/>
         <source>Note</source>
         <translation>Note</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="95"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="123"/>
         <source>Add note here</source>
         <translation>Ajouter une note ici</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="193"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.ui" line="189"/>
         <source>Delete crop</source>
         <translation>Supprimer la culture</translation>
     </message>
@@ -250,24 +247,44 @@
 <context>
     <name>PhysInput</name>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="26"/>
         <source>x position:</source>
-        <translation>position x :</translation>
+        <translation type="obsolete">position x :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="28"/>
         <source>y position:</source>
-        <translation>position y :</translation>
+        <translation type="obsolete">position y :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="30"/>
         <source>width:</source>
-        <translation>largeur :</translation>
+        <translation type="obsolete">largeur :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="32"/>
         <source>height:</source>
-        <translation>hauteur :</translation>
+        <translation type="obsolete">hauteur :</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="27"/>
+        <source>x position (m):</source>
+        <translatorcomment>position x (m) :</translatorcomment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="29"/>
+        <source>y position (m):</source>
+        <translatorcomment>position y (m) :</translatorcomment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="31"/>
+        <source>width (m):</source>
+        <translatorcomment>largeur (m) :</translatorcomment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="33"/>
+        <source>height (m):</source>
+        <translatorcomment>longueur (m) :</translatorcomment>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -301,17 +318,17 @@
 <context>
     <name>PlotsWindow</name>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="71"/>
+        <location filename="src/gui/gui_plots.cpp" line="59"/>
         <source>Add a plot</source>
         <translation>Ajouter une planche</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="76"/>
+        <location filename="src/gui/gui_plots.cpp" line="64"/>
         <source>Delete plot</source>
         <translation>Supprimer la planche</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_plots.cpp" line="80"/>
+        <location filename="src/gui/gui_plots.cpp" line="68"/>
         <source>Close</source>
         <translation>Fermer</translation>
     </message>
@@ -369,12 +386,12 @@
         <translation>Erreur d&apos;écriture du fichier de données.</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="116"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="115"/>
         <source>Delete crop</source>
         <translation>Suppression d&apos;une culture</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="117"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="116"/>
         <source>Are you sure you want to delete the crop ?</source>
         <translation>Êtes-vous sûr de vouloir supprimer cette culture ?</translation>
     </message>
@@ -382,9 +399,8 @@
 <context>
     <name>SubdWidget</name>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="62"/>
         <source>subdivisions</source>
-        <translation>subdivisions</translation>
+        <translation type="obsolete">subdivisions</translation>
     </message>
 </context>
 <context>
