@@ -211,6 +211,10 @@ static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> c
     }
 
     //step 2: order groups
+    if (grouped_partitions.empty()) {
+        list<Rectangle> empty_result;
+        return empty_result;
+    }
     list<Rectangle> result = grouped_partitions.front();
     grouped_partitions.pop_front();
     while (!grouped_partitions.empty()) {

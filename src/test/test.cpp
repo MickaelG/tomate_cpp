@@ -944,3 +944,15 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_10)
     //self.assertEqual(timereprs, [[(0.0, 0.25), (0.5, 0.25)], [(0.25, 0.25), (0.75, 0.25)],
     //                             [(0.5, 0.5)], [(0.0, 0.5)]])
 }
+
+BOOST_AUTO_TEST_CASE(timeline_ycomputing_11)
+{
+    //No crop. Must not crash...
+    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+
+
+    list<Crop*> l_crops;
+    list<Rectangle> partitions = compute_partitions(l_crops, plot);
+    //cout << "DEBUG partitions:" << partitions << endl;
+    BOOST_CHECK(partitions.empty());
+}
