@@ -325,7 +325,6 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void WholeTimeScene::keyPressEvent(QKeyEvent* keyEvent)
 {
-    cout << "Coucou" << hex << keyEvent->key() << endl;
     if (keyEvent->key() == Qt::Key_Tab)
     {
         selectNextCrop();
