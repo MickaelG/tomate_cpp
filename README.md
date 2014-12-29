@@ -29,9 +29,9 @@ You can also download packages for version 0.1 here:
 http://software.opensuse.org/download.html?project=home%3Aclaudex&package=tomate
 
 # Quick start #
-- Add plots in the "Plots" tab. Each plot is subdivided in subplots, and crops will take place in the subplots. You can create only one subplot in a plot if needed.
-- Add plants in the "Plants" tab. You can set a different color for each plant with the "color" button
-- Add crops by right-clicking in the "Time view" tab.
+- Add plots using "Edit plots" button in the lower part of the screen.
+- Add plants in the "Edit plants" button in the lower part of the screen. You can set a different color for each plant with the "color" button
+- Set your first crop data and add it using "add crop" button.
 - You can see the state of the garden at any date in the "Space view" tab. By default, this date is today. You can select an other date by clicking in the "months line" in the time view. The red line shows the date selected for space view.
 
 # Mailing list #
