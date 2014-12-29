@@ -1,12 +1,16 @@
 
-v0.2
+v0.1 (2014 March 19th)
+First version
+
+v0.2 (2014 August 23rd)
+Bug fixes
+
+v0.3
 X Vue spatiale pas mise à jour qd on modifie une culture
 X corriger les "fail writing data file" => remp mkdir par boost::create_directories
 - Répertoire données cross-platforme
 - Compilation et test sous windows
-- ajouter les unités de longueurs
-- Quand une culture est sélectionnée, tab sélectionne la suivante
-- Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue spatiale
+X ajouter les unités de longueurs
 X Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue temporelle
 O expliciter le concept de subdivision
 X Expliciter la méthode pour ajouter des cultures au début
@@ -17,11 +21,13 @@ O Par défaut, end, et planned_end devraient être désactivés
 X pouvoir éditer des plantations dans la space view
 X pouvoir supprimer des plantations
 X Les calendriers désactivés doivent être à la date d'aujourd'hui
-
-v0.4
-- subdivision dynamiques et non-rectangulaires (use case: 
+X subdivision dynamiques et non-rectangulaires (use case: 
     une planche avec 4 rangs de carottes, 3 de patates, 1/2 de radis, 1/2 de salade
     une planche avec 4 concombres, et un pied de potimarron.)
+
+v0.4
+- Quand une culture est sélectionnée, tab sélectionne la suivante
+- Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue spatiale
 - livrer un fichier de donné pré-rempli
 - Expliquer ce qu'il faut faire pour supprimer un plot avec des plantations dessus
 - pouvoir bouger des plantations à la souris dans la space view
@@ -49,7 +55,4 @@ v10.0
 - association de plantes (à associer ou à éviter)
 - rotation des cultures
 - longitude pour prendre en compte le climat
-
-
-
 
