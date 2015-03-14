@@ -5,27 +5,17 @@ First version
 v0.2 (2014 August 23rd)
 Bug fixes
 
-v0.3
-X Vue spatiale pas mise à jour qd on modifie une culture
-X corriger les "fail writing data file" => remp mkdir par boost::create_directories
-- Répertoire données cross-platforme
-- Compilation et test sous windows
-X ajouter les unités de longueurs
-X Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue temporelle
-O expliciter le concept de subdivision
-X Expliciter la méthode pour ajouter des cultures au début
-X tester les .ui de QtCreator
-O Label dans la vue temporelle pour connaitre les planches et les subd
-X Pouvoir modifier les cultures à partir de la vue spatiale
-O Par défaut, end, et planned_end devraient être désactivés
-X pouvoir éditer des plantations dans la space view
-X pouvoir supprimer des plantations
-X Les calendriers désactivés doivent être à la date d'aujourd'hui
-X subdivision dynamiques et non-rectangulaires (use case: 
-    une planche avec 4 rangs de carottes, 3 de patates, 1/2 de radis, 1/2 de salade
-    une planche avec 4 concombres, et un pied de potimarron.)
+v0.3 (2015 March xx)
+Bug fixes
+Dynamic crop locations
+Added length units
+Use of qtcreator .ui
+Changed screen layout (crop editing at the bottom)
+Ability to delete crops
 
 v0.4
+- Répertoire données cross-platforme
+- Compilation et test sous windows
 - Quand une culture est sélectionnée, tab sélectionne la suivante
 - Lors de la suppression d'une planche, le zoom arrière n'est pas fait sur la vue spatiale
 - livrer un fichier de donné pré-rempli
