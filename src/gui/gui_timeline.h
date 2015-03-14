@@ -17,16 +17,16 @@ class CropTimeRepresentation: public QGraphicsItemGroup
 {
 public:
     CropTimeRepresentation(Crop& crop, const list<pair<float, float> >& y_coords, QDate date0 = QDate(), QWidget* parent = NULL);
-    void add_rect(QDate start_date, QDate end_date, float ypos, float height, bool planned=false);
+    QGraphicsRectItem* create_rect(QDate start_date, QDate end_date, float ypos, float height, bool planned=false);
     void delete_me();
     Crop* get_pcrop();
     //void show(QPoint point, Crop* p_crop);
-    QGraphicsRectItem* get_global_rect();
+    void set_selected(bool val);
 
 private:
     Crop& crop;
     QDate date0;
-    QGraphicsRectItem* global_rect;
+    QGraphicsRectItem* _global_rect;
 };
 
 

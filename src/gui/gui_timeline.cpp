@@ -51,27 +51,39 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float
     QDate end_date = toQDate(crop.get_virtual_end_date());
 
     for (pair<float, float> yc: y_coords) {
-        add_rect(p_start_date, p_end_date, yc.first, yc.second, true);
-        add_rect(start_date, end_date, yc.first, yc.second, false);
+        QGraphicsItemGroup* curr_group = new QGraphicsItemGroup();
+        QGraphicsRectItem* planned_rect = create_rect(p_start_date, p_end_date, yc.first, yc.second, true);
+        if (planned_rect) {
+          curr_group->addToGroup(planned_rect);
+        }
+        QGraphicsRectItem* real_rect = create_rect(start_date, end_date, yc.first, yc.second, false);
+        if (real_rect) {
+          curr_group->addToGroup(real_rect);
+        }
 
         QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
-        center_text(textw, this->boundingRect());
-        textw->setParentItem(this);
-        global_rect = new QGraphicsRectItem(boundingRect());
-        this->addToGroup(global_rect);
+        center_text(textw, curr_group->boundingRect());
+        textw->setParentItem(curr_group);
+        curr_group->addToGroup(new QGraphicsRectItem(boundingRect()));
+        this->addToGroup(curr_group);
     }
+    if (_global_rect) {
+        //delete _global_rect;
+    }
+    _global_rect = new QGraphicsRectItem(boundingRect());
+    this->addToGroup(_global_rect);
 }
 
 
-void CropTimeRepresentation::add_rect(QDate start_date, QDate end_date, float ypos, float height, bool planned)
+QGraphicsRectItem* CropTimeRepresentation::create_rect(QDate start_date, QDate end_date, float ypos, float height, bool planned)
 {
     if (!(start_date.isValid() && end_date.isValid()))
     {
-        return;
+        return nullptr;
     }
     if (start_date > date0.addYears(1) || end_date < date0)
     {
-        return;
+        return nullptr;
     }
     if (start_date < date0) { start_date = date0.addDays(-3); }
     if (end_date > date0.addYears(1)) { end_date = date0.addYears(1).addDays(3); }
@@ -95,7 +107,7 @@ void CropTimeRepresentation::add_rect(QDate start_date, QDate end_date, float yp
     }
     rect->setPen(QPen(Qt::NoPen));
     
-    this->addToGroup(rect);
+    return rect;
 }
 
 
@@ -119,9 +131,16 @@ Crop* CropTimeRepresentation::get_pcrop()
     return &crop;
 }
 
-QGraphicsRectItem* CropTimeRepresentation::get_global_rect()
+void CropTimeRepresentation::set_selected(bool sel)
 {
-    return global_rect;
+    if (sel) {
+      QPen selected_pen;
+      selected_pen.setWidth(4);
+      //selected_pen.setColor(QColor("#444444"));
+      _global_rect->setPen(selected_pen);
+    } else {
+      _global_rect->setPen(QPen());
+    }
 }
 
 
@@ -197,10 +216,7 @@ void WholeTimeScene::drawCropSelection()
     }
     if (selected_crop_repr)
     {
-        QPen selected_pen;
-        selected_pen.setWidth(4);
-        //selected_pen.setColor(QColor("#444444"));
-        selected_crop_repr->get_global_rect()->setPen(selected_pen);
+        selected_crop_repr->set_selected(true);
     }
     emit crop_selected(selected_crop);
 }
@@ -209,7 +225,7 @@ void WholeTimeScene::removeCropSelection()
 {
     if (selected_crop_repr)
     {
-        selected_crop_repr->get_global_rect()->setPen(QPen());
+        selected_crop_repr->set_selected(false);
     }
 }
 
