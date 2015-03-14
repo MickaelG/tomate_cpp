@@ -67,9 +67,6 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float
         curr_group->addToGroup(new QGraphicsRectItem(boundingRect()));
         this->addToGroup(curr_group);
     }
-    if (_global_rect) {
-        //delete _global_rect;
-    }
     _global_rect = new QGraphicsRectItem(boundingRect());
     this->addToGroup(_global_rect);
 }
