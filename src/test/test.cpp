@@ -78,7 +78,10 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop1.is_active_at_date(bg::date(2012, 10, 01)));
     BOOST_CHECK(!crop1.is_planned_at_date(bg::date(2012, 10, 03)));
     BOOST_CHECK(!crop1.is_planned_at_date(bg::date(2012, 10, 01)));
-    
+    BOOST_CHECK(!crop1.is_in_year_started_by(bg::date(2011, 01, 01)));
+    BOOST_CHECK(crop1.is_in_year_started_by(bg::date(2012, 01, 01)));
+    //BOOST_CHECK(!crop1.is_in_year_started_by(bg::date(2013, 01, 01)));
+
     //Crop with start date and end date
     Crop crop2(bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, "", &plot);
     BOOST_CHECK(crop2.is_active_at_date(bg::date(2012, 10, 03)));
@@ -87,7 +90,10 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop2.is_active_at_date(bg::date(2012, 10, 01)));
     BOOST_CHECK(!crop2.is_planned_at_date(bg::date(2012, 10, 03)));
     BOOST_CHECK(!crop2.is_planned_at_date(bg::date(2012, 10, 01)));
-    
+    BOOST_CHECK(!crop2.is_in_year_started_by(bg::date(2011, 01, 01)));
+    BOOST_CHECK(crop2.is_in_year_started_by(bg::date(2012, 01, 01)));
+    BOOST_CHECK(!crop2.is_in_year_started_by(bg::date(2013, 01, 01)));
+
     //Crop with only planned start and planned end
     Crop crop3(bg::date(), bg::date(), bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, "", &plot);
     BOOST_CHECK(!crop3.is_active_at_date(bg::date(2012, 10, 03)));
@@ -98,7 +104,10 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop3.is_planned_at_date(bg::date(2012, 10, 01)));
     BOOST_CHECK(crop3.is_planned_at_date(bg::date(2012, 11, 21)));
     BOOST_CHECK(!crop3.is_planned_at_date(bg::date(2012, 11, 23)));
-    
+    BOOST_CHECK(!crop3.is_in_year_started_by(bg::date(2011, 01, 01)));
+    BOOST_CHECK(crop3.is_in_year_started_by(bg::date(2012, 01, 01)));
+    BOOST_CHECK(!crop3.is_in_year_started_by(bg::date(2013, 01, 01)));
+
     //Crop with all dates set
     Crop crop4(bg::date(2012, 10, 15), bg::date(2012, 11, 28), bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, "", &plot);
     BOOST_CHECK(!crop4.is_active_at_date(bg::date(2012, 10, 14)));
@@ -109,6 +118,9 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop4.is_planned_at_date(bg::date(2012, 10, 01)));
     BOOST_CHECK(crop4.is_planned_at_date(bg::date(2012, 11, 21)));
     BOOST_CHECK(!crop4.is_planned_at_date(bg::date(2012, 11, 23)));
+    BOOST_CHECK(!crop4.is_in_year_started_by(bg::date(2011, 01, 01)));
+    BOOST_CHECK(crop4.is_in_year_started_by(bg::date(2012, 01, 01)));
+    BOOST_CHECK(!crop4.is_in_year_started_by(bg::date(2013, 01, 01)));
 
     //Crop with star date and planned end
     Crop crop5(bg::date(2012, 10, 15), bg::date(), bg::date(), bg::date(2012, 11, 22), &plant, "", &plot);
@@ -119,6 +131,20 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(crop5.is_planned_at_date(bg::date(2012, 10, 16)));
     BOOST_CHECK(crop5.is_planned_at_date(bg::date(2012, 11, 21)));
     BOOST_CHECK(!crop5.is_planned_at_date(bg::date(2012, 11, 23)));
+    BOOST_CHECK(!crop5.is_in_year_started_by(bg::date(2011, 01, 01)));
+    BOOST_CHECK(crop5.is_in_year_started_by(bg::date(2012, 01, 01)));
+    //BOOST_CHECK(!crop5.is_in_year_started_by(bg::date(2013, 01, 01)));
+
+    //Crop with star date, end date and planned start
+    Crop crop6(bg::date(2012, 10, 15), bg::date(2012, 11, 01), bg::date(2012, 10, 1), bg::date(), &plant, "", &plot);
+    BOOST_CHECK(!crop6.is_active_at_date(bg::date(2012, 10, 14)));
+    BOOST_CHECK(crop6.is_active_at_date(bg::date(2012, 10, 16)));
+    BOOST_CHECK(crop6.is_active_at_date(bg::date(2012, 10, 30)));
+    BOOST_CHECK(!crop6.is_planned_at_date(bg::date(2012, 9, 30)));
+    BOOST_CHECK(crop6.is_planned_at_date(bg::date(2012, 10, 2)));
+    BOOST_CHECK(!crop6.is_in_year_started_by(bg::date(2011, 01, 01)));
+    BOOST_CHECK(crop6.is_in_year_started_by(bg::date(2012, 01, 01)));
+    BOOST_CHECK(!crop6.is_in_year_started_by(bg::date(2013, 01, 01)));
 
 }
 

@@ -424,6 +424,7 @@ void WholeTimeScene::draw_scene()
         //actual timeline
         list<Crop*> current_crops;
 
+        //Select crops in current year and current plot
         for (Crop& crop: crops)
         {
             if (crop.get_plot().get_key() == plot.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
