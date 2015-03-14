@@ -6,6 +6,16 @@
 #include <QVBoxLayout>
 #include "geometry.h"
 
+class LineEditDist: public QLineEdit
+{
+    Q_OBJECT
+public:
+    LineEditDist(QWidget* parent=NULL);
+    float getValueCm() const;
+    void setValueCm(float val);
+
+};
+
 class PhysInput: public QWidget
 {
     Q_OBJECT
@@ -16,10 +26,10 @@ public:
     Rectangle get_rect();
 
 private:
-    QLineEdit* x_widget;
-    QLineEdit* y_widget;
-    QLineEdit* width_widget;
-    QLineEdit* height_widget;
+    LineEditDist* x_widget;
+    LineEditDist* y_widget;
+    LineEditDist* width_widget;
+    LineEditDist* height_widget;
 };
 
 #endif //GUI_PHYS_INPUT_H

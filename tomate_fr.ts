@@ -247,44 +247,24 @@
 <context>
     <name>PhysInput</name>
     <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="37"/>
         <source>x position:</source>
-        <translation type="obsolete">position x :</translation>
+        <translation>position x :</translation>
     </message>
     <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="39"/>
         <source>y position:</source>
-        <translation type="obsolete">position y :</translation>
+        <translation>position y :</translation>
     </message>
     <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="41"/>
         <source>width:</source>
-        <translation type="obsolete">largeur :</translation>
+        <translation>largeur :</translation>
     </message>
     <message>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="43"/>
         <source>height:</source>
-        <translation type="obsolete">hauteur :</translation>
-    </message>
-    <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="27"/>
-        <source>x position (m):</source>
-        <translatorcomment>position x (m) :</translatorcomment>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="29"/>
-        <source>y position (m):</source>
-        <translatorcomment>position y (m) :</translatorcomment>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="31"/>
-        <source>width (m):</source>
-        <translatorcomment>largeur (m) :</translatorcomment>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="33"/>
-        <source>height (m):</source>
-        <translatorcomment>longueur (m) :</translatorcomment>
-        <translation></translation>
+        <translation>hauteur :</translation>
     </message>
 </context>
 <context>
