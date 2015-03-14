@@ -174,6 +174,32 @@ MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWi
     }
 }
 
+class DateLineGraphicsItem : public QGraphicsItem
+{
+public:
+    DateLineGraphicsItem(int length) : _length(length)
+    {
+    }
+
+    QRectF boundingRect() const
+    {
+        return QRectF(-_point_size/2, -30, _point_size, 30+_length);
+    }
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget)
+    {
+        QColor red("red");
+        painter->setPen(QPen(red));
+        painter->setBrush(QBrush(red));
+        painter->drawLine(0, -30, 0, _length);
+        painter->drawEllipse(-_point_size/2, -14, _point_size, _point_size);
+    }
+private:
+    int _length;
+    int _point_size = 8;
+};
+
 
 WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
     dataset(dataset), selected_crop(NULL), selected_crop_repr(NULL)
@@ -330,7 +356,8 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         int xpos = clic_point.x();
         date = pos_to_date(xpos, QDate(date.year(), 1, 1));
         current_date_changed(date);
-        redraw();
+        //redraw();
+        _date_line->setPos(xpos, 0);
     }
     else {
         CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
@@ -452,19 +479,13 @@ void WholeTimeScene::draw_scene()
         T->setRotation(-90);
         addItem(T);
     }
-    draw_date_line(date, y_pos);
+    _date_line = new DateLineGraphicsItem(y_pos);
+    int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
+    _date_line->setPos(xpos, 0);
+    this->addItem(_date_line);
     drawCropSelection();
     update();
 }
-
-void WholeTimeScene::draw_date_line(QDate date, int bottom_y)
-{
-    int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
-    QGraphicsLineItem *L = new QGraphicsLineItem(xpos, -30, xpos, bottom_y);
-    L->setPen(QPen(QColor("red")));
-    addItem(L);
-}
-
 
 WholeTimeSceneView::WholeTimeSceneView(Dataset& dataset, QWidget* parent)
 {

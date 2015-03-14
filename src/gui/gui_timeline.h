@@ -72,6 +72,7 @@ private:
     vector<CropTimeRepresentation*> crop_reprs;
     CropTimeRepresentation* selected_crop_repr;
     Crop* selected_crop;
+    QGraphicsItem* _date_line;
 
     void add_year_buttons();
     void draw_date_line(QDate date, int bottom_y);
