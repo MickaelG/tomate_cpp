@@ -391,23 +391,20 @@ void WholeTimeScene::add_year_buttons()
 
 void WholeTimeScene::draw_scene()
 {
-    int y_pos = 0;
     //date0 is the 1 january of the first year if (a crop exists,
     //else 1 january of current year
-    Crops& crops = dataset.get_crops();
-
-    add_year_buttons();
-    
     QDate date0 = QDate(date.year(), 1, 1);
     MonthsRepresentation *months = new MonthsRepresentation(date0, date0.addYears(1).addDays(-1));
+
     addItem(months);
+    add_year_buttons();
+
+    Crops& crops = dataset.get_crops();
+
+    int y_pos = 0;
     for (const Plot plot: dataset.get_plots())
     {
-        //subdiv numbers on the left
-        QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(plot.get_name()));
-        T->setPos(-40, y_pos + 8);
-        addItem(T);
-
+        int y_pos_start = y_pos;
         //actual timeline
         list<Crop*> current_crops;
 
@@ -430,6 +427,13 @@ void WholeTimeScene::draw_scene()
             crop_reprs.push_back(crop_repr);
         }
         y_pos += Margin + PlotHeight;
+
+        //Add plot name on the left
+        QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(plot.get_name()));
+        float text_width = T->boundingRect().width();
+        T->setPos(-40, (y_pos_start + y_pos + text_width) / 2);
+        T->setRotation(-90);
+        addItem(T);
     }
     draw_date_line(date, y_pos);
     drawCropSelection();

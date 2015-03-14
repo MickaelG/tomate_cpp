@@ -3,7 +3,7 @@
 #define GUI_UTILS_H
 
 #include <QGraphicsSimpleTextItem>
-void center_text(QGraphicsSimpleTextItem* text, QRectF rect);
+void center_text(QGraphicsSimpleTextItem* text, const QRectF& rect);
 
 #include <QString>
 #include <string>

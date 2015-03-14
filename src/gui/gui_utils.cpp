@@ -1,7 +1,7 @@
 
 #include "gui_utils.h"
 
-void center_text(QGraphicsSimpleTextItem* text, QRectF rect)
+void center_text(QGraphicsSimpleTextItem* text, const QRectF& rect)
 {
     float text_width = text->boundingRect().width();
     float text_height = text->boundingRect().height();
