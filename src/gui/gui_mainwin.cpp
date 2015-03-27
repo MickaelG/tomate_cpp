@@ -70,6 +70,7 @@ QWidget* createTabsWidget(Dataset& data)
 
 GuiMainWin::GuiMainWin(Dataset& dataset) : dataset(dataset) {
     showMaximized();
+    setWindowTitle("tomate");
     
     setCentralWidget(new QWidget);
     centralWidget()->setLayout(new QGridLayout);
