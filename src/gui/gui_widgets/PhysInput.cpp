@@ -6,9 +6,34 @@
 #include <QGroupBox>
 #include <QScrollArea>
 
+class DistValidator: public QValidator {
+public:
+    void fixup(QString &input) const override
+    {
+        if (input.simplified() == "m") {
+            input = "0 m";
+        }
+    }
+
+    State validate(QString & input, int & pos) const override
+    {
+        if (input.simplified() == "m") {
+            return State::Intermediate;
+        }
+        QRegExp val_rx("-?[\\d.]+\\s*m?");
+        if (val_rx.exactMatch(input)) {
+            if (!input.endsWith("m")) {
+                input = input.simplified() + " m";
+            }
+            return State::Acceptable;
+        }
+        return State::Invalid;
+    }
+};
+
 LineEditDist::LineEditDist(QWidget *parent) : QLineEdit(parent)
 {
-    this->setValidator( new QRegExpValidator(QRegExp(QString("-?[\\d.]+\\s*m?")), this) );
+    this->setValidator(new DistValidator());
 }
 
 float LineEditDist::getValueCm() const {
