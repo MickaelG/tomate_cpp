@@ -5,7 +5,7 @@ First version
 v0.2 (2014 August 23rd)
 Bug fixes
 
-v0.3 (2015 March xx)
+v0.3 (2015 March 27)
 Bug fixes
 Dynamic crop locations
 Added length units
@@ -29,6 +29,7 @@ v0.4
 - pouvoir bouger les plantations à la souris dans la time view, en tirant sur les côtés pour changer les dates
 - pouvoir renommer des planches
 - pouvoir renommer des plantes
+- Une aide à la planification, en prenant en comptes les périodes et durées de culture des différentes plantes.
 
 
 v1.0
