@@ -24,6 +24,8 @@ public:
     void set_selected(bool val);
 
 private:
+    void update_global_rect(const QGraphicsRectItem& in_rect);
+
     Crop& crop;
     QDate date0;
     QGraphicsRectItem* _global_rect;

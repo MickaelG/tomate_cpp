@@ -36,9 +36,8 @@ QDate pos_to_date(int pos, QDate date0)
     return date0.addDays(nb_days);
 }
 
-
 CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float, float> >& y_coords, QDate date0, QWidget* parent) :
-    date0(date0), crop(crop)
+    date0(date0), crop(crop), _global_rect(nullptr)
 {
     QString text = toQString(crop.get_plant().get_name());
 
@@ -54,11 +53,13 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float
         QGraphicsItemGroup* curr_group = new QGraphicsItemGroup();
         QGraphicsRectItem* planned_rect = create_rect(p_start_date, p_end_date, yc.first, yc.second, true);
         if (planned_rect) {
-          curr_group->addToGroup(planned_rect);
+            update_global_rect(*planned_rect);
+            curr_group->addToGroup(planned_rect);
         }
         QGraphicsRectItem* real_rect = create_rect(start_date, end_date, yc.first, yc.second, false);
         if (real_rect) {
-          curr_group->addToGroup(real_rect);
+            update_global_rect(*real_rect);
+            curr_group->addToGroup(real_rect);
         }
 
         QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
@@ -67,8 +68,44 @@ CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float
         curr_group->addToGroup(new QGraphicsRectItem(boundingRect()));
         this->addToGroup(curr_group);
     }
-    _global_rect = new QGraphicsRectItem(boundingRect());
-    this->addToGroup(_global_rect);
+    if (_global_rect != nullptr) {
+        this->addToGroup(_global_rect);
+    }
+}
+
+void CropTimeRepresentation::update_global_rect(const QGraphicsRectItem& in_rect)
+{
+    if (_global_rect == nullptr) {
+        _global_rect = new QGraphicsRectItem(in_rect.rect());
+        return;
+    }
+
+    int in_x1 = in_rect.rect().x();
+    int in_y1 = in_rect.rect().y();
+    int in_x2 = in_x1 + in_rect.rect().width();
+    int in_y2 = in_y1 + in_rect.rect().height();
+
+    int g_x1 = _global_rect->rect().x();
+    int g_y1 = _global_rect->rect().y();
+    int g_x2 = g_x1 + _global_rect->rect().width();
+    int g_y2 = g_y1 + _global_rect->rect().height();
+
+    QRectF new_rect(_global_rect->rect());
+
+    if (in_x1 < g_x1) {
+        new_rect.setX(in_x1);
+    }
+    if (in_y1 < g_y1) {
+        new_rect.setY(in_y1);
+    }
+    if (in_x2 > g_x2) {
+        new_rect.setWidth(in_x2 - _global_rect->rect().x());
+    }
+    if (in_y2 > g_y2) {
+        new_rect.setHeight(in_y2 - _global_rect->rect().y());
+    }
+    _global_rect->setRect(new_rect);
+
 }
 
 
