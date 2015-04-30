@@ -8,76 +8,39 @@
 // class Dataset
 ///////////////////////////////////////////////////////////////////////////////
 
-Dataset::Dataset() : plots(crops), plants(crops)
+Dataset::Dataset() : _plots(_crops), _plants(_crops)
 {
 }
 
-Crop& Dataset::add_crop(Crop crop)
+void Dataset::set_filename(string filename)
 {
-    this->crops.push_back(crop);
-    return crops.back();
-}
-
-Plant& Dataset::add_plant(Plant plant)
-{
-    plants.push_back(plant);
-    return plants.back();
-}
-
-Plot& Dataset::add_plot(Plot& plot)
-{
-    return get_plots().add_plot(plot);
-}
-
-Plant& Dataset::get_plant(string key)
-{
-    return get_plants().get_plant(key);
-}
-
-Plant* Dataset::get_pplant(string key)
-{
-    return get_plants().get_pplant(key);
-}
-
-void Dataset::set_filename(string in_filename)
-{
-    filename = in_filename;
+    _filename = filename;
 }
 
 const Plots& Dataset::get_plots() const
 {
-    return plots;
+    return _plots;
 }
 
 const Plants& Dataset::get_plants() const
 {
-    return plants;
+    return _plants;
 }
 
 const Crops& Dataset::get_crops() const {
-    return crops;
+    return _crops;
 }
 
 Plots& Dataset::get_plots() {
-    return plots;
+    return _plots;
 }
 
 Plants& Dataset::get_plants() {
-    return plants;
+    return _plants;
 }
 
 Crops& Dataset::get_crops() {
-    return crops;
+    return _crops;
 }
 
-//TODO: search hierarchically without running through all subplots
-Plot& Dataset::get_plot(string key)
-{
-    return get_plots().get_plot(key);
-}
-
-Plot* Dataset::get_pplot(string key)
-{
-    return get_plots().get_pplot(key);
-}
 ///////////////////////////////////////////////////////////////////////////////

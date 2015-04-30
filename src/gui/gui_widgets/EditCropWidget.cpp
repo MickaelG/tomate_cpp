@@ -73,11 +73,11 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
 void EditCropWidget::edit_crop()
 {
     QString plot_key = ui->plotInput->currentElem();
-    Plot* p_plot = dataset.get_pplot(fromQString(plot_key));
+    Plot* p_plot = dataset.get_plots().find(fromQString(plot_key));
     Rectangle rect = ui->shapeInput->get_rect();
 
     QString plant_key = ui->plantInput->currentElem();
-    Plant* p_plant = dataset.get_pplant(fromQString(plant_key));
+    Plant* p_plant = dataset.get_plants().find(fromQString(plant_key));
     QString var_key = ui->varInput->currentElem();
     
     QDate start_date = ui->startdateInput->selectedDate();
@@ -88,10 +88,10 @@ void EditCropWidget::edit_crop()
     QString note = ui->noteInput->text();
     if (!p_crop)
     {
-        Crop crop = dataset.add_crop(Crop(fromQDate(start_date), fromQDate(end_date),
-                                          fromQDate(planned_start_date), fromQDate(planned_end_date),
-                                          p_plant, fromQString(var_key), p_plot, fromQString(note),
-                                          rect));
+        Crop crop = dataset.get_crops().add(fromQDate(start_date), fromQDate(end_date),
+                                            fromQDate(planned_start_date), fromQDate(planned_end_date),
+                                            p_plant, fromQString(var_key), p_plot, fromQString(note),
+                                            rect);
     }
     else
     {
@@ -117,7 +117,7 @@ void EditCropWidget::delete_crop()
                              QMessageBox::Yes | QMessageBox::No);
 
        if (result == QMessageBox::Yes) {
-           dataset.get_crops().delete_crop(*p_crop);
+           dataset.get_crops().remove(*p_crop);
            p_crop = NULL;
            set_crop_values(p_crop);
            emit select_crop(NULL);

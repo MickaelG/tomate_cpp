@@ -16,27 +16,20 @@ namespace bg = boost::gregorian;
 
 class Dataset
 {
-    private:
-        string filename;
-        Crops crops;
-        Plots plots;
-        Plants plants;
-    public:
-        Dataset();
-        Crop& add_crop(Crop crop);
-        Plant& add_plant(Plant plant);
-        Plot& add_plot(Plot& plot);
-        void set_filename(string in_filename);
-        Plant& get_plant(string key);
-        Plant* get_pplant(string key);
-        Plot& get_plot(string key);
-        Plot* get_pplot(string key);
-        const Plots& get_plots() const;
-        const Plants& get_plants() const;
-        const Crops& get_crops() const;
-        Plots& get_plots();
-        Plants& get_plants();
-        Crops& get_crops();
+public:
+    Dataset();
+    void set_filename(string in_filename);
+    const Plots& get_plots() const;
+    const Plants& get_plants() const;
+    const Crops& get_crops() const;
+    Plots& get_plots();
+    Plants& get_plants();
+    Crops& get_crops();
+private:
+    string _filename;
+    Crops _crops;
+    Plots _plots;
+    Plants _plants;
 };
 
 #endif //DATASET_H

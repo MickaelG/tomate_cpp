@@ -25,7 +25,7 @@ public:
     Ui::EditCropWidget *ui;
 
 private slots:
-    void set_crop_values(Crop* p_crop);
+    void set_crop_values(Crop *p_crop);
     void edit_crop();
     void delete_crop();
 

@@ -7,8 +7,8 @@
 #include <algorithm>
 using namespace std;
 
-static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> crops, bool isvertical = true);
-static bool remove_partitions_overlaps(set<Rectangle>& partitions);
+static list<Rectangle> sort_partitions(set<Rectangle>& partitions, const list<Crop *> &crops, bool isvertical = true);
+static bool remove_partitions_overlaps(set<Rectangle> &partitions);
 
 template <typename T>
 std::ostream& operator<<(std::ostream& stream, const std::list<T>& list)
@@ -53,8 +53,8 @@ list<Rectangle> compute_partitions(const list<Crop*>& l_crops, const Plot& plot)
     set<Rectangle> partitions;
 
     //Create a partition for each different crop
-    for (Crop* crop_p: l_crops) {
-        Shape* crop_shape_p = crop_p->get_shape();
+    for (const Crop* crop_p: l_crops) {
+        const Shape* crop_shape_p = crop_p->get_shape();
         if (crop_shape_p->get_width() == plot_shape_p->get_width() &&
             crop_shape_p->get_height() == plot_shape_p->get_height()) {
             continue;
@@ -161,11 +161,11 @@ static bool remove_partitions_overlaps(set<Rectangle>& partitions)
     return true;
 }
 
-static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> crops, bool isvertical)
+static list<Rectangle> sort_partitions(set<Rectangle>& partitions, const list<Crop*>& crops, bool isvertical)
 {
-    map<Rectangle, set<Crop*> > crops_in_part;
+    map<Rectangle, set<const Crop*> > crops_in_part;
     for (Rectangle partition: partitions) {
-        for (Crop* crop_p: crops) {
+        for (const Crop* crop_p: crops) {
             if (partition.is_inside(*crop_p->get_shape())) {
                 crops_in_part[partition].insert(crop_p);
             }
@@ -183,7 +183,7 @@ static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> c
     list< list< Rectangle> >grouped_partitions;
     //step 1: group parts that contain the same set of crops
     for (Rectangle part: lpartitions) {
-        set<Crop*> mycrops = crops_in_part[part];
+        set<const Crop*> mycrops = crops_in_part[part];
         if (mycrops.empty()) { // Part without any crop. we create a new
                                // group with this part only
             list<Rectangle> mylist;
@@ -229,9 +229,9 @@ static list<Rectangle> sort_partitions(set<Rectangle>& partitions, list<Crop*> c
             // Another group has common crop with the current one. we put it
             // just after
             list<Rectangle> group = *groupit;
-            set<Crop*> crops_in_group = crops_in_part[group.front()];
-            set<Crop*> crops_in_last = crops_in_part[result.back()];
-            vector<Crop*> common_crops;
+            set<const Crop*> crops_in_group = crops_in_part[group.front()];
+            set<const Crop*> crops_in_last = crops_in_part[result.back()];
+            vector<const Crop*> common_crops;
             set_intersection(crops_in_group.begin(), crops_in_group.end(),
                              crops_in_last.begin(), crops_in_last.end(),
                              back_inserter(common_crops));

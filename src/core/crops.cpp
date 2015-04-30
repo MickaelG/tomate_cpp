@@ -5,11 +5,11 @@
 #include "plant.h"
 
 #include <stdexcept>
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 // class Crop
 ///////////////////////////////////////////////////////////////////////////////
-const Crop NullCrop;
 string Crop::str_descr() const
 {
     return p_plant->get_name();
@@ -59,31 +59,32 @@ void Crop::set_date(string which, bg::date date)
     }
 }
 
-Crop::Crop() : p_plant(0), p_plot(0), shape(0)
+Crop::Crop() : p_plant(nullptr), p_plot(nullptr), shape(nullptr)
 {
 }
 
 Crop::Crop(bg::date start_date, bg::date end_date,
      bg::date planned_start_date, bg::date planned_end_date,
-     Plant* p_plant, string varkey,
-     Plot* p_plot, string note, Rectangle rect) :
+     Plant* p_plant, const string& varkey,
+     Plot* p_plot, const string& note, Rectangle rect) :
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
     varkey(varkey),
-    p_plant(p_plant), p_plot(p_plot), note(note), shape(0)
+    p_plant(p_plant), p_plot(p_plot), note(note), shape(nullptr)
 {
-    if (! (rect.get_width() < 0))
-    {
+    if (rect.get_width() > 0) {
         set_shape(new Rectangle(rect));
+    } else {
+        set_default_shape();
     }
 }
 
 Crop::Crop(bg::date start_date, bg::date end_date,
-     Plant* p_plant, string varkey,
-     Plot* p_plot, string note) :
+     Plant* p_plant, const string& varkey,
+     Plot* p_plot, const string& note) :
     start_date(start_date), end_date(end_date),
     varkey(varkey),
-    p_plant(p_plant), p_plot(p_plot), note(note), shape(0)
+    p_plant(p_plant), p_plot(p_plot), note(note), shape(nullptr)
 {
 }
 
@@ -112,12 +113,10 @@ Plant& Crop::get_plant()
 
 const Plant& Crop::get_plant() const
 {
-    if (p_plant)
-    {
+    if (p_plant) {
         return *p_plant;
-    } else {
-        return NullPlant;
     }
+    throw logic_error("Plant not defined");
 }
 
 void Crop::set_plant(Plant& plant)
@@ -132,22 +131,18 @@ Plot* Crop::get_pplot()
 
 Plot& Crop::get_plot()
 {
-    if (p_plot)
-    {
+    if (p_plot) {
         return *p_plot;
-    } else {
-        throw logic_error("Plot is not yet defined for crop");
     }
+    throw logic_error("Plot is not yet defined for crop");
 }
 
 const Plot& Crop::get_plot() const
 {
-    if (p_plot)
-    {
+    if (p_plot) {
         return *p_plot;
-    } else {
-        return NullPlot;
     }
+    throw logic_error("Plot is not yet defined for crop");
 }
 
 void Crop::set_plot(Plot& plot)
@@ -160,7 +155,12 @@ void Crop::add_action(bg::date date, string note)
     actions.push_back(CropAction(date, note));
 }
 
-list<CropAction>& Crop::get_actions()
+vector<CropAction>& Crop::get_actions()
+{
+    return actions;
+}
+
+const vector<CropAction>& Crop::get_actions() const
 {
     return actions;
 }
@@ -278,7 +278,17 @@ void Crop::set_note(string note)
 
 Shape* Crop::get_shape()
 {
-    if (!shape)
+    return shape;
+}
+
+const Shape* Crop::get_shape() const
+{
+    return shape;
+}
+
+void Crop::set_default_shape()
+{
+    if (shape == nullptr)
     {
         Shape* plot_shape = get_plot().get_shape();
         if (plot_shape)
@@ -290,12 +300,6 @@ Shape* Crop::get_shape()
             shape = new Rectangle(0, 0, -1, -1);
         }
     }
-    return shape;
-}
-
-const Shape* Crop::get_shape() const
-{
-    return shape;
 }
 
 void Crop::set_shape(Shape* in_shape)
@@ -303,7 +307,7 @@ void Crop::set_shape(Shape* in_shape)
     if (shape)
     {
         delete shape;
-        shape = NULL;
+        shape = nullptr;
     }
     shape = in_shape;
     if (p_plot)
@@ -323,17 +327,28 @@ bool operator==(const Crop& elem1, const Crop& elem2)
 ///////////////////////////////////////////////////////////////////////////////
 // class Crops
 ///////////////////////////////////////////////////////////////////////////////
+Crop& Crops::add(bg::date start_date, bg::date end_date,
+                 bg::date planned_start_date, bg::date planned_end_date,
+                 Plant *p_plant, const std::string& varkey,
+                 Plot *p_plot, const std::string& note, Rectangle rect)
+{
+    _vcrops.push_back(unique_ptr<Crop>(new Crop(start_date, end_date, planned_start_date, planned_end_date,
+                                                p_plant, varkey, p_plot, note, rect)));
+    return *_vcrops.back();
+
+}
+
 vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
 {
     vector<Crop*> result;
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
-    for (Crops::iterator it=this->begin(); it != this->end(); ++it)
+    for (auto it = _vcrops.begin(); it != _vcrops.end(); ++it)
     {
-        if (it->get_plot() == plot)
+        if ((*it)->get_plot() == plot)
         {
-           if (it->is_active_at_date(date) || it->is_planned_at_date(date))
+           if ((*it)->is_active_at_date(date) || (*it)->is_planned_at_date(date))
            {
-               result.push_back(&*it);
+               result.push_back(it->get());
            }
         }
     }
@@ -343,9 +358,9 @@ vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
 bool Crops::is_used_plot(const Plot& plot) const
 {
     string plot_key = plot.get_key();
-    for (Crops::const_iterator it=this->begin(); it != this->end(); ++it)
+    for (auto it = _vcrops.cbegin(); it != _vcrops.cend(); ++it)
     {
-        string loop_key = it->get_plot().get_key();
+        string loop_key = (*it)->get_plot().get_key();
         //plot_key must be conntained in loop_key
         if (loop_key.find(plot_key) == 0)
         {
@@ -358,9 +373,9 @@ bool Crops::is_used_plot(const Plot& plot) const
 bool Crops::is_used_plant(const Plant& plant) const
 {
     string plant_key = plant.get_key();
-    for (Crops::const_iterator it=this->begin(); it != this->end(); ++it)
+    for (auto it = _vcrops.cbegin(); it != _vcrops.cend(); ++it)
     {
-        string loop_key = it->get_plant().get_key();
+        string loop_key = (*it)->get_plant().get_key();
         //plant_key must be conntained in loop_key
         if (loop_key.find(plant_key) == 0)
         {
@@ -370,9 +385,32 @@ bool Crops::is_used_plant(const Plant& plant) const
     return false;
 }
 
-bool Crops::delete_crop(Crop& crop)
+void Crops::remove(const Crop& crop)
 {
-    remove(crop);
-    return true;
+    auto crop_it = std::find_if(_vcrops.begin(), _vcrops.end(),
+                                [&crop](const unique_ptr<Crop>& value) { return *value == crop; } );
+    if (crop_it != _vcrops.end()) {
+        _vcrops.erase(crop_it);
+    }
+}
+
+my_iterator<Crop> Crops::begin()
+{
+    return my_iterator<Crop>(_vcrops.begin());
+}
+
+my_iterator<Crop> Crops::end()
+{
+    return my_iterator<Crop>(_vcrops.end());
+}
+
+my_const_iterator<Crop> Crops::begin() const
+{
+    return my_const_iterator<Crop>(_vcrops.begin());
+}
+
+my_const_iterator<Crop> Crops::end() const
+{
+    return my_const_iterator<Crop>(_vcrops.end());
 }
 ///////////////////////////////////////////////////////////////////////////////

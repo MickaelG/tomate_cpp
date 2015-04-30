@@ -31,8 +31,8 @@ private slots:
     {
         Crops crops;
         Plants plants(crops);
-        Plant& plant1 = plants.add_plant("pl1", "plant1");
-        Plant& plant2 = plants.add_plant("pl2", "plant2");
+        Plant& plant1 = plants.add("pl1", "plant1");
+        Plant& plant2 = plants.add("pl2", "plant2");
         plant1.set_note("Note for plant1");
         PlantsModel* plants_model =  new PlantsModel(plants);
 
@@ -51,8 +51,8 @@ private slots:
     {
         Crops crops;
         Plants plants(crops);
-        Plant& plant1 = plants.add_plant("pl1", "plant1");
-        Plant& plant2 = plants.add_plant("pl2", "plant2");
+        Plant& plant1 = plants.add("pl1", "plant1");
+        Plant& plant2 = plants.add("pl2", "plant2");
         plant1.add_var("", "var1");
         plant1.add_var("", "var2");
 

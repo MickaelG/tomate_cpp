@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(xml)
 {
     Dataset dataset;
     xml_read_data("../testfiles/data_v0.2.sfg", dataset);
-    BOOST_CHECK(dataset.get_plot("1").get_name() == "Plot1");
+    BOOST_CHECK(dataset.get_plots().find("1")->get_name() == "Plot1");
     xml_write_data("data_out.sfg", dataset);
     ifstream ifs1("../testfiles/data_v0.2.sfg");
     ifstream ifs2("data_out.sfg");
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(xml_conv_from_01)
 {
     Dataset dataset;
     xml_read_data("../testfiles/data_v0.1.sfg", dataset);
-    BOOST_CHECK(dataset.get_plot("1").get_name() == "Plot1");
+    BOOST_CHECK(dataset.get_plots().find("1")->get_name() == "Plot1");
     xml_write_data("data_out.sfg", dataset);
     ifstream ifs1("../testfiles/data_v0.1.out_v0.2.sfg");
     ifstream ifs2("data_out.sfg");
@@ -151,8 +151,8 @@ BOOST_AUTO_TEST_CASE(is_active)
 BOOST_AUTO_TEST_CASE(crop_shape)
 {
     Dataset data;
-    Plot& plot = data.get_plots().add_plot("pn", "plot_nom", "une jolie planche", 2,3,8,9);
-    Plant& plant = data.add_plant(Plant("pl", "plant_name"));
+    Plot& plot = data.get_plots().add("pn", "plot_nom", "une jolie planche", 2,3,8,9);
+    Plant& plant = data.get_plants().add("pl", "plant_name");
     Crop crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), &plant, "", &plot, "first crop");
     //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), -1);
     Rectangle *rect = new Rectangle(50, 20, 100, 120);
@@ -184,15 +184,15 @@ BOOST_AUTO_TEST_CASE(crop_shape)
 BOOST_AUTO_TEST_CASE(find_crop)
 {
     Dataset data;
-    Plot& plot = data.get_plots().add_plot("pn", "plot_nom", "une jolie planche", 2,3,8,9);
-    Plot& plot2 = data.get_plots().add_plot("p2", "plot_nom2", "une très jolie planche", 2,3,8,9);
-    Plant& plant = data.add_plant(Plant("pl", "plant_name"));
-    data.add_crop(Crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), &plant, "", &plot, "first crop"));
-    data.add_crop(Crop(bg::date(2012, 10, 02), bg::date(2012, 11, 10), &plant, "", &plot, "second crop"));
-    data.add_crop(Crop(bg::date(), bg::date(), bg::date(2012, 12, 1), bg::date(2013, 2, 9), &plant, "", &plot, "third, planned crop"));
-    data.add_crop(Crop(bg::date(2012, 10, 02), bg::date(2012, 12, 10), &plant, "", &plot2, "other crop"));
+    Plot& plot = data.get_plots().add("pn", "plot_nom", "une jolie planche", 2,3,8,9);
+    Plot& plot2 = data.get_plots().add("p2", "plot_nom2", "une très jolie planche", 2,3,8,9);
+    Plant& plant = data.get_plants().add("pl", "plant_name");
+    data.get_crops().add(bg::date(2012, 8, 15), bg::date(2012, 9, 10), bg::date(), bg::date(), &plant, "", &plot, "first crop");
+    data.get_crops().add(bg::date(2012, 10, 02), bg::date(2012, 11, 10), bg::date(), bg::date(), &plant, "", &plot, "second crop");
+    data.get_crops().add(bg::date(), bg::date(), bg::date(2012, 12, 1), bg::date(2013, 2, 9), &plant, "", &plot, "third, planned crop");
+    data.get_crops().add(bg::date(2012, 10, 02), bg::date(2012, 12, 10), bg::date(), bg::date(), &plant, "", &plot2, "other crop");
 
-    BOOST_CHECK_EQUAL(data.get_crops().front().get_plot().get_key(), "pn");
+    BOOST_CHECK_EQUAL(data.get_crops().begin()->get_plot().get_key(), "pn");
     
     /*
     Crop* p_crop0 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
@@ -225,12 +225,13 @@ BOOST_AUTO_TEST_CASE(find_crop)
 BOOST_AUTO_TEST_CASE(plots)
 {
     Dataset data;
-    Plot& plot = data.get_plots().add_plot("te", "test");
-    Plot& plt2 = data.get_plots().add_plot("te2", "test2");
+    Plot& plot = data.get_plots().add("te", "test");
+    Plot& plt2 = data.get_plots().add("te2", "test2");
 
     BOOST_CHECK_EQUAL(data.get_plots().size(), 2);
-    BOOST_CHECK_EQUAL(data.get_plots().index(0).get_key(), "te");
-    BOOST_CHECK_EQUAL(data.get_plots().index(1).get_key(), "te2");
+    auto plot_it = data.get_plots().begin();
+    BOOST_CHECK_EQUAL(plot_it->get_key(), "te");
+    BOOST_CHECK_EQUAL((++plot_it)->get_key(), "te2");
     vector<string> keys;
     for(Plot plot: data.get_plots())
     {
@@ -238,10 +239,10 @@ BOOST_AUTO_TEST_CASE(plots)
     }
     BOOST_CHECK_EQUAL(keys.size(), 2);
 
-    data.get_plots().delete_plot("te");
+    data.get_plots().remove("te");
 
     BOOST_CHECK_EQUAL(data.get_plots().size(), 1);
-    BOOST_CHECK_EQUAL(data.get_plots().index(0).get_key(), "te2");
+    BOOST_CHECK_EQUAL(data.get_plots().begin()->get_key(), "te2");
     keys.clear();
     for(Plot plot: data.get_plots())
     {
@@ -249,7 +250,7 @@ BOOST_AUTO_TEST_CASE(plots)
     }
     BOOST_CHECK_EQUAL(keys.size(), 1);
 
-    data.get_plots().delete_plot("te2");
+    data.get_plots().remove("te2");
 
     BOOST_CHECK_EQUAL(data.get_plots().size(), 0);
     keys.clear();
@@ -263,13 +264,13 @@ BOOST_AUTO_TEST_CASE(plots)
 BOOST_AUTO_TEST_CASE(plants)
 {
     Dataset data;
-    Plant& plant = data.get_plants().add_plant("pl1", "plant1");
+    Plant& plant = data.get_plants().add("pl1", "plant1");
     Plot plot("p1", "Carré1", "description du carré 1", new Rectangle(8,9,2,3));
     bg::date start_date(2013, 3, 3);
     bg::date end_date(2013, 3, 23);
 
     BOOST_CHECK_EQUAL(data.get_plants().is_used(plant), false);
-    data.add_crop(Crop(start_date, end_date, &plant, "", &plot));
+    data.get_crops().add(start_date, end_date, bg::date(), bg::date(), &plant, "", &plot);
     BOOST_CHECK_EQUAL(data.get_plants().is_used(plant), true);
 }
 
@@ -730,7 +731,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_6)
     list<Rectangle> partitions = compute_partitions(l_crops, plot);
     //cout << "DEBUG partitions:" << partitions << endl;
     for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        Crop* crop_p = l_crops.front();
+        const Crop* crop_p = l_crops.front();
         l_crops.pop_front();
         list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
         list< pair<float, float> > refcoords;
@@ -775,7 +776,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_7)
     list<Rectangle> partitions = compute_partitions(l_crops, plot);
     //cout << "DEBUG partitions:" << partitions << endl;
     for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        Crop* crop_p = l_crops.front();
+        const Crop* crop_p = l_crops.front();
         l_crops.pop_front();
         list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
         list< pair<float, float> > refcoords;
@@ -833,7 +834,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_8)
     list<Rectangle> partitions = compute_partitions(l_crops, plot);
     //cout << "DEBUG partitions:" << partitions << endl;
     for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        Crop* crop_p = l_crops.front();
+        const Crop* crop_p = l_crops.front();
         l_crops.pop_front();
         list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
         list< pair<float, float> > refcoords;
@@ -945,7 +946,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_10)
     list<Rectangle> partitions = compute_partitions(l_crops, plot);
     //cout << "DEBUG partitions:" << partitions << endl;
     for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        Crop* crop_p = l_crops.front();
+        const Crop* crop_p = l_crops.front();
         l_crops.pop_front();
         list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
         list< pair<float, float> > refcoords;

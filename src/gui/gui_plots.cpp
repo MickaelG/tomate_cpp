@@ -98,7 +98,7 @@ PlotsWindow::PlotsWindow(PlotsModel *plots_model, QWidget* parent) :
 Plot& PlotsWindow::selected_plot()
 {
     int plot_index = plots_widget->selectionModel()->currentIndex().row();
-    return plots_model->get_plots().index(plot_index);
+    return *(plots_model->get_plots().begin() + plot_index);
 }
 
 void PlotsWindow::delete_plot()
@@ -119,7 +119,7 @@ void PlotsWindow::update_plot_data(const QModelIndex& current_plot_mi, const QMo
 
 void PlotsWindow::update_del_btn(int current_plot_index)
 {
-    if (plots_model->get_plots().is_used(current_plot_index)) {
+    if (plots_model->get_plots().is_used(plots_model->get_plots()[current_plot_index])) {
         del_plot_btn->setEnabled(false);
     } else {
         del_plot_btn->setEnabled(true);
@@ -132,13 +132,13 @@ void PlotsWindow::update_notes(int current_plot_index, int previous_plot_index)
     if (previous_plot_index >= 0)
     {
         QString text = notes_widget->toPlainText();
-        plots_model->get_plots().index(previous_plot_index).set_note(fromQString(text));
+        plots_model->get_plots()[previous_plot_index].set_note(fromQString(text));
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        QString text = toQString(plots_model->get_plots().index(current_plot_index).get_note());
+        QString text = toQString(plots_model->get_plots()[current_plot_index].get_note());
         notes_widget->setPlainText(text);
         notes_widget->setDisabled(false);
     }
@@ -153,13 +153,13 @@ void PlotsWindow::update_phys(int current_plot_index, int previous_plot_index)
     //We save the note content of the previous plot
     if (previous_plot_index >= 0)
     {
-        plots_model->get_plots().index(previous_plot_index).set_shape(new Rectangle(phys_widget->get_rect()));
+        plots_model->get_plots()[previous_plot_index].set_shape(new Rectangle(phys_widget->get_rect()));
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        Shape* shape = plots_model->get_plots().index(current_plot_index).get_shape();
+        Shape* shape = plots_model->get_plots()[current_plot_index].get_shape();
         phys_widget->set_shape(shape);
         phys_widget->setDisabled(false);
     }

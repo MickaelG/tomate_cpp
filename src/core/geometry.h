@@ -5,7 +5,6 @@
 #include <vector>
 #include <set>
 #include <iostream>
-using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// class Shape : abstract class for all others
@@ -28,10 +27,10 @@ public:
 class Polygon: public Shape
 {
 private:
-    vector<float> points;
+    std::vector<float> points;
 public:
     Polygon();
-    Polygon(vector<float> points);
+    Polygon(std::vector<float> points);
 };
 
 class Rectangle: public Shape
@@ -42,7 +41,9 @@ private:
 public:
     Rectangle();
     Rectangle(int posx, int posy, int width, int height);
-    Rectangle(Shape& shape);
+    Rectangle(const Shape& shape);
+    Rectangle(const Rectangle& shape);
+
     float get_width() const;
     float get_height() const;
     float get_min_x() const;
@@ -51,14 +52,15 @@ public:
     float get_max_y() const;
     float get_area() const;
     virtual void fit_in_plot(const Shape* parent_shape);
+    bool is_inside(const Shape& other) const;
     bool is_inside(const Rectangle& other) const;
     bool overlaps(const Rectangle& other) const;
     Rectangle intersection(const Rectangle& other) const;
     Shape* clone();
-    string str() const;
+    std::string str() const;
 };
 
-set<Rectangle> compute_non_overlapping_rects(const Rectangle& first, const Rectangle& other);
+std::set<Rectangle> compute_non_overlapping_rects(const Rectangle& first, const Rectangle& other);
 
 std::ostream& operator<<(std::ostream& stream, const Rectangle& rect);
 

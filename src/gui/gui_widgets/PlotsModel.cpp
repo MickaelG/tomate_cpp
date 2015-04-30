@@ -34,12 +34,12 @@ QVariant PlotsModel::data(const QModelIndex& index, int role) const
     {
         if (index.column() == 0)
         {
-            QString name = toQString(plots.index(index.row()).get_name());
+            QString name = toQString(plots[index.row()].get_name());
             return QVariant(name);
         }
         else if (index.column() == 1)
         {
-            QString key = toQString(plots.index(index.row()).get_key());
+            QString key = toQString(plots[index.row()].get_key());
             return QVariant(key);
         }
     }
@@ -52,7 +52,7 @@ bool PlotsModel::removeRows(int position, int rows, const QModelIndex &parent)
 
     bool retval = true;
     for (int row = 0; row < rows; ++row) {
-        plots.delete_plot(position + row);
+        plots.remove(position + row);
     }
 
     endRemoveRows();
@@ -63,7 +63,7 @@ Plot& PlotsModel::addPlot(QString plot_name)
 {
    beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
 
-   Plot& plot = plots.add_plot("", fromQString(plot_name));
+   Plot& plot = plots.add("", fromQString(plot_name));
 
    endInsertRows();
 

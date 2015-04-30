@@ -4,6 +4,7 @@
 
 #include "plot.h"
 #include "crops.h"
+using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////
 // class Plots
@@ -13,105 +14,88 @@ Plots::Plots(const Crops& crops) : crops(crops)
 {
 }
 
-const Plot& Plots::index(int data_index) const
-{
-    if (data_index >= 0)
-    {
-        Plots::const_iterator it = this->begin();
-        advance(it, data_index);
-        return *it;
-    }
-    else
-    {
-        return NullPlot;
-    }
-}
-
-Plot& Plots::index(int data_index)
-{
-    if (data_index >= 0)
-    {
-        Plots::iterator it = this->begin();
-        advance(it, data_index);
-        return *it;
-    }
-    else
-    {
-        throw invalid_argument("Index must not be negative");
-    }
-}
-
-Plot& Plots::add_plot(string key, string name, string descr, float width, float height, float posx, float posy)
+Plot& Plots::add(string key, const string& name, const string& descr, float width, float height, float posx, float posy)
 {
     if (key == "")
     {
-        key = to_string(size());
+        key = to_string(_vplots.size());
     }
-    return add_plot(Plot(key, name, descr, width, height, posx, posy));
+    _vplots.push_back(unique_ptr<Plot>(new Plot(key, name, descr, width, height, posx, posy)));
+    return *_vplots.back();
 }
 
-Plot& Plots::add_plot(Plot plot)
+Plot* Plots::find(const string& key)
 {
-    if (get_pplot(plot.get_key()))
-    {
-        throw invalid_argument("Plot already exists in plot list");
-    }
-    push_back(plot);
-    return back();
-}
-
-void Plots::delete_plot(string key)
-{
-    Plot& del_plot = get_plot(key);
-    delete_plot(del_plot);
-}
-
-void Plots::delete_plot(int del_index)
-{
-    Plot& del_plot = index(del_index);
-    delete_plot(del_plot);
-}
-
-void Plots::delete_plot(Plot& plot)
-{
-    if ( ! crops.is_used_plot(plot) )
-    {
-        remove(plot);
-    }
-}
-
-Plot& Plots::get_plot(string key)
-{
-    Plot* pplot = get_pplot(key);
-    if (pplot)
-    {
-        return *pplot;
-    }
-    else
-    {
-        throw invalid_argument("Plot with required key does not exist");
-    }
-}
-
-Plot* Plots::get_pplot(string key)
-{
-    for (Plots::iterator it=this->begin(); it != this->end(); ++it)
-    {
-        if (it->get_key() == key)
-        {
-            return &(*it);
+    for (auto& plot_up: _vplots) {
+        if (plot_up->get_key() == key) {
+            return plot_up.get();
         }
     }
-    return NULL;
+    return nullptr;
 }
 
-bool Plots::is_used(int in_index) const
+void Plots::remove(int index)
 {
-    return is_used(index(in_index));
+    if (!crops.is_used_plot(*_vplots[index])) {
+        _vplots.erase(_vplots.begin() + index);
+    }
+}
+
+void Plots::remove(const string& key)
+{
+    //TODO: use std::find
+    auto plot_it = _vplots.begin();
+    for ( ; plot_it != _vplots.end(); ++plot_it) {
+        if ( (*(*plot_it)).get_key() == key ) {
+            break;
+        }
+    }
+
+    if (plot_it != _vplots.end()) {
+        if ( !crops.is_used_plot(*(*plot_it)) ) {
+            _vplots.erase(plot_it);
+        }
+    }
 }
 
 bool Plots::is_used(const Plot& plot) const
 {
     return crops.is_used_plot(plot);
 }
+
+my_iterator<Plot> Plots::begin()
+{
+    return my_iterator<Plot>(_vplots.begin());
+}
+
+my_iterator<Plot> Plots::end()
+{
+    return my_iterator<Plot>(_vplots.end());
+}
+
+my_const_iterator<Plot> Plots::begin() const
+{
+    return my_const_iterator<Plot>(_vplots.begin());
+}
+
+my_const_iterator<Plot> Plots::end() const
+{
+    return my_const_iterator<Plot>(_vplots.end());
+}
+
+int Plots::size() const
+{
+    return _vplots.size();
+}
+
+const Plot& Plots::operator[](int index) const
+{
+    return *_vplots[index];
+}
+
+Plot& Plots::operator[](int index)
+{
+    return *_vplots[index];
+}
+
 ///////////////////////////////////////////////////////////////////////////////

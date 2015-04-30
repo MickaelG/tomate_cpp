@@ -36,7 +36,10 @@ QDate pos_to_date(int pos, QDate date0)
     return date0.addDays(nb_days);
 }
 
-CropTimeRepresentation::CropTimeRepresentation(Crop& crop, const list<pair<float, float> >& y_coords, QDate date0, QWidget* parent) :
+CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
+                                               const list<pair<float, float> >& y_coords,
+                                               QDate date0,
+                                               QWidget* parent) :
     date0(date0), crop(crop), _global_rect(nullptr)
 {
     QString text = toQString(crop.get_plant().get_name());
@@ -160,10 +163,16 @@ void CropTimeRepresentation::delete_me()
     this->scene()->removeItem(this);
 }
 
+const Crop* CropTimeRepresentation::get_pcrop() const
+{
+    return &crop;
+}
+
 Crop* CropTimeRepresentation::get_pcrop()
 {
     return &crop;
 }
+
 
 void CropTimeRepresentation::set_selected(bool sel)
 {
@@ -479,7 +488,7 @@ void WholeTimeScene::draw_scene()
     Crops& crops = dataset.get_crops();
 
     int y_pos = 0;
-    for (const Plot plot: dataset.get_plots())
+    for (const Plot& plot: dataset.get_plots())
     {
         int y_pos_start = y_pos;
         //actual timeline

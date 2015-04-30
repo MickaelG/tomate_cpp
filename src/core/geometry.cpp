@@ -43,7 +43,13 @@ Rectangle::Rectangle()
     posy = 0;
 }
 
-Rectangle::Rectangle(Shape& shape) :
+Rectangle::Rectangle(const Shape &shape) :
+    width(shape.get_width()), height(shape.get_height()),
+    posx(shape.get_min_x()), posy(shape.get_min_y())
+{
+}
+
+Rectangle::Rectangle(const Rectangle &shape) :
     width(shape.get_width()), height(shape.get_height()),
     posx(shape.get_min_x()), posy(shape.get_min_y())
 {
@@ -110,6 +116,12 @@ void Rectangle::fit_in_plot(const Shape* parent_shape)
     {
         height = parent_shape->get_height() - posy;
     }
+}
+
+bool Rectangle::is_inside(const Shape& other) const
+{
+    //TODO: handle something else than rect
+    return is_inside(dynamic_cast<const Rectangle&>(other));
 }
 
 bool Rectangle::is_inside(const Rectangle& other) const

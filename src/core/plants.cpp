@@ -3,6 +3,8 @@
 
 #include "crops.h"
 
+using namespace std;
+
 ///////////////////////////////////////////////////////////////////////////////
 // class Plants
 ///////////////////////////////////////////////////////////////////////////////
@@ -11,106 +13,84 @@ Plants::Plants(const Crops& crops) : crops(crops)
 {
 }
 
-Plant& Plants::index(int data_index)
-{
-    if (data_index >= 0)
-    {
-        Plants::iterator it = this->begin();
-        advance(it, data_index);
-        return *it;
-    }
-    else
-    {
-        throw invalid_argument("Index must not be negative");
-    }
-}
-
-const Plant& Plants::index(int data_index) const
-{
-    if (data_index >= 0)
-    {
-        Plants::const_iterator it = this->begin();
-        advance(it, data_index);
-        return *it;
-    }
-    else
-    {
-        return NullPlant;
-    }
-}
-
-Plant& Plants::add_plant(string key, string name)
+Plant& Plants::add(string key, const string& name, const string& note)
 {
     if (key == "")
     {
-        key = to_string(size());
+        key = to_string(_vplants.size());
     }
-    if (get_pplant(key))
-    {
-        throw invalid_argument("Plant already exists in plot list");
-    }
-    push_back(Plant(key, name));
-    return back();
+    _vplants.push_back(unique_ptr<Plant>(new Plant(key, name, note)));
+    return *_vplants.back();
 }
 
-Plant& Plants::get_plant(string key)
+Plant* Plants::find(const std::string& key)
 {
-    Plant* pplant = get_pplant(key);
-    if (pplant)
-    {
-        return *pplant;
-    }
-    else
-    {
-        throw invalid_argument("Plant with required key does not exist");
-    }
-}
-
-Plant* Plants::get_pplant(string key)
-{
-    for (Plants::iterator it=this->begin(); it != this->end(); ++it)
-    {
-        if (it->get_key() == key)
-        {
-            return &(*it);
+    for (auto& plant_up: _vplants) {
+        if (plant_up->get_key() == key) {
+            return plant_up.get();
         }
     }
     return NULL;
 }
 
-int Plants::delete_plant(string key)
+void Plants::remove(int iplant)
 {
-    Plant& del_plant = get_plant(key);
-    return delete_plant(del_plant);
-}
-
-int Plants::delete_plant(int del_index)
-{
-    Plant& del_plant = index(del_index);
-    return delete_plant(del_plant);
-}
-
-int Plants::delete_plant(Plant& plant)
-{
-    if ( ! crops.is_used_plant(plant) )
+    if (iplant >= _vplants.size())
     {
-        remove(plant);
-        return 0;
+        return;
     }
-    else
-    {
-        return -1;
-    }
+    _vplants.erase(_vplants.begin() + iplant);
 }
 
-bool Plants::is_used(int in_index) const
+bool Plants::delete_plant(int iplant)
 {
-    return is_used(index(in_index));
+    if ( ! crops.is_used_plant(*_vplants[iplant]) )
+    {
+        remove(iplant);
+        return true;
+    }
+    return false;
 }
 
 bool Plants::is_used(const Plant& plant) const
 {
     return crops.is_used_plant(plant);
 }
+
+my_iterator<Plant> Plants::begin()
+{
+    return my_iterator<Plant>(_vplants.begin());
+}
+
+my_iterator<Plant> Plants::end()
+{
+    return my_iterator<Plant>(_vplants.end());
+}
+
+my_const_iterator<Plant> Plants::begin() const
+{
+    return my_const_iterator<Plant>(_vplants.begin());
+}
+
+my_const_iterator<Plant> Plants::end() const
+{
+    return my_const_iterator<Plant>(_vplants.end());
+}
+
+int Plants::size() const
+{
+    return _vplants.size();
+}
+
+const Plant& Plants::operator[](int index) const
+{
+    return *_vplants[index];
+}
+
+Plant& Plants::operator[](int index)
+{
+    return *_vplants[index];
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 

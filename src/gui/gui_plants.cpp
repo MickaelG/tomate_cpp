@@ -142,7 +142,7 @@ PlantsWindow::PlantsWindow(PlantsModel* plants_model, QWidget* parent) :
 Plant& PlantsWindow::selected_plant()
 {
     int plant_index = plants_widget->selectionModel()->currentIndex().row();
-    return plants_model->get_plants().index(plant_index);
+    return *(plants_model->get_plants().begin() + plant_index);
 }
 
 void PlantsWindow::set_color()
@@ -172,7 +172,8 @@ void PlantsWindow::update_plant_data(const QModelIndex& current_plant_mi, const 
 
 void PlantsWindow::update_del_btn(int current_plant_index)
 {
-    if (plants_model->get_plants().is_used(current_plant_index)) {
+    const Plant& curr_plant = *(plants_model->get_plants().begin() + current_plant_index);
+    if (plants_model->get_plants().is_used(curr_plant)) {
         del_plant_btn->setEnabled(false);
     } else {
         del_plant_btn->setEnabled(true);
@@ -202,13 +203,13 @@ void PlantsWindow::update_notes(int current_plant_index, int previous_plant_inde
     if (previous_plant_index >= 0)
     {
         QString text = notes_widget->toPlainText();
-        plants_model->get_plants().index(previous_plant_index).set_note(fromQString(text));
+        (plants_model->get_plants().begin() + previous_plant_index)->set_note(fromQString(text));
     }
 
     //and get the notes for the new plant
     if (current_plant_index >= 0)
     {
-        QString text = toQString(plants_model->get_plants().index(current_plant_index).get_note());
+        QString text = toQString((plants_model->get_plants().begin() + current_plant_index)->get_note());
         notes_widget->setPlainText(text);
     }
 }

@@ -3,26 +3,35 @@
 #define PLANTS_H
 
 #include "plant.h"
+
+#include <vector>
+#include <memory>
+
+#include "my_iterator.h"
+#include "plant.h"
 class Crops;
 
-//this is dangerous to store reference from vector elements. use list.
-class Plants: public list<Plant>
+class Plants
 {
 public:
     Plants(const Crops& crops);
-    Plant& index(int data_index);
-    const Plant& index(int data_index) const;
-    Plant& add_plant(string key, string name);
-    Plant& get_plant(string key);
-    Plant* get_pplant(string key);
-    int delete_plant(string key);
-    int delete_plant(int index);
-    int delete_plant(Plant& plant);
-    bool is_used(int index) const;
+    Plant& add(std::string key, const std::string& name, const std::string& note="");
+    Plant* find(const std::string& key);
+    bool delete_plant(int iplant);
     bool is_used(const Plant& plant) const;
+    my_iterator<Plant> begin();
+    my_iterator<Plant> end();
+    my_const_iterator<Plant> begin() const;
+    my_const_iterator<Plant> end() const;
+    const Plant& operator[](int index) const;
+    Plant& operator[](int index);
+    int size() const;
 
 private:
+    void remove(int iplant);
+
     const Crops& crops;
+    std::vector<std::unique_ptr<Plant> > _vplants;
 };
 
 #endif //PLANTS_H

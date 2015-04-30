@@ -46,7 +46,7 @@ int PlantsModel::rowCount(const QModelIndex& parent) const
         int plant_index =  parent.row();
         if (plant_index >= 0 && plant_index < plants.size())
         {
-            Plants::iterator it = plants.begin();
+            auto it = plants.begin();
             advance(it, plant_index);
             int var_size = it->get_vars().size();
             return var_size;
@@ -68,12 +68,12 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
         {
             if (index.column() == 0)
             {
-                QString name = toQString(plants.index(index.row()).get_name());
+                QString name = toQString(plants[index.row()].get_name());
                 return QVariant(name);
             }
             else if (index.column() == 1)
             {
-                QString key = toQString(plants.index(index.row()).get_key());
+                QString key = toQString(plants[index.row()].get_key());
                 return QVariant(key);
             }
         }
@@ -88,10 +88,10 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
             {
                 if (plant_index >= 0)
                 {
-                    Plants::iterator it = plants.begin();
+                    auto it = plants.begin();
                     advance(it, plant_index);
-                    Vars vars = it->get_vars();
-                    Vars::iterator itv = vars.begin();
+                    const Vars& vars = it->get_vars();
+                    auto itv = vars.begin();
                     if (index.row() > vars.size()-1) {
                         return QVariant(QString("ERROR"));
                     }
@@ -103,10 +103,10 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
             {
                 if (plant_index > 0)
                 {
-                    Plants::iterator it = plants.begin();
+                    auto it = plants.begin();
                     advance(it, plant_index);
-                    Vars vars = it->get_vars();
-                    Vars::iterator itv = vars.begin();
+                    const Vars& vars = it->get_vars();
+                    auto itv = vars.begin();
                     advance(itv, index.row());
                     return QVariant(toQString(itv->get_key()));
                 }
@@ -134,7 +134,7 @@ void PlantsModel::addPlant(QString plant_name)
 {
    beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
 
-   plants.add_plant("", fromQString(plant_name));
+   plants.add("", fromQString(plant_name));
 
    endInsertRows();
 }
@@ -144,7 +144,7 @@ void PlantsModel::addVar(const QModelIndex& plant_mi, QString var_name)
    beginInsertRows(plant_mi, rowCount(plant_mi), rowCount(plant_mi)+1);
 
    int plant_index = plant_mi.row();
-   plants.index(plant_index).add_var("", fromQString(var_name));
+   plants[plant_index].add_var("", fromQString(var_name));
 
    endInsertRows();
 }
