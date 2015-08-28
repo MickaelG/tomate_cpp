@@ -30,6 +30,10 @@ int PlotsModel::columnCount(const QModelIndex& index) const
 
 QVariant PlotsModel::data(const QModelIndex& index, int role) const
 {
+    if (index.row() >= plots.size() || index.row() < 0) {
+        return QVariant();
+    }
+
     if (role == Qt::DisplayRole)
     {
         if (index.column() == 0)

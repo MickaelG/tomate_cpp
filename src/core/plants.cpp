@@ -30,7 +30,7 @@ Plant* Plants::find(const std::string& key)
             return plant_up.get();
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 void Plants::remove(int iplant)

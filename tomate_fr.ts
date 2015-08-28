@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="fr_FR">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>AddDialog</name>
     <message>
@@ -247,22 +247,22 @@
 <context>
     <name>PhysInput</name>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="37"/>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="62"/>
         <source>x position:</source>
         <translation>position x :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="39"/>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="64"/>
         <source>y position:</source>
         <translation>position y :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="41"/>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="66"/>
         <source>width:</source>
         <translation>largeur :</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="43"/>
+        <location filename="src/gui/gui_widgets/PhysInput.cpp" line="68"/>
         <source>height:</source>
         <translation>hauteur :</translation>
     </message>
@@ -337,6 +337,8 @@
         <location filename="src/main.cpp" line="38"/>
         <location filename="src/main.cpp" line="59"/>
         <location filename="src/main.cpp" line="81"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="78"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="87"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
@@ -366,12 +368,22 @@
         <translation>Erreur d&apos;écriture du fichier de données.</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="115"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="79"/>
+        <source>Please select a plot.</source>
+        <translation>Veuillez sélectionner une planche.</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="88"/>
+        <source>Please select a plant.</source>
+        <translation>Veuillez sélectionner une plante.</translation>
+    </message>
+    <message>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="125"/>
         <source>Delete crop</source>
         <translation>Suppression d&apos;une culture</translation>
     </message>
     <message>
-        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="116"/>
+        <location filename="src/gui/gui_widgets/EditCropWidget.cpp" line="126"/>
         <source>Are you sure you want to delete the crop ?</source>
         <translation>Êtes-vous sûr de vouloir supprimer cette culture ?</translation>
     </message>

@@ -74,10 +74,20 @@ void EditCropWidget::edit_crop()
 {
     QString plot_key = ui->plotInput->currentElem();
     Plot* p_plot = dataset.get_plots().find(fromQString(plot_key));
+    if (p_plot == nullptr) {
+       QMessageBox::critical(NULL, QObject::tr("Error"),
+                              QObject::tr("Please select a plot."));
+       return;
+    }
     Rectangle rect = ui->shapeInput->get_rect();
 
     QString plant_key = ui->plantInput->currentElem();
     Plant* p_plant = dataset.get_plants().find(fromQString(plant_key));
+    if (p_plant == nullptr) {
+       QMessageBox::critical(NULL, QObject::tr("Error"),
+                              QObject::tr("Please select a plant."));
+       return;
+    }
     QString var_key = ui->varInput->currentElem();
     
     QDate start_date = ui->startdateInput->selectedDate();

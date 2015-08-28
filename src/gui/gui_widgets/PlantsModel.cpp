@@ -64,6 +64,9 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
 {
     if (! index.parent().isValid())  // parent is invalid: we want the plant
     {
+        if (index.row() >= plants.size() || index.row() < 0) {
+            return QVariant();
+        }
         if (role == Qt::DisplayRole)
         {
             if (index.column() == 0)
@@ -82,6 +85,9 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
     else
     {
         int plant_index =  index.parent().row();
+        if (plant_index >= plants.size() || plant_index < 0) {
+            return QVariant();
+        }
         if (role == Qt::DisplayRole)
         {
             if (index.column() == 0)
