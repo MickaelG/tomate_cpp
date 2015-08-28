@@ -55,14 +55,19 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
     for (pair<float, float> yc: y_coords) {
         QGraphicsItemGroup* curr_group = new QGraphicsItemGroup();
         QGraphicsRectItem* planned_rect = create_rect(p_start_date, p_end_date, yc.first, yc.second, true);
-        if (planned_rect) {
+        if (planned_rect != nullptr) {
             update_global_rect(*planned_rect);
             curr_group->addToGroup(planned_rect);
         }
         QGraphicsRectItem* real_rect = create_rect(start_date, end_date, yc.first, yc.second, false);
-        if (real_rect) {
+        if (real_rect != nullptr) {
             update_global_rect(*real_rect);
             curr_group->addToGroup(real_rect);
+        }
+
+        if (planned_rect == nullptr && real_rect == nullptr) {
+            std::cout << "Warning: No rect as be drawn (" <<
+                         yc.first << "/" << yc.second << ")" << std::endl;
         }
 
         QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
@@ -71,6 +76,10 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
         curr_group->addToGroup(new QGraphicsRectItem(boundingRect()));
         this->addToGroup(curr_group);
     }
+    if (y_coords.empty()) {
+        std::cout << "Warning: no y_coords for crop" << std::endl;
+    }
+
     if (_global_rect != nullptr) {
         this->addToGroup(_global_rect);
     }
@@ -176,6 +185,11 @@ Crop* CropTimeRepresentation::get_pcrop()
 
 void CropTimeRepresentation::set_selected(bool sel)
 {
+    if (_global_rect == nullptr) {
+        std::cout << "Warning: global_rect is null" << std::endl;
+        return;
+    }
+
     if (sel) {
       QPen selected_pen;
       selected_pen.setWidth(4);

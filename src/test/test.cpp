@@ -983,3 +983,67 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_11)
     //cout << "DEBUG partitions:" << partitions << endl;
     BOOST_CHECK(partitions.empty());
 }
+
+BOOST_AUTO_TEST_CASE(timeline_ycomputing_12)
+{
+    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+
+    list<Rectangle*> lrect;
+    lrect.push_back(new Rectangle(0, 0, 100, 100));
+    list<Crop*> l_crops;
+    for (Rectangle* rect: lrect) {
+        Crop* ncrop_p = new Crop();
+        ncrop_p->set_shape(rect);
+        ncrop_p->set_plot(plot);
+        l_crops.push_back(ncrop_p);
+    }
+
+    list<Rectangle> partitions = compute_partitions(l_crops, plot);
+    //cout << "DEBUG partitions:" << partitions << endl;
+    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
+        const Crop* crop_p = l_crops.front();
+        l_crops.pop_front();
+        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
+        list< pair<float, float> > refcoords;
+        switch (icrop) {
+        case 0:
+            refcoords.push_back(make_pair(0.0, 1));
+            break;
+        }
+        BOOST_CHECK_EQUAL(ycoords, refcoords);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(timeline_ycomputing_13)
+{
+    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+
+    list<Rectangle*> lrect;
+    lrect.push_back(new Rectangle(0, 0, 100, 100));
+    lrect.push_back(new Rectangle(0, 50, 100, 50));
+    list<Crop*> l_crops;
+    for (Rectangle* rect: lrect) {
+        Crop* ncrop_p = new Crop();
+        ncrop_p->set_shape(rect);
+        ncrop_p->set_plot(plot);
+        l_crops.push_back(ncrop_p);
+    }
+
+    list<Rectangle> partitions = compute_partitions(l_crops, plot);
+    //cout << "DEBUG partitions:" << partitions << endl;
+    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
+        const Crop* crop_p = l_crops.front();
+        l_crops.pop_front();
+        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
+        list< pair<float, float> > refcoords;
+        switch (icrop) {
+        case 0:
+            refcoords.push_back(make_pair(0.0, 1));
+            break;
+        case 1:
+            refcoords.push_back(make_pair(0.5, 1));
+            break;
+        }
+        BOOST_CHECK_EQUAL(ycoords, refcoords);
+    }
+}

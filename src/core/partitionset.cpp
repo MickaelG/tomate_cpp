@@ -257,6 +257,10 @@ static list<Rectangle> sort_partitions(set<Rectangle>& partitions, const list<Cr
 list< pair<float, float> > compute_timerepr(const Crop& crop, const list<Rectangle>& partitions)
 {
     list< pair<float, float> > y_coords;
+    if (partitions.empty()) {
+        y_coords.push_back(make_pair(0, 1));
+        return y_coords;
+    }
     //TODO: handle split crops
     float timeoffset = 0;
     const Shape* plot_shape_p = crop.get_plot().get_shape();
