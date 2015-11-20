@@ -29,6 +29,14 @@ private:
 class Crop
 {
 public:
+    enum class DateSel {
+        INVALID,
+        START,
+        END,
+        PLANNED_START,
+        PLANNED_END
+    };
+
     Crop();
     Crop(bg::date start_date, bg::date end_date,
          bg::date planned_start_date, bg::date planned_end_date,
@@ -37,7 +45,7 @@ public:
     Crop(bg::date start_date, bg::date end_date,
          Plant* p_plant, const std::string& varkey,
          Plot* p_plot, const std::string& note = "");
-    std::string str_descr() const;
+    std::string get_repr() const;
 
     Plant* get_pplant();
     Plant& get_plant();
@@ -49,8 +57,8 @@ public:
     Plot* get_pplot();
     void set_plot(Plot& plot);
 
-    bg::date get_date(std::string which) const;
-    void set_date(std::string which, bg::date date);
+    bg::date get_date(DateSel which) const;
+    void set_date(DateSel which, bg::date date);
     bg::date get_virtual_end_date() const;
     bg::date get_virtual_planned_start_date() const;
     bg::date get_virtual_planned_end_date() const;
@@ -96,6 +104,7 @@ public:
               bg::date planned_start_date, bg::date planned_end_date,
               Plant *p_plant, const std::string& varkey,
               Plot *p_plot, const std::string& note = "", Rectangle rect=Rectangle());
+    Crop& add(const Crop& crop);
     bool is_used_plot(const Plot& plot) const;
     bool is_used_plant(const Plant& plant) const;
     void remove(const Crop& crop);

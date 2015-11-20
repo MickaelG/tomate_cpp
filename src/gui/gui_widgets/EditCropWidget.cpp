@@ -46,10 +46,10 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
     this->p_crop = p_crop;
     if (p_crop)
     {
-        ui->startdateInput->setSelectedDate(toQDate(p_crop->get_date("start")));
-        ui->enddateInput->setSelectedDate(toQDate(p_crop->get_date("end")));
-        ui->plannedstartdateInput->setSelectedDate(toQDate(p_crop->get_date("planned_start")));
-        ui->plannedenddateInput->setSelectedDate(toQDate(p_crop->get_date("planned_end")));
+        ui->startdateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::START)));
+        ui->enddateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::END)));
+        ui->plannedstartdateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::PLANNED_START)));
+        ui->plannedenddateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::PLANNED_END)));
         ui->plantInput->setCurrentElem(toQString(p_crop->get_plant().get_key()));
         if (p_crop->get_varkey() != "")
         {
@@ -105,10 +105,10 @@ void EditCropWidget::edit_crop()
     }
     else
     {
-        p_crop->set_date("start", fromQDate(start_date));
-        p_crop->set_date("end", fromQDate(end_date));
-        p_crop->set_date("planned_start", fromQDate(planned_start_date));
-        p_crop->set_date("planned_end", fromQDate(planned_end_date));
+        p_crop->set_date(Crop::DateSel::START, fromQDate(start_date));
+        p_crop->set_date(Crop::DateSel::END, fromQDate(end_date));
+        p_crop->set_date(Crop::DateSel::PLANNED_START, fromQDate(planned_start_date));
+        p_crop->set_date(Crop::DateSel::PLANNED_END, fromQDate(planned_end_date));
         p_crop->set_plot(*p_plot);
         p_crop->set_shape(new Rectangle(rect));
         p_crop->set_plant(*p_plant);

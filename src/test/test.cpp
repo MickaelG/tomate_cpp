@@ -5,6 +5,7 @@
 #include "dataset.h"
 #include "plot.h"
 #include "plant.h"
+#include "calendar.h"
 #include "xml.h"
 
 BOOST_AUTO_TEST_CASE(crops)
@@ -1046,4 +1047,22 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_13)
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
     }
+}
+
+BOOST_AUTO_TEST_CASE(calendar_test_1)
+{
+    Plant plant("pl", "plant_name");
+    Plot plot("pn", "plot_name");
+    Crop crop1(bg::date(2012, 10, 2), bg::date(), &plant, "", &plot);
+    Crops crops;
+    crops.add(crop1);
+
+    Calendar TestCal(crops);
+    for (auto& event: TestCal.GetEvents()) {
+        BOOST_CHECK_EQUAL(event->GetDate(), bg::date(2012, 10, 2));
+    }
+    BOOST_CHECK_EQUAL(TestCal.GetEvents(bg::date(2012, 10, 2)).size(), 1);
+    BOOST_CHECK_EQUAL(TestCal.GetEvents(bg::date(2012, 10, 3)).size(), 0);
+    BOOST_CHECK_EQUAL(TestCal.GetEvents(bg::date(2012, 9, 1), bg::date(2012, 10, 2)).size(), 1);
+    BOOST_CHECK_EQUAL(TestCal.GetEvents(bg::date(2012, 9, 1), bg::date(2012, 10, 1)).size(), 0);
 }

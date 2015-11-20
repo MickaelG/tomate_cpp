@@ -49,7 +49,7 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
     if (p_start_date > p_end_date) {
         std::cout << "Error with crop " << crop.get_plant().get_name() << std::endl;
     }
-    QDate start_date = toQDate(crop.get_date("start"));
+    QDate start_date = toQDate(crop.get_date(Crop::DateSel::START));
     QDate end_date = toQDate(crop.get_virtual_end_date());
 
     for (pair<float, float> yc: y_coords) {

@@ -239,9 +239,26 @@ int xml_write_data(string filename, const Dataset& dataset)
     for (const Crop& crop: dataset.get_crops())
     {
         xml_node elem_node = crop_node.append_child("crop");
-        for (string which_date: {"start", "end", "planned_start", "planned_end"} )
+        for (Crop::DateSel which_date: {Crop::DateSel::START, Crop::DateSel::END,
+                                        Crop::DateSel::PLANNED_START, Crop::DateSel::PLANNED_END} )
         {
-            add_date_attribute(elem_node, which_date + "_date", crop.get_date(which_date));
+            string which_str;
+            switch (which_date) {
+            case Crop::DateSel::START:
+                which_str = "start";
+                break;
+            case Crop::DateSel::END:
+                which_str = "end";
+                break;
+            case Crop::DateSel::PLANNED_START:
+                which_str = "planned_start";
+                break;
+            case Crop::DateSel::PLANNED_END:
+                which_str = "planned_end";
+                break;
+            }
+
+            add_date_attribute(elem_node, which_str + "_date", crop.get_date(which_date));
         }
         elem_node.append_attribute("plant") = crop.get_plant().get_key().c_str();
         add_str_attribute(elem_node, "var", crop.get_varkey());

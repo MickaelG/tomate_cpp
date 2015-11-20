@@ -10,52 +10,50 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////
 // class Crop
 ///////////////////////////////////////////////////////////////////////////////
-string Crop::str_descr() const
+string Crop::get_repr() const
 {
     return p_plant->get_name();
 }
 
-bg::date Crop::get_date(string which) const
+bg::date Crop::get_date(DateSel which) const
 {
-    if (which == "planned_start")
-    {
-        return planned_start_date;
-    }
-    else if (which == "planned_end")
-    {
-        return planned_end_date;
-    }
-    else if (which == "end")
-    {
-        return end_date;
-    }
-    else if (which == "start")
-    {
+    switch (which) {
+    case DateSel::START:
         return start_date;
-    } else {
+        break;
+    case DateSel::END:
+        return end_date;
+        break;
+    case DateSel::PLANNED_END:
+        return planned_end_date;
+        break;
+    case DateSel::PLANNED_START:
+        return planned_start_date;
+        break;
+    default:
         throw "Erreur, unknown which";
+        break;
     }
 }
 
-void Crop::set_date(string which, bg::date date)
+void Crop::set_date(DateSel which, bg::date date)
 {
-    if (which == "planned_start")
-    {
-        planned_start_date = date;
-    }
-    else if (which == "planned_end")
-    {
-        planned_end_date = date;
-    }
-    else if (which == "end")
-    {
-       end_date = date;
-    }
-    else if (which == "start")
-    {
+    switch (which) {
+    case DateSel::START:
         start_date = date;
-    } else {
-
+        break;
+    case DateSel::END:
+        end_date = date;
+        break;
+    case DateSel::PLANNED_END:
+        planned_end_date = date;
+        break;
+    case DateSel::PLANNED_START:
+        planned_start_date = date;
+        break;
+    default:
+        throw "Erreur, unknown which";
+        break;
     }
 }
 
@@ -90,10 +88,10 @@ Crop::Crop(bg::date start_date, bg::date end_date,
 
 string Crop::description() const
 {
-    return get_plant().get_name() + " start:" + bg::to_simple_string(get_date("start")) +
-                                    " end:"   + bg::to_simple_string(get_date("end")) +
-                                    " planned_start:" + bg::to_simple_string(get_date("planned_start")) +
-                                    " planned_end:"   + bg::to_simple_string(get_date("planned_end"));
+    return get_plant().get_name() + " start:" + bg::to_simple_string(get_date(DateSel::START)) +
+                                    " end:"   + bg::to_simple_string(get_date(DateSel::END)) +
+                                    " planned_start:" + bg::to_simple_string(get_date(DateSel::PLANNED_START)) +
+                                    " planned_end:"   + bg::to_simple_string(get_date(DateSel::PLANNED_END));
 }
 
 Plant* Crop::get_pplant()
@@ -334,6 +332,13 @@ Crop& Crops::add(bg::date start_date, bg::date end_date,
 {
     _vcrops.push_back(unique_ptr<Crop>(new Crop(start_date, end_date, planned_start_date, planned_end_date,
                                                 p_plant, varkey, p_plot, note, rect)));
+    return *_vcrops.back();
+
+}
+
+Crop& Crops::add(const Crop& crop)
+{
+    _vcrops.push_back(unique_ptr<Crop>(new Crop(crop)));
     return *_vcrops.back();
 
 }
