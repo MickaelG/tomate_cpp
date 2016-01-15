@@ -66,7 +66,7 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
         }
 
         if (planned_rect == nullptr && real_rect == nullptr) {
-            std::cout << "Warning: No rect as be drawn (" <<
+            std::cout << "Warning: No rect as been drawn (" <<
                          yc.first << "/" << yc.second << ")" << std::endl;
         }
 
