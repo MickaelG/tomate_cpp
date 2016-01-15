@@ -48,7 +48,6 @@ class WholeScene: public QGraphicsScene
 
 public:
     WholeScene(Dataset& dataset);
-    void update_draw();
     void draw_scene();
     void clear_scene();
     Crop* getCropAtPos(QPointF scene_pos);
@@ -59,6 +58,7 @@ public:
 private slots:
     void set_date(QDate date);
     void selectCrop(Crop *p_crop);
+    void update_draw();
 
 signals:
     void crop_selected(Crop* p_crop);
@@ -71,33 +71,13 @@ private:
     vector<PlotRepresentation*> plot_reprs;
 };
 
-class WholeSceneView: public QGraphicsView
+class AutofitSceneView: public QGraphicsView
 {
     Q_OBJECT
     
 public:
-    WholeSceneView(Dataset& dataset, QWidget* parent);
+    AutofitSceneView(QWidget* parent = nullptr);
     void zoom_fit();
-    void update_draw();
     void resizeEvent(QResizeEvent *event);
-    WholeScene* get_scene() { return &my_scene; };
-
-private:
-    WholeScene my_scene;
-};
-
-class SpaceViewWindow: public QWidget
-{
-    Q_OBJECT
-
-public:
-    SpaceViewWindow(Dataset& data);
-    WholeSceneView* get_view() { return &view; };
-     
-private slots:
-    void update_draw();
-
-private:
-    WholeSceneView view;
 };
 

@@ -89,25 +89,12 @@ class WholeTimeSceneView: public QGraphicsView
 
 public:
     WholeTimeSceneView(Dataset& dataset, QWidget* parent=NULL);
-    void update_draw();
     void update_rect();
     WholeTimeScene* get_scene() { return _scene; };
 
-private:
-    WholeTimeScene* _scene;
-};
-
-class TimelineWindow: public QWidget
-{
-    Q_OBJECT
-
-public:
-    TimelineWindow(Dataset& dataset, QWidget* parent=NULL);
-    WholeTimeSceneView* get_view() { return &view; };
-    
 private slots:
     void update_draw();
 
 private:
-    WholeTimeSceneView view;
+    WholeTimeScene* _scene;
 };

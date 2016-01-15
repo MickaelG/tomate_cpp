@@ -1,10 +1,12 @@
 
 #include "dataset.h"
+#include "calendar.h"
 #include "gui_mainwin.h"
 #include "gui_plants.h"
 #include "gui_plots.h"
 #include "gui_spaceview.h"
 #include "gui_timeline.h"
+#include "gui_calendar.h"
 #include "PlantsModel.h"
 #include "PlotsModel.h"
 #include "EditCropWidget.h"
@@ -21,39 +23,47 @@ QWidget* createTabsWidget(Dataset& data)
 
     QTabWidget* tab_widget = new QTabWidget;
 
-    SpaceViewWindow* spacewidget = new SpaceViewWindow(data);
-    tab_widget->addTab(spacewidget, QObject::tr("Space view"));
+    WholeScene* spacescene = new WholeScene(data);
+    AutofitSceneView* spaceview = new AutofitSceneView();
+    spaceview->setScene(spacescene);
+    tab_widget->addTab(spaceview, QObject::tr("Space view"));
 
-    TimelineWindow* timewidget = new TimelineWindow(data);
-    tab_widget->addTab(timewidget, QObject::tr("Time view"));
+
+    WholeTimeSceneView* timeview = new WholeTimeSceneView(data);
+    tab_widget->addTab(timeview, QObject::tr("Time view"));
+
+    //CalendarScene* calendarscene = new CalendarScene(CropsCalendar(data.get_crops()));
+    //AutofitSceneView* calendarview = new AutofitSceneView();
+    //calendarview->setScene(calendarscene);
+    //tab_widget->addTab(calendarview, QObject::tr("Calendar"));
 
     PlantsWindow* plantswidget = new PlantsWindow(plants_model);
     PlotsWindow* plotswidget = new PlotsWindow(plots_model);
 
     EditCropWidget* edit_crop_widget = new EditCropWidget(data, plants_model, plots_model);
 
-    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
-    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update_draw()));
+    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), spacescene, SLOT(update_draw()));
+    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), timeview, SLOT(update_draw()));
 
-    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacewidget, SLOT(update_draw()));
-    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timewidget, SLOT(update_draw()));
+    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacescene, SLOT(update_draw()));
+    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timeview, SLOT(update_draw()));
 
-    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), timewidget, SLOT(update_draw()));
-    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), spacewidget, SLOT(update_draw()));
+    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), timeview, SLOT(update_draw()));
+    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), spacescene, SLOT(update_draw()));
 
-    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), timewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
-    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), spacewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
+    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), timeview->get_scene(), SLOT(selectCrop(Crop*)));
+    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), spacescene, SLOT(selectCrop(Crop*)));
 
     //Date of the spacewidget
-    QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(current_date_changed(QDate)), spacewidget->get_view()->get_scene(), SLOT(set_date(QDate)));
+    QObject::connect(timeview->get_scene(), SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
 
     //Crops selection synchronisation
-    QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
-    QObject::connect(spacewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
-    QObject::connect(timewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)),
-                     spacewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
-    QObject::connect(spacewidget->get_view()->get_scene(), SIGNAL(crop_selected(Crop*)),
-                     timewidget->get_view()->get_scene(), SLOT(selectCrop(Crop*)));
+    QObject::connect(timeview->get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
+    QObject::connect(spacescene, SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
+    QObject::connect(timeview->get_scene(), SIGNAL(crop_selected(Crop*)),
+                     spacescene, SLOT(selectCrop(Crop*)));
+    QObject::connect(spacescene, SIGNAL(crop_selected(Crop*)),
+                     timeview->get_scene(), SLOT(selectCrop(Crop*)));
 
     QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));

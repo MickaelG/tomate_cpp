@@ -11,37 +11,19 @@
 #include <QColor>
 #include <QBrush>
 #include <QGraphicsSceneMouseEvent>
-
-SpaceViewWindow::SpaceViewWindow(Dataset& dataset) : view(dataset, this)
-{
-    this->setLayout(new QGridLayout);
-    this->layout()->addWidget(&view);
-}
-
-void SpaceViewWindow::update_draw()
-{
-    view.update_draw();
-}
                 
-WholeSceneView::WholeSceneView(Dataset& dataset, QWidget* parent):
-  my_scene(dataset)
+
+AutofitSceneView::AutofitSceneView(QWidget* parent) :
+    QGraphicsView(parent)
 {
-    setScene(&my_scene);
-    zoom_fit();
 }
 
-void WholeSceneView::update_draw()
-{
-    my_scene.update_draw();
-    zoom_fit();
-}
-
-void WholeSceneView::zoom_fit()
+void AutofitSceneView::zoom_fit()
 {
     fitInView(sceneRect(), Qt::KeepAspectRatio);
 }
 
-void WholeSceneView::resizeEvent(QResizeEvent *event)
+void AutofitSceneView::resizeEvent(QResizeEvent *event)
 {
     zoom_fit();
 }

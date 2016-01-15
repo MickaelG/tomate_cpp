@@ -568,16 +568,3 @@ void WholeTimeSceneView::update_rect()
                       width + 2 * Margin, height + 2 * Margin);
     this->setAlignment(Qt::AlignTop);
 }
-
-TimelineWindow::TimelineWindow(Dataset& dataset, QWidget* parent) :
-    view(dataset, this)
-{
-    this->setLayout(new QGridLayout);
-    this->layout()->addWidget(&view);
-}
-
-
-void TimelineWindow::update_draw()
-{
-    view.update_draw();
-}

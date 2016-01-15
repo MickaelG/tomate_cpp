@@ -55,12 +55,12 @@ bool EventIterator::equals(const EventIterator &rhs) const
 ///////////////////////////////////////////////////////////////////////////////
 
 
-Calendar::Calendar(const Crops& crops) : _crops(crops)
+CropsCalendar::CropsCalendar(const Crops& crops) : _crops(crops)
 {
 }
 
 vector< unique_ptr< CalendarEvent > >
-Calendar::GetEvents(bg::date start, bg::date end)
+CropsCalendar::GetEvents(bg::date start, bg::date end) const
 {
     std::vector< std::unique_ptr< CalendarEvent > > result;
     bg::date_period period(start, end + bg::date_duration(1));
@@ -76,17 +76,22 @@ Calendar::GetEvents(bg::date start, bg::date end)
     return result;
 }
 
+bg::date CalendarEvent::GetEndDate() const
+{
+    return GetStartDate();
+}
+
 CustomCalendarEvent::CustomCalendarEvent(bg::date date, std::string title) :
     _date(date), _title(title)
 {
 }
 
-bg::date CustomCalendarEvent::GetDate()
+bg::date CustomCalendarEvent::GetStartDate() const
 {
     return _date;
 }
 
-string CustomCalendarEvent::GetTitle()
+string CustomCalendarEvent::GetTitle() const
 {
     return _title;
 }
@@ -96,12 +101,12 @@ CropCalendarEvent::CropCalendarEvent(const Crop& crop, Crop::DateSel date_sel) :
 {
 }
 
-bg::date CropCalendarEvent::GetDate()
+bg::date CropCalendarEvent::GetStartDate() const
 {
     return _crop.get_date(_date_sel);
 }
 
-string CropCalendarEvent::GetTitle()
+string CropCalendarEvent::GetTitle() const
 {
     return _crop.get_repr();
 }

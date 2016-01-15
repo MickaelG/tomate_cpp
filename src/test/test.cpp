@@ -1057,9 +1057,9 @@ BOOST_AUTO_TEST_CASE(calendar_test_1)
     Crops crops;
     crops.add(crop1);
 
-    Calendar TestCal(crops);
+    CropsCalendar TestCal(crops);
     for (auto& event: TestCal.GetEvents()) {
-        BOOST_CHECK_EQUAL(event->GetDate(), bg::date(2012, 10, 2));
+        BOOST_CHECK_EQUAL(event->GetStartDate(), bg::date(2012, 10, 2));
     }
     BOOST_CHECK_EQUAL(TestCal.GetEvents(bg::date(2012, 10, 2)).size(), 1);
     BOOST_CHECK_EQUAL(TestCal.GetEvents(bg::date(2012, 10, 3)).size(), 0);
