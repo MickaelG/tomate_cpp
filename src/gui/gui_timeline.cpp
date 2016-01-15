@@ -488,6 +488,16 @@ void WholeTimeScene::add_year_buttons()
     addItem(text);
 }
 
+list< pair<float, float> > compute_crop_ypos(const Crop& crop, const Plot& plot)
+{
+    float pos = 0;
+    float height = crop.get_shape()->get_area() / plot.get_shape()->get_area();
+
+    list< pair<float, float> > result;
+    result.push_back(make_pair(pos, height));
+    return result;
+}
+
 
 void WholeTimeScene::draw_scene()
 {
@@ -501,10 +511,14 @@ void WholeTimeScene::draw_scene()
 
     Crops& crops = dataset.get_crops();
 
-    int y_pos = 0;
+    qreal plot_max_pos = 0;
     for (const Plot& plot: dataset.get_plots())
     {
-        int y_pos_start = y_pos;
+        qreal y_pos_start = plot_max_pos;
+        if (y_pos_start != 0) {
+            y_pos_start += Margin;
+        }
+        plot_max_pos += PlotHeight;
         //actual timeline
         list<Crop*> current_crops;
 
@@ -517,38 +531,55 @@ void WholeTimeScene::draw_scene()
             }
         }
 
-        list<Rectangle> partitions = compute_partitions(current_crops, plot);
-
+        //list<Rectangle> partitions = compute_partitions(current_crops, plot);
         for (Crop* crop_p: current_crops)
         {
-            list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
+            //list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
+            list< pair<float, float> > ycoords = compute_crop_ypos(*crop_p, plot);
             CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*crop_p, ycoords, date0);
-            crop_repr->setY(y_pos);
+            crop_repr->setY(y_pos_start);
+
+            QList<QGraphicsItem*> colliding_items;
+            do {
+                colliding_items = collidingItems(crop_repr);
+                qreal lowest_y = crop_repr->pos().y();
+                for (auto item: colliding_items) {
+                    qreal low_y = item->pos().y() + item->boundingRect().height();
+                    if (low_y > lowest_y) {
+                        lowest_y = low_y;
+                    }
+                }
+                crop_repr->setY(lowest_y+1);
+            } while (!colliding_items.empty());
+
+            plot_max_pos = qMax(plot_max_pos, crop_repr->pos().y() + crop_repr->boundingRect().height());
+
             addItem(crop_repr);
             crop_reprs.push_back(crop_repr);
         }
-        y_pos += Margin + PlotHeight;
 
         //Add plot name on the left
         QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(plot.get_name()));
         float text_width = T->boundingRect().width();
-        T->setPos(-40, (y_pos_start + y_pos + text_width) / 2);
+        T->setPos(-40, (y_pos_start + plot_max_pos + text_width) / 2);
         T->setRotation(-90);
         addItem(T);
     }
-    _date_line = new DateLineGraphicsItem(y_pos);
+    _date_line = new DateLineGraphicsItem(plot_max_pos);
     int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
     _date_line->setPos(xpos, 0);
     this->addItem(_date_line);
     drawCropSelection();
     update();
+    emit size_changed();
 }
 
 WholeTimeSceneView::WholeTimeSceneView(Dataset& dataset, QWidget* parent)
 {
     _scene = new WholeTimeScene(dataset, parent);
-    this->setScene(_scene);
-    this->update_rect();
+    setScene(_scene);
+    update_rect();
+    QObject::connect(_scene, SIGNAL(size_changed()), this, SLOT(update_rect()));
 }
 
 void WholeTimeSceneView::update_draw()
@@ -564,7 +595,7 @@ void WholeTimeSceneView::update_rect()
     int y = itemsRect.y();
     int width = itemsRect.width();
     int height = itemsRect.height();
-    this->setSceneRect(x - Margin, y - Margin,
-                      width + 2 * Margin, height + 2 * Margin);
-    this->setAlignment(Qt::AlignTop);
+    setSceneRect(x - Margin, y - Margin,
+                 width + 2 * Margin, height + 2 * Margin);
+    setAlignment(Qt::AlignTop);
 }

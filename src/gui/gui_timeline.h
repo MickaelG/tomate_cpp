@@ -69,6 +69,7 @@ public slots:
 signals:
     void current_date_changed(QDate date);
     void crop_selected(Crop* p_crop);
+    void size_changed();
 
 private:
     Dataset& dataset;
@@ -89,11 +90,11 @@ class WholeTimeSceneView: public QGraphicsView
 
 public:
     WholeTimeSceneView(Dataset& dataset, QWidget* parent=NULL);
-    void update_rect();
-    WholeTimeScene* get_scene() { return _scene; };
+    WholeTimeScene* get_scene() { return _scene; }
 
 private slots:
     void update_draw();
+    void update_rect();
 
 private:
     WholeTimeScene* _scene;
