@@ -1,5 +1,6 @@
 
 #include "geometry.h"
+#include "log.h"
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -34,6 +35,10 @@ Rectangle::Rectangle(int posx, int posy, int width, int height) :
 {
 }
 
+Rectangle::Rectangle(int width, int height) :
+    width(width), height(height), posx(0), posy(0)
+{
+}
 
 Rectangle::Rectangle()
 {
@@ -163,7 +168,7 @@ set<Rectangle> compute_non_overlapping_rects(const Rectangle& first, const Recta
 {
     set<Rectangle> result;
     if (!first.overlaps(other)) {
-        cerr << __func__ << " called on non-overlaping rects: " << first.str() << " / " << other.str() << endl;
+        Log::Warning("compute_non_overlapping_rects called on non-overlaping rects: " + first.str() + " / " + other.str());
         result.insert(first);
         result.insert(other);
         return result;

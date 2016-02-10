@@ -7,6 +7,7 @@
 #include "plant.h"
 #include "calendar.h"
 #include "xml.h"
+#include "partitionset.h"
 
 BOOST_AUTO_TEST_CASE(crops)
 {
@@ -360,30 +361,17 @@ BOOST_AUTO_TEST_CASE(geometry_overlaps)
     BOOST_CHECK( Rectangle(60, 0, 20, 100).overlaps(Rectangle(70, 0, 20, 100)));
 }
 
-#include "partitionset.h"
-BOOST_AUTO_TEST_CASE(partitions_sort)
+static void check_converter(const Rectangle& master,
+                            const vector<Rectangle>& input,
+                            const vector<pair<float, float> >& ref)
 {
-    list<Rectangle> lrect;
-    lrect.push_back(Rectangle(0, 0, 25, 25));
-    lrect.push_back(Rectangle(0, 25, 25, 25));
-    lrect.push_back(Rectangle(25, 25, 25, 25));
-    lrect.push_back(Rectangle(25, 0, 25, 25));
+    BOOST_CHECK_EQUAL(input.size(), ref.size());
+    _2dTo1dConverter converter(master, input);
+    for (int irect = 0; irect < input.size(); ++irect) {
+        pair<float, float> ycoords = converter.get_position(input[irect]);
+        BOOST_CHECK_EQUAL(ycoords, ref[irect]);
+    }
 
-    lrect.sort(is_before_hori);
-    list<Rectangle> lrecth;
-    lrecth.push_back(Rectangle(0, 0, 25, 25));
-    lrecth.push_back(Rectangle(25, 0, 25, 25));
-    lrecth.push_back(Rectangle(0, 25, 25, 25));
-    lrecth.push_back(Rectangle(25, 25, 25, 25));
-    BOOST_CHECK_EQUAL(lrect, lrecth);
-
-    lrect.sort(is_before_vert);
-    list<Rectangle> lrectv;
-    lrectv.push_back(Rectangle(0, 0, 25, 25));
-    lrectv.push_back(Rectangle(0, 25, 25, 25));
-    lrectv.push_back(Rectangle(25, 0, 25, 25));
-    lrectv.push_back(Rectangle(25, 25, 25, 25));
-    BOOST_CHECK_EQUAL(lrect, lrectv);
 }
 
 /*
@@ -414,19 +402,19 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_0)
         list< pair<float, float> > refcoords;
         switch (icrop) {
         case 0:
-            refcoords.push_back(make_pair(0, 0.25));
+            refcoords = make_pair(0, 0.25);
             break;
         case 1:
-            refcoords.push_back(make_pair(0.25, 0.25));
+            refcoords = make_pair(0.25, 0.25);
             break;
         case 2:
-            refcoords.push_back(make_pair(0.60, 0.20));
+            refcoords = make_pair(0.60, 0.20);
             break;
         case 3:
-            refcoords.push_back(make_pair(0.70, 0.20));
+            refcoords = make_pair(0.70, 0.20);
             break;
         case 4:
-            refcoords.push_back(make_pair(0.80, 0.20));
+            refcoords = make_pair(0.80, 0.20);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -460,22 +448,22 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_1)
         list< pair<float, float> > refcoords;
         switch (icrop) {
         case 0:
-            refcoords.push_back(make_pair(0, 0.25));
+            refcoords = make_pair(0, 0.25);
             break;
         case 1:
-            refcoords.push_back(make_pair(0.25, 0.25));
+            refcoords = make_pair(0.25, 0.25);
             break;
         case 2:
-            refcoords.push_back(make_pair(0.60, 0.1));
+            refcoords = make_pair(0.60, 0.1);
             break;
         case 3:
-            refcoords.push_back(make_pair(0.70, 0.1));
+            refcoords = make_pair(0.70, 0.1);
             break;
         case 4:
-            refcoords.push_back(make_pair(0.80, 0.2));
+            refcoords = make_pair(0.80, 0.2);
             break;
         case 5:
-            refcoords.push_back(make_pair(0.60, 0.2));
+            refcoords = make_pair(0.60, 0.2);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -511,22 +499,22 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_2)
         list< pair<float, float> > refcoords;
         switch (icrop) {
         case 0:
-            refcoords.push_back(make_pair(0, 0.25));
+            refcoords = make_pair(0, 0.25);
             break;
         case 1:
-            refcoords.push_back(make_pair(0.25, 0.25));
+            refcoords = make_pair(0.25, 0.25);
             break;
         case 2:
-            refcoords.push_back(make_pair(0.60, 0.1));
+            refcoords = make_pair(0.60, 0.1);
             break;
         case 3:
-            refcoords.push_back(make_pair(0.75, 0.1));
+            refcoords = make_pair(0.75, 0.1);
             break;
         case 4:
-            refcoords.push_back(make_pair(0.80, 0.2));
+            refcoords = make_pair(0.80, 0.2);
             break;
         case 5:
-            refcoords.push_back(make_pair(0.60, 0.2));
+            refcoords = make_pair(0.60, 0.2);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -561,23 +549,23 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_3)
         list< pair<float, float> > refcoords;
         switch (icrop) {
         case 0:
-            refcoords.push_back(make_pair(0, 0.25));
+            refcoords = make_pair(0, 0.25);
             break;
         case 1:
-            refcoords.push_back(make_pair(0.25, 0.25));
+            refcoords = make_pair(0.25, 0.25);
             break;
         case 2:
-            refcoords.push_back(make_pair(0.6, 0.1));
+            refcoords = make_pair(0.6, 0.1);
             break;
         case 3:
-            refcoords.push_back(make_pair(0.7, 0.1));
+            refcoords = make_pair(0.7, 0.1);
             break;
         case 4:
-            refcoords.push_back(make_pair(0.80, 0.20));
+            refcoords = make_pair(0.80, 0.20);
             break;
         case 5:
-            refcoords.push_back(make_pair(0.65, 0.10));
-            refcoords.push_back(make_pair(0.80, 0.10));
+            refcoords = make_pair(0.65, 0.10);
+            refcoords = make_pair(0.80, 0.10);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -621,34 +609,34 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_4)
         list< pair<float, float> > refcoords;
         switch (icrop) {
         case 0:
-            refcoords.push_back(make_pair(0, 0.0625));
+            refcoords = make_pair(0, 0.0625);
             break;
         case 1:
-            refcoords.push_back(make_pair(0.9375, 0.0625));
+            refcoords = make_pair(0.9375, 0.0625);
             break;
         case 2:
-            refcoords.push_back(make_pair(0.625, 0.0625));
+            refcoords = make_pair(0.625, 0.0625);
             break;
         case 3:
-            refcoords.push_back(make_pair(0.5625, 0.0625));
+            refcoords = make_pair(0.5625, 0.0625);
             break;
         case 4:
-            refcoords.push_back(make_pair(0.375, 0.0625));
+            refcoords = make_pair(0.375, 0.0625);
             break;
         case 5:
-            refcoords.push_back(make_pair(0.4375, 0.0625));
+            refcoords = make_pair(0.4375, 0.0625);
             break;
         case 6:
-            refcoords.push_back(make_pair(0.875, 0.0625));
+            refcoords = make_pair(0.875, 0.0625);
             break;
         case 7:
-            refcoords.push_back(make_pair(0.0625, 0.0625));
+            refcoords = make_pair(0.0625, 0.0625);
             break;
         case 8:
-            refcoords.push_back(make_pair(0.75, 0.0625));
+            refcoords = make_pair(0.75, 0.0625);
             break;
         case 9:
-            refcoords.push_back(make_pair(0.25, 0.0625));
+            refcoords = make_pair(0.25, 0.0625);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -684,25 +672,25 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_5)
         list< pair<float, float> > refcoords;
         switch (icrop) {
         case 0:
-            refcoords.push_back(make_pair(0, 0.0625));
+            refcoords = make_pair(0, 0.0625);
             break;
         case 1:
-            refcoords.push_back(make_pair(0.9375, 0.0625));
+            refcoords = make_pair(0.9375, 0.0625);
             break;
         case 2:
-            refcoords.push_back(make_pair(0.625, 0.0625));
+            refcoords = make_pair(0.625, 0.0625);
             break;
         case 3:
-            refcoords.push_back(make_pair(0.5625, 0.0625));
+            refcoords = make_pair(0.5625, 0.0625);
             break;
         case 4:
-            refcoords.push_back(make_pair(0.4375, 0.0625));
+            refcoords = make_pair(0.4375, 0.0625);
             break;
         case 5:
-            refcoords.push_back(make_pair(0.875, 0.0625));
+            refcoords = make_pair(0.875, 0.0625);
             break;
         case 6:
-            refcoords.push_back(make_pair(0.25, 0.0625));
+            refcoords = make_pair(0.25, 0.0625);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -714,46 +702,38 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_6)
 {
     Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
 
-    list<Rectangle*> lrect;
-    lrect.push_back(new Rectangle(0, 0, 25, 25));
-    lrect.push_back(new Rectangle(75, 75, 25, 25));
-    lrect.push_back(new Rectangle(50, 50, 50, 25));
-    lrect.push_back(new Rectangle(50, 50, 25, 25));
-    lrect.push_back(new Rectangle(75, 50, 25, 25));
-    lrect.push_back(new Rectangle(0, 0, 100, 100));
-    list<Crop*> l_crops;
-    for (Rectangle* rect: lrect) {
-        Crop* ncrop_p = new Crop();
-        ncrop_p->set_shape(rect);
-        ncrop_p->set_plot(plot);
-        l_crops.push_back(ncrop_p);
-    }
+    vector<Rectangle> lrect;
+    lrect.push_back(Rectangle(0, 0, 25, 25));
+    lrect.push_back(Rectangle(75, 75, 25, 25));
+    lrect.push_back(Rectangle(50, 50, 50, 25));
+    lrect.push_back(Rectangle(50, 50, 25, 25));
+    lrect.push_back(Rectangle(75, 50, 25, 25));
+    lrect.push_back(Rectangle(0, 0, 100, 100));
 
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
+    _2dTo1dConverter converter(*plot.get_shape(), lrect);
     //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        const Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
+    for (int irect = 0; irect < lrect.size(); ++irect) {
+        const Rectangle& rect = lrect[irect];
+        pair<float, float> ycoords = converter.get_position(rect);
+        pair<float, float> refcoords;
+        switch (irect) {
         case 0:
-            refcoords.push_back(make_pair(0.0, (float)1/16));
+            refcoords = make_pair(0.0, (float)1/16);
             break;
         case 1:
-            refcoords.push_back(make_pair(1-(float)1/16, (float)1/16));
+            refcoords = make_pair(1-(float)1/16, (float)1/16);
             break;
         case 2:
-            refcoords.push_back(make_pair(1-(float)3/16, (float)1/8));
+            refcoords = make_pair(1-(float)3/16, (float)1/8);
             break;
         case 3:
-            refcoords.push_back(make_pair(1-(float)3/16, (float)1/16));
+            refcoords = make_pair(1-(float)3/16, (float)1/16);
             break;
         case 4:
-            refcoords.push_back(make_pair(1-(float)2/16, (float)1/16));
+            refcoords = make_pair(1-(float)2/16, (float)1/16);
             break;
         case 5:
-            refcoords.push_back(make_pair(0.0, 1.0));
+            refcoords = make_pair(0.0, 1.0);
             break;
         }
         BOOST_CHECK_EQUAL(ycoords, refcoords);
@@ -762,291 +742,134 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_6)
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_7)
 {
-    Plot plot = Plot("pl", "plot", "", 90, 90, 0, 0);
+    Rectangle plot(90, 90);
 
-    list<Crop*> l_crops;
+    vector<Rectangle> rects;
     for(int x=0; x<3; ++x) {
         for(int y=0; y<3; ++y) {
-            Crop* ncrop_p = new Crop();
-            ncrop_p->set_shape(new Rectangle(30*x, 30*y, 30, 30));
-            ncrop_p->set_plot(plot);
-            l_crops.push_back(ncrop_p);
+            rects.push_back(Rectangle(30*x, 30*y, 30, 30));
         }
     }
+    vector<pair<float, float> > refcoords = {
+        make_pair(0.0, 1.0/9),
+        make_pair(1.0/3, 1.0/9),
+        make_pair(2.0/3, 1.0/9),
+        make_pair(1.0/9, 1.0/9),
+        make_pair(4.0/9, 1.0/9),
+        make_pair(7.0/9, 1.0/9),
+        make_pair(2.0/9, 1.0/9),
+        make_pair(5.0/9, 1.0/9),
+        make_pair(8.0/9, 1.0/9)
+    };
 
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        const Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
-        case 0:
-            refcoords.push_back(make_pair(0.0, 1.0/9));
-            break;
-        case 1:
-            refcoords.push_back(make_pair(1.0/3, 1.0/9));
-            break;
-        case 2:
-            refcoords.push_back(make_pair(2.0/3, 1.0/9));
-            break;
-        case 3:
-            refcoords.push_back(make_pair(1.0/9, 1.0/9));
-            break;
-        case 4:
-            refcoords.push_back(make_pair(4.0/9, 1.0/9));
-            break;
-        case 5:
-            refcoords.push_back(make_pair(7.0/9, 1.0/9));
-            break;
-        case 6:
-            refcoords.push_back(make_pair(2.0/9, 1.0/9));
-            break;
-        case 7:
-            refcoords.push_back(make_pair(5.0/9, 1.0/9));
-            break;
-        case 8:
-            refcoords.push_back(make_pair(8.0/9, 1.0/9));
-            break;
-        }
-        BOOST_CHECK_EQUAL(ycoords, refcoords);
-    }
+    check_converter(plot, rects, refcoords);
+
 }
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_8)
 {
-    Plot plot = Plot("pl", "plot", "", 90, 90, 0, 0);
+    Rectangle plot(90, 90);
 
+    vector<Rectangle> rects;
     list<Crop*> l_crops;
     for(int x=0; x<3; ++x) {
         for(int y=0; y<3; ++y) {
-            Crop* ncrop_p = new Crop();
-            ncrop_p->set_shape(new Rectangle(30*x, 30*y, 30, 30));
-            ncrop_p->set_plot(plot);
-            l_crops.push_back(ncrop_p);
+            rects.push_back(Rectangle(30*x, 30*y, 30, 30));
         }
     }
-    Crop* ncrop_p = new Crop();
-    ncrop_p->set_shape(new Rectangle(15, 15, 30, 30));
-    ncrop_p->set_plot(plot);
-    l_crops.push_back(ncrop_p);
-
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        const Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
-        case 0:
-            refcoords.push_back(make_pair(0.0, 1.0/9));
-            break;
-        case 1:
-            refcoords.push_back(make_pair(1.0/3, 1.0/9));
-            break;
-        case 2:
-            refcoords.push_back(make_pair(2.0/3, 1.0/9));
-            break;
-        case 3:
-            refcoords.push_back(make_pair(1.0/9, 1.0/9));
-            break;
-        case 4:
-            refcoords.push_back(make_pair(4.0/9, 1.0/9));
-            break;
-        case 5:
-            refcoords.push_back(make_pair(7.0/9, 1.0/9));
-            break;
-        case 6:
-            refcoords.push_back(make_pair(2.0/9, 1.0/9));
-            break;
-        case 7:
-            refcoords.push_back(make_pair(5.0/9, 1.0/9));
-            break;
-        case 8:
-            refcoords.push_back(make_pair(8.0/9, 1.0/9));
-            break;
-        case 9:
-            refcoords.push_back(make_pair(3.0/36, 1.0/18));
-            refcoords.push_back(make_pair(15.0/36, 1.0/18));
-            break;
-        }
-        BOOST_CHECK_EQUAL(ycoords, refcoords);
-    }
+    rects.push_back(Rectangle(15, 15, 30, 30));
+    vector<pair<float, float> > refcoords = {
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9),
+        make_pair(-1, 1.0/9)
+    };
+    check_converter(plot, rects, refcoords);
 }
 
-/* Deactivated for now
- * TODO: reactivate it
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_9)
 {
-    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+    Rectangle plot(90, 90);
 
+    vector<Rectangle> rects;
     list<Crop*> l_crops;
-    list<Rectangle*> lrect;
-    for (int x=0; x<2; ++x) {
-        for (int y=0; y<2; ++y) {
-            Crop* ncrop_p = new Crop();
-            ncrop_p->set_shape(new Rectangle(50*x, 50*y, 50, 50));
-            ncrop_p->set_plot(plot);
-            l_crops.push_back(ncrop_p);
+    for(int x=0; x<3; ++x) {
+        for(int y=0; y<3; ++y) {
+            rects.push_back(Rectangle(30*x, 30*y, 30, 30));
         }
     }
-    Crop* ncrop_p = new Crop();
-    ncrop_p->set_shape(new Rectangle(25, 25, 50, 50));
-    ncrop_p->set_plot(plot);
-    l_crops.push_back(ncrop_p);
-
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
-        case 0:
-            refcoords.push_back(make_pair(0.0, 1.0/4));
-            break;
-        case 1:
-            refcoords.push_back(make_pair(1.0/4, 1.0/4));
-            break;
-        case 2:
-            refcoords.push_back(make_pair(1.0/2, 1.0/4));
-            break;
-        case 3:
-            refcoords.push_back(make_pair(3.0/4, 1.0/4));
-            break;
-        case 4:
-            refcoords.push_back(make_pair(4.0/9, 1.0/8));
-            refcoords.push_back(make_pair(4.0/9, 1.0/8));
-            break;
-        }
-        BOOST_CHECK_EQUAL(ycoords, refcoords);
-    }
+    rects.push_back(Rectangle(0, 15, 30, 30));
+    vector<pair<float, float> > refcoords = {
+        make_pair(0.0, 1.0/9),
+        make_pair(1.0/9, 1.0/9),
+        make_pair(2.0/3, 1.0/9),
+        make_pair(2.0/9, 1.0/9),
+        make_pair(4.0/9, 1.0/9),
+        make_pair(7.0/9, 1.0/9),
+        make_pair(1.0/3, 1.0/9),
+        make_pair(5.0/9, 1.0/9),
+        make_pair(8.0/9, 1.0/9),
+        make_pair(1.0/18, 1.0/9)
+    };
+    check_converter(plot, rects, refcoords);
 }
-*/
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_10)
 {
-    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+    Rectangle plot(100, 100);
 
-    list<Rectangle*> lrect;
-    lrect.push_back(new Rectangle(0, 0, 50, 100));
-    lrect.push_back(new Rectangle(50, 0, 50, 100));
-    lrect.push_back(new Rectangle(0, 50, 100, 50));
-    lrect.push_back(new Rectangle(0, 0, 100, 50));
-    list<Crop*> l_crops;
-    for (Rectangle* rect: lrect) {
-        Crop* ncrop_p = new Crop();
-        ncrop_p->set_shape(rect);
-        ncrop_p->set_plot(plot);
-        l_crops.push_back(ncrop_p);
-    }
+    vector<Rectangle> lrect;
+    lrect.push_back(Rectangle(0, 0, 50, 100));
+    lrect.push_back(Rectangle(50, 0, 50, 100));
+    lrect.push_back(Rectangle(0, 50, 100, 50));
+    lrect.push_back(Rectangle(0, 0, 100, 50));
 
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        const Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
-        case 0:
-            refcoords.push_back(make_pair(0.0, 0.25));
-            refcoords.push_back(make_pair(0.75, 0.25));
-            break;
-        case 1:
-            refcoords.push_back(make_pair(0.25, 0.5));
-            break;
-        case 2:
-            refcoords.push_back(make_pair(0.5, 0.5));
-            break;
-        case 3:
-            refcoords.push_back(make_pair(0.0, 0.5));
-            break;
-        }
-        BOOST_CHECK_EQUAL(ycoords, refcoords);
-    }
-
-    //self.assertEqual(timereprs, [[(0.0, 0.25), (0.5, 0.25)], [(0.25, 0.25), (0.75, 0.25)],
-    //                             [(0.5, 0.5)], [(0.0, 0.5)]])
+    vector<pair<float, float> > refcoords = {
+        make_pair(-1, 0.5),
+        make_pair(-1, 0.5),
+        make_pair(-1, 0.5),
+        make_pair(-1, 0.5)
+    };
+    check_converter(plot, lrect, refcoords);
 }
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_11)
 {
     //No crop. Must not crash...
-    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
-
-
-    list<Crop*> l_crops;
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    BOOST_CHECK(partitions.empty());
+    Rectangle plot(100, 100);
+    vector<Rectangle> lrect;
+    vector<pair<float, float> > refcoords;
+    check_converter(plot, lrect, refcoords);
 }
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_12)
 {
-    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+    Rectangle plot(100, 100);
 
-    list<Rectangle*> lrect;
-    lrect.push_back(new Rectangle(0, 0, 100, 100));
-    list<Crop*> l_crops;
-    for (Rectangle* rect: lrect) {
-        Crop* ncrop_p = new Crop();
-        ncrop_p->set_shape(rect);
-        ncrop_p->set_plot(plot);
-        l_crops.push_back(ncrop_p);
-    }
-
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        const Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
-        case 0:
-            refcoords.push_back(make_pair(0.0, 1));
-            break;
-        }
-        BOOST_CHECK_EQUAL(ycoords, refcoords);
-    }
+    vector<Rectangle> lrect;
+    lrect.push_back(Rectangle(0, 0, 100, 100));
+    vector<pair<float, float> > refcoords = { make_pair(0, 1) };
+    check_converter(plot, lrect, refcoords);
 }
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_13)
 {
-    Plot plot = Plot("pl", "plot", "", 100, 100, 0, 0);
+    Rectangle plot(100, 100);
 
-    list<Rectangle*> lrect;
-    lrect.push_back(new Rectangle(0, 0, 100, 100));
-    lrect.push_back(new Rectangle(0, 50, 100, 50));
-    list<Crop*> l_crops;
-    for (Rectangle* rect: lrect) {
-        Crop* ncrop_p = new Crop();
-        ncrop_p->set_shape(rect);
-        ncrop_p->set_plot(plot);
-        l_crops.push_back(ncrop_p);
-    }
-
-    list<Rectangle> partitions = compute_partitions(l_crops, plot);
-    //cout << "DEBUG partitions:" << partitions << endl;
-    for (int icrop = 0; icrop < l_crops.size(); ++icrop) {
-        const Crop* crop_p = l_crops.front();
-        l_crops.pop_front();
-        list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-        list< pair<float, float> > refcoords;
-        switch (icrop) {
-        case 0:
-            refcoords.push_back(make_pair(0.0, 1));
-            break;
-        case 1:
-            refcoords.push_back(make_pair(0.5, 1));
-            break;
-        }
-        BOOST_CHECK_EQUAL(ycoords, refcoords);
-    }
+    vector<Rectangle> lrect;
+    lrect.push_back(Rectangle(0, 0, 100, 100));
+    lrect.push_back(Rectangle(0, 50, 100, 50));
+    vector<pair<float, float> > refcoords = {
+        make_pair(0.0, 1),
+        make_pair(0.5, 0.5)
+    };
+    check_converter(plot, lrect, refcoords);
 }
 
 BOOST_AUTO_TEST_CASE(calendar_test_1)

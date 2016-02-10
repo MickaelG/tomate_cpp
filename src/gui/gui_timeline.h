@@ -16,7 +16,7 @@ class Crop;
 class CropTimeRepresentation: public QGraphicsItemGroup
 {
 public:
-    CropTimeRepresentation(Crop &crop, const list<pair<float, float> >& y_coords,
+    CropTimeRepresentation(Crop &crop, float ypos, float height,
                            QDate date0 = QDate(), QWidget* parent = NULL);
     QGraphicsRectItem* create_rect(QDate start_date, QDate end_date,
                                    float ypos, float height, bool planned=false);

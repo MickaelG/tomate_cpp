@@ -41,6 +41,7 @@ private:
 public:
     Rectangle();
     Rectangle(int posx, int posy, int width, int height);
+    Rectangle(int width, int height);
     Rectangle(const Shape& shape);
     Rectangle(const Rectangle& shape);
 

@@ -1,4 +1,5 @@
 
+#include "log.h"
 #include "gui_timeline.h"
 #include "gui_utils.h"
 
@@ -37,7 +38,8 @@ QDate pos_to_date(int pos, QDate date0)
 }
 
 CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
-                                               const list<pair<float, float> >& y_coords,
+                                               float ypos,
+                                               float height,
                                                QDate date0,
                                                QWidget* parent) :
     date0(date0), crop(crop), _global_rect(nullptr)
@@ -52,33 +54,28 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
     QDate start_date = toQDate(crop.get_date(Crop::DateSel::START));
     QDate end_date = toQDate(crop.get_virtual_end_date());
 
-    for (pair<float, float> yc: y_coords) {
-        QGraphicsItemGroup* curr_group = new QGraphicsItemGroup();
-        QGraphicsRectItem* planned_rect = create_rect(p_start_date, p_end_date, yc.first, yc.second, true);
-        if (planned_rect != nullptr) {
-            update_global_rect(*planned_rect);
-            curr_group->addToGroup(planned_rect);
-        }
-        QGraphicsRectItem* real_rect = create_rect(start_date, end_date, yc.first, yc.second, false);
-        if (real_rect != nullptr) {
-            update_global_rect(*real_rect);
-            curr_group->addToGroup(real_rect);
-        }
-
-        if (planned_rect == nullptr && real_rect == nullptr) {
-            std::cout << "Warning: No rect as been drawn (" <<
-                         yc.first << "/" << yc.second << ")" << std::endl;
-        }
-
-        QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
-        center_text(textw, curr_group->boundingRect());
-        textw->setParentItem(curr_group);
-        curr_group->addToGroup(new QGraphicsRectItem(boundingRect()));
-        this->addToGroup(curr_group);
+    QGraphicsItemGroup* curr_group = new QGraphicsItemGroup();
+    QGraphicsRectItem* planned_rect = create_rect(p_start_date, p_end_date, ypos, height, true);
+    if (planned_rect != nullptr) {
+        update_global_rect(*planned_rect);
+        curr_group->addToGroup(planned_rect);
     }
-    if (y_coords.empty()) {
-        std::cout << "Warning: no y_coords for crop" << std::endl;
+    QGraphicsRectItem* real_rect = create_rect(start_date, end_date, ypos, height, false);
+    if (real_rect != nullptr) {
+       update_global_rect(*real_rect);
+       curr_group->addToGroup(real_rect);
     }
+
+    if (planned_rect == nullptr && real_rect == nullptr) {
+       Log::Warning("No rect as been drawn (" + to_string(ypos) + "/" +
+                    to_string(height) + ")");
+    }
+
+    QGraphicsSimpleTextItem* textw = new QGraphicsSimpleTextItem(text);
+    center_text(textw, curr_group->boundingRect());
+    textw->setParentItem(curr_group);
+    curr_group->addToGroup(new QGraphicsRectItem(boundingRect()));
+    this->addToGroup(curr_group);
 
     if (_global_rect != nullptr) {
         this->addToGroup(_global_rect);
@@ -488,14 +485,12 @@ void WholeTimeScene::add_year_buttons()
     addItem(text);
 }
 
-list< pair<float, float> > compute_crop_ypos(const Crop& crop, const Plot& plot)
+pair<float, float> compute_crop_ypos(const Crop& crop, const Plot& plot)
 {
     float pos = 0;
     float height = crop.get_shape()->get_area() / plot.get_shape()->get_area();
 
-    list< pair<float, float> > result;
-    result.push_back(make_pair(pos, height));
-    return result;
+    return make_pair(pos, height);
 }
 
 
@@ -521,6 +516,7 @@ void WholeTimeScene::draw_scene()
         plot_max_pos += PlotHeight;
         //actual timeline
         list<Crop*> current_crops;
+        vector<Rectangle> crop_rects;
 
         //Select crops in current year and current plot
         for (Crop& crop: crops)
@@ -528,29 +524,34 @@ void WholeTimeScene::draw_scene()
             if (crop.get_plot().get_key() == plot.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
             {
                 current_crops.push_back(&crop);
+                crop_rects.push_back(*crop.get_shape());
             }
         }
 
-        //list<Rectangle> partitions = compute_partitions(current_crops, plot);
+        _2dTo1dConverter converter(*plot.get_shape(), crop_rects);
         for (Crop* crop_p: current_crops)
         {
-            //list< pair<float, float> > ycoords = compute_timerepr(*crop_p, partitions);
-            list< pair<float, float> > ycoords = compute_crop_ypos(*crop_p, plot);
-            CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*crop_p, ycoords, date0);
+            pair<float, float> ycoords = converter.get_position(*crop_p->get_shape());
+            float ypos = ycoords.first;
+            CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*crop_p, (ypos == -1) ? 0 : ypos,
+                                                                           ycoords.second, date0);
             crop_repr->setY(y_pos_start);
 
-            QList<QGraphicsItem*> colliding_items;
-            do {
-                colliding_items = collidingItems(crop_repr);
-                qreal lowest_y = crop_repr->pos().y();
-                for (auto item: colliding_items) {
-                    qreal low_y = item->pos().y() + item->boundingRect().height();
-                    if (low_y > lowest_y) {
-                        lowest_y = low_y;
+            if (ycoords.first == -1) {
+
+                QList<QGraphicsItem*> colliding_items;
+                do {
+                    colliding_items = collidingItems(crop_repr);
+                    qreal lowest_y = crop_repr->pos().y();
+                    for (auto item: colliding_items) {
+                        qreal low_y = item->pos().y() + item->boundingRect().height();
+                        if (low_y > lowest_y) {
+                            lowest_y = low_y;
+                        }
                     }
-                }
-                crop_repr->setY(lowest_y+1);
-            } while (!colliding_items.empty());
+                    crop_repr->setY(lowest_y+1);
+                } while (!colliding_items.empty());
+            }
 
             plot_max_pos = qMax(plot_max_pos, crop_repr->pos().y() + crop_repr->boundingRect().height());
 
