@@ -9,8 +9,9 @@
 #include <vector>
 using namespace std;
 
-class Dataset;
+class DatasetModel;
 class Crop;
+class CropSelectionController;
 
 
 class CropTimeRepresentation: public QGraphicsItemGroup
@@ -43,16 +44,17 @@ private:
 };
 
 
-class WholeTimeScene: public QGraphicsScene
+class TimeScene: public QGraphicsScene
 {
   Q_OBJECT
 
 public:
-    WholeTimeScene(Dataset& dataset, QWidget* parent=NULL);
+    TimeScene(DatasetModel& dataset,
+              CropSelectionController& selection_controller,
+              QWidget* parent=NULL);
     void draw_scene();
     void clear_scene();
     CropTimeRepresentation* getCropReprAtPos(QPointF scene_pos);
-    void selectCrop(CropTimeRepresentation *p_crop_repr);
     void selectNextCrop(bool reverse=false);
     void drawCropSelection();
     void removeCropSelection();
@@ -72,30 +74,14 @@ signals:
     void size_changed();
 
 private:
-    Dataset& dataset;
+    DatasetModel& dataset_model;
     //QMenu* context_menu;
     QDate date;
     vector<CropTimeRepresentation*> crop_reprs;
     CropTimeRepresentation* selected_crop_repr;
-    Crop* selected_crop;
+    CropSelectionController& _selection_controller;
     QGraphicsItem* _date_line;
 
     void add_year_buttons();
     void draw_date_line(QDate date, int bottom_y);
-};
-
-class WholeTimeSceneView: public QGraphicsView
-{
-    Q_OBJECT
-
-public:
-    WholeTimeSceneView(Dataset& dataset, QWidget* parent=NULL);
-    WholeTimeScene* get_scene() { return _scene; }
-
-private slots:
-    void update_draw();
-    void update_rect();
-
-private:
-    WholeTimeScene* _scene;
 };

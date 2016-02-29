@@ -7,84 +7,97 @@
 #include "gui_spaceview.h"
 #include "gui_timeline.h"
 #include "gui_calendar.h"
+#include "gui_controller.h"
 #include "PlantsModel.h"
 #include "PlotsModel.h"
 #include "EditCropWidget.h"
 
 #include "xml.h"
 
+#include <QWidget>
 #include <QGridLayout>
 #include <QToolBar>
+#include <QDockWidget>
 
-QWidget* createTabsWidget(Dataset& data)
+AutofitSceneView::AutofitSceneView(bool horizontal_only, QWidget* parent) :
+    QGraphicsView(parent), horizontal_only(horizontal_only)
 {
-    PlantsModel* plants_model = new PlantsModel(data.get_plants());
-    PlotsModel* plots_model = new PlotsModel(data.get_plots());
+}
+
+void AutofitSceneView::zoom_fit()
+{
+    fitInView(sceneRect(), Qt::KeepAspectRatio);
+}
+
+void AutofitSceneView::resizeEvent(QResizeEvent *event)
+{
+    if (scene() == nullptr) {
+        return;
+    }
+
+    int Margin = 20;
+    if (horizontal_only) {
+        QRectF itemsRect = scene()->itemsBoundingRect();
+        int x = itemsRect.x();
+        int y = itemsRect.y();
+        int width = itemsRect.width();
+        int height = itemsRect.height();
+        setSceneRect(x - Margin, y - Margin,
+                     width + 2 * Margin, height + 2 * Margin);
+        setAlignment(Qt::AlignTop);
+    } else {
+        zoom_fit();
+    }
+}
+
+QWidget* GuiMainWin::createTabsWidget()
+{
+    PlantsModel* plants_model = new PlantsModel(dataset_model.get_dataset().get_plants());
+    PlotsModel* plots_model = new PlotsModel(dataset_model.get_dataset().get_plots());
 
     QTabWidget* tab_widget = new QTabWidget;
 
-    WholeScene* spacescene = new WholeScene(data);
-    AutofitSceneView* spaceview = new AutofitSceneView();
+    SpaceScene* spacescene = new SpaceScene(dataset_model, selection_controller);
+    AutofitSceneView* spaceview = new AutofitSceneView(false);
     spaceview->setScene(spacescene);
     tab_widget->addTab(spaceview, QObject::tr("Space view"));
 
 
-    WholeTimeSceneView* timeview = new WholeTimeSceneView(data);
+    TimeScene* timescene = new TimeScene(dataset_model, selection_controller);
+    AutofitSceneView* timeview = new AutofitSceneView(true);
+    timeview->setScene(timescene);
     tab_widget->addTab(timeview, QObject::tr("Time view"));
-
-    //CalendarScene* calendarscene = new CalendarScene(CropsCalendar(data.get_crops()));
-    //AutofitSceneView* calendarview = new AutofitSceneView();
-    //calendarview->setScene(calendarscene);
-    //tab_widget->addTab(calendarview, QObject::tr("Calendar"));
 
     PlantsWindow* plantswidget = new PlantsWindow(plants_model);
     PlotsWindow* plotswidget = new PlotsWindow(plots_model);
 
-    EditCropWidget* edit_crop_widget = new EditCropWidget(data, plants_model, plots_model);
-
-    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), spacescene, SLOT(update_draw()));
-    QObject::connect(plantswidget, SIGNAL(timeline_need_update()), timeview, SLOT(update_draw()));
-
-    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), spacescene, SLOT(update_draw()));
-    QObject::connect(plotswidget, SIGNAL(timeline_need_update()), timeview, SLOT(update_draw()));
-
-    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), timeview, SLOT(update_draw()));
-    QObject::connect(edit_crop_widget, SIGNAL(dataset_changed()), spacescene, SLOT(update_draw()));
-
-    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), timeview->get_scene(), SLOT(selectCrop(Crop*)));
-    QObject::connect(edit_crop_widget, SIGNAL(select_crop(Crop*)), spacescene, SLOT(selectCrop(Crop*)));
+    EditCropWidget* edit_crop_widget = new EditCropWidget(dataset_model, dataset_controller,
+                                                          selection_controller, plants_model, plots_model);
 
     //Date of the spacewidget
-    QObject::connect(timeview->get_scene(), SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
-
-    //Crops selection synchronisation
-    QObject::connect(timeview->get_scene(), SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
-    QObject::connect(spacescene, SIGNAL(crop_selected(Crop*)), edit_crop_widget, SLOT(set_crop_values(Crop*)));
-    QObject::connect(timeview->get_scene(), SIGNAL(crop_selected(Crop*)),
-                     spacescene, SLOT(selectCrop(Crop*)));
-    QObject::connect(spacescene, SIGNAL(crop_selected(Crop*)),
-                     timeview->get_scene(), SLOT(selectCrop(Crop*)));
+    QObject::connect(timescene, SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
 
     QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
 
-    QWidget* widget = new QWidget;
-    QGridLayout* main_layout = new QGridLayout;
-    main_layout->addWidget(tab_widget);
-    main_layout->addWidget(edit_crop_widget);
-    widget->setLayout(main_layout);
+    QDockWidget *dockWidget = new QDockWidget(this);
+    dockWidget->setWidget(edit_crop_widget);
+    dockWidget->setFeatures(dockWidget->features() & ~QDockWidget::DockWidgetClosable);
+    addDockWidget(Qt::BottomDockWidgetArea, dockWidget);
 
-    return widget;
+    return tab_widget;
 }
 
 
-GuiMainWin::GuiMainWin(Dataset& dataset) : dataset(dataset) {
+GuiMainWin::GuiMainWin(Dataset& dataset) :
+    dataset_model(dataset),
+    selection_controller(),
+    dataset_controller(dataset_model, selection_controller)
+{
     showMaximized();
     setWindowTitle("tomate");
-    
-    setCentralWidget(new QWidget);
-    centralWidget()->setLayout(new QGridLayout);
-    centralWidget()->layout()->addWidget(createTabsWidget(dataset));
+
+    setCentralWidget(createTabsWidget());
 }
 
 GuiMainWin::~GuiMainWin() {

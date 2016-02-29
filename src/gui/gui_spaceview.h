@@ -9,10 +9,11 @@
 #include <vector>
 using namespace std;
 
-class Dataset;
 class Crop;
 class Crops;
 class Plot;
+class CropSelectionController;
+class DatasetModel;
 #include "geometry.h"
 
 
@@ -21,7 +22,7 @@ class CropSpaceRepr: public QGraphicsRectItem
 public:
     CropSpaceRepr(Crop* p_crop, QDate date);
     Crop* get_pcrop();
-    Rectangle get_rect() { return rect; };
+    Rectangle get_rect() { return rect; }
 private:
     Rectangle rect;
     Crop* p_crop;
@@ -36,18 +37,20 @@ public:
     vector<CropSpaceRepr*> crop_reprs;
 
 private:
+    void update_draw(const vector<Crop*>& crops_to_plot, QDate date);
+
     QMenu context_menu;
     Crops& crops;
     Plot& plot;
 };
 
 
-class WholeScene: public QGraphicsScene
+class SpaceScene: public QGraphicsScene
 {
     Q_OBJECT
 
 public:
-    WholeScene(Dataset& dataset);
+    SpaceScene(DatasetModel& dataset_model, CropSelectionController& selection_controller);
     void draw_scene();
     void clear_scene();
     Crop* getCropAtPos(QPointF scene_pos);
@@ -64,20 +67,10 @@ signals:
     void crop_selected(Crop* p_crop);
     
 private:
-    Dataset& dataset;
+    DatasetModel& dataset_model;
     QDate date;
-    Crop* selected_crop;
     CropSpaceRepr* selected_subd_repr;
+    CropSelectionController& selection_controller;
     vector<PlotRepresentation*> plot_reprs;
-};
-
-class AutofitSceneView: public QGraphicsView
-{
-    Q_OBJECT
-    
-public:
-    AutofitSceneView(QWidget* parent = nullptr);
-    void zoom_fit();
-    void resizeEvent(QResizeEvent *event);
 };
 

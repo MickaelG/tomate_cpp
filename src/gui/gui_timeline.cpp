@@ -2,6 +2,7 @@
 #include "log.h"
 #include "gui_timeline.h"
 #include "gui_utils.h"
+#include "gui_controller.h"
 
 #include "dataset.h"
 #include "plot.h"
@@ -255,16 +256,23 @@ private:
 };
 
 
-WholeTimeScene::WholeTimeScene(Dataset& dataset, QWidget* parent) :
-    dataset(dataset), selected_crop(NULL), selected_crop_repr(NULL)
+TimeScene::TimeScene(DatasetModel& dataset_model,
+                     CropSelectionController& selection_controller,
+                     QWidget* parent) :
+    QGraphicsScene(parent),
+    dataset_model(dataset_model), selected_crop_repr(nullptr),
+    _selection_controller(selection_controller)
 {
-    //context_menu = new QMenu;
-    //context_menu->addAction(tr("Edit"), edit_crop_dialog, SLOT(show()));
+    QObject::connect(&_selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
+    QObject::connect(this, SIGNAL(crop_selected(Crop*)), &_selection_controller, SLOT(select_crop(Crop*)));
+
+    QObject::connect(&dataset_model, SIGNAL(updated()), this, SLOT(redraw()));
+
     date = QDate::currentDate();
     draw_scene();
 }
 
-CropTimeRepresentation* WholeTimeScene::getCropReprAtPos(QPointF scene_pos)
+CropTimeRepresentation* TimeScene::getCropReprAtPos(QPointF scene_pos)
 {
     CropTimeRepresentation* p_current_crop_repr = 0;
     for (CropTimeRepresentation* crop_repr: crop_reprs)
@@ -280,59 +288,50 @@ CropTimeRepresentation* WholeTimeScene::getCropReprAtPos(QPointF scene_pos)
     return p_current_crop_repr;
 }
 
-void WholeTimeScene::drawCropSelection()
+void TimeScene::removeCropSelection()
 {
-    if (selected_crop && !selected_crop_repr)
-    {
-        for (CropTimeRepresentation* crop_repr: crop_reprs)
-        {
-            if (crop_repr->get_pcrop() == selected_crop)
-            {
-                selected_crop_repr = crop_repr;
-                break;
-            }
-        }
-
-    }
-    if (selected_crop_repr)
-    {
-        selected_crop_repr->set_selected(true);
-    }
-    emit crop_selected(selected_crop);
-}
-
-void WholeTimeScene::removeCropSelection()
-{
-    if (selected_crop_repr)
+    if (selected_crop_repr != nullptr)
     {
         selected_crop_repr->set_selected(false);
     }
+    selected_crop_repr = nullptr;
 }
 
-void WholeTimeScene::selectCrop(Crop* p_crop)
+void TimeScene::selectCrop(Crop* p_crop)
 {
     removeCropSelection();
-    selected_crop_repr = 0;
-    selected_crop = p_crop;
-    drawCropSelection();
+    if (p_crop == nullptr) {
+        return;
+    }
+    for (CropTimeRepresentation* crop_repr: crop_reprs)
+    {
+        if (crop_repr->get_pcrop() == p_crop)
+        {
+            selected_crop_repr = crop_repr;
+            break;
+        }
+    }
+    if (selected_crop_repr == nullptr) {
+        return;
+    }
+    selected_crop_repr->set_selected(true);
 }
 
-void WholeTimeScene::selectNextCrop(bool reverse)
+void TimeScene::selectNextCrop(bool reverse)
 {
-    removeCropSelection();
-    if (!selected_crop)
+    CropTimeRepresentation* crop_repr_to_select;
+    if (selected_crop_repr == nullptr)
     {
         if (crop_reprs.size() > 0)
         {
           if (reverse)
           {
-            selected_crop_repr = crop_reprs.back();
+              crop_repr_to_select = crop_reprs.back();
           }
           else
           {
-            selected_crop_repr = crop_reprs[0];
+              crop_repr_to_select = crop_reprs.front();
           }
-          selected_crop = selected_crop_repr->get_pcrop();
         }
     }
     else
@@ -349,60 +348,24 @@ void WholeTimeScene::selectNextCrop(bool reverse)
         }
         if (next_index < crop_reprs.size() && next_index >= 0)
         {
-            selected_crop_repr = crop_reprs[next_index];
-            selected_crop = selected_crop_repr->get_pcrop();
+            crop_repr_to_select = crop_reprs[next_index];
         }
         else if (crop_reprs.size() > 0)
         {
             if (reverse)
             {
-                selected_crop_repr = crop_reprs.back();
+                crop_repr_to_select = crop_reprs.back();
             }
             else
             {
-                selected_crop_repr = crop_reprs[0];
+                crop_repr_to_select = crop_reprs.front();
             }
-            selected_crop = selected_crop_repr->get_pcrop();
         }
     }
-    drawCropSelection();
+    emit crop_selected(crop_repr_to_select->get_pcrop());
 }
 
-void WholeTimeScene::selectCrop(CropTimeRepresentation* p_crop_repr)
-{
-    removeCropSelection();
-    selected_crop_repr = p_crop_repr;
-    if (p_crop_repr)
-    {
-        selected_crop = p_crop_repr->get_pcrop();
-    }
-    else
-    {
-        selected_crop = 0;
-    }
-    drawCropSelection();
-}
-
-/*
-void WholeTimeScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-    CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(event->scenePos());
-    QAction* action = context_menu->actions().first();
-    if (p_current_crop_repr)
-    {
-        edit_crop_dialog->set_crop_values(p_current_crop_repr->get_pcrop());
-        action->setText(tr("Edit crop"));
-    }
-    else
-    {
-        edit_crop_dialog->set_crop_values(0);
-        action->setText(tr("New crop"));
-    }
-    context_menu->exec(event->screenPos());
-}
-*/
-
-void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF clic_point = event->scenePos();
     if ((clic_point.y() > -30) && (clic_point.y() < 0))
@@ -415,12 +378,12 @@ void WholeTimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     }
     else {
         CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
-        selectCrop(p_current_crop_repr);
+        emit crop_selected(p_current_crop_repr ? p_current_crop_repr->get_pcrop() : nullptr);
     }
     QGraphicsScene::mousePressEvent(event);
 }
 
-void WholeTimeScene::keyPressEvent(QKeyEvent* keyEvent)
+void TimeScene::keyPressEvent(QKeyEvent* keyEvent)
 {
     if (keyEvent->key() == Qt::Key_Tab)
     {
@@ -432,27 +395,27 @@ void WholeTimeScene::keyPressEvent(QKeyEvent* keyEvent)
     }
 }
 
-void WholeTimeScene::next_year() {
+void TimeScene::next_year() {
     date = date.addYears(1);
     current_date_changed(date);
     redraw();
 }
 
 
-void WholeTimeScene::previous_year() {
+void TimeScene::previous_year() {
     date = date.addYears(-1);
     current_date_changed(date);
     redraw();
 }
 
 
-void WholeTimeScene::redraw()
+void TimeScene::redraw()
 {
     clear_scene();
     draw_scene();
 }
 
-void WholeTimeScene::clear_scene()
+void TimeScene::clear_scene()
 {
     selected_crop_repr = 0;
     crop_reprs.clear();
@@ -460,7 +423,7 @@ void WholeTimeScene::clear_scene()
 }
 
 
-void WholeTimeScene::add_year_buttons()
+void TimeScene::add_year_buttons()
 {
     QDate date0 = QDate(date.year(), 1, 1);
     QDate date_end = date0.addYears(1);
@@ -494,7 +457,7 @@ pair<float, float> compute_crop_ypos(const Crop& crop, const Plot& plot)
 }
 
 
-void WholeTimeScene::draw_scene()
+void TimeScene::draw_scene()
 {
     //date0 is the 1 january of the first year if (a crop exists,
     //else 1 january of current year
@@ -504,10 +467,10 @@ void WholeTimeScene::draw_scene()
     addItem(months);
     add_year_buttons();
 
-    Crops& crops = dataset.get_crops();
+    Crops& crops = dataset_model.get_dataset().get_crops();
 
     qreal plot_max_pos = 0;
-    for (const Plot& plot: dataset.get_plots())
+    for (const Plot& plot: dataset_model.get_dataset().get_plots())
     {
         qreal y_pos_start = plot_max_pos;
         if (y_pos_start != 0) {
@@ -570,33 +533,7 @@ void WholeTimeScene::draw_scene()
     int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
     _date_line->setPos(xpos, 0);
     this->addItem(_date_line);
-    drawCropSelection();
+    selectCrop(_selection_controller.get_selected());
     update();
     emit size_changed();
-}
-
-WholeTimeSceneView::WholeTimeSceneView(Dataset& dataset, QWidget* parent)
-{
-    _scene = new WholeTimeScene(dataset, parent);
-    setScene(_scene);
-    update_rect();
-    QObject::connect(_scene, SIGNAL(size_changed()), this, SLOT(update_rect()));
-}
-
-void WholeTimeSceneView::update_draw()
-{
-    get_scene()->redraw();
-    update_rect();
-}
-
-void WholeTimeSceneView::update_rect()
-{
-    QRectF itemsRect = scene()->itemsBoundingRect();
-    int x = itemsRect.x();
-    int y = itemsRect.y();
-    int width = itemsRect.width();
-    int height = itemsRect.height();
-    setSceneRect(x - Margin, y - Margin,
-                 width + 2 * Margin, height + 2 * Margin);
-    setAlignment(Qt::AlignTop);
 }

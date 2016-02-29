@@ -1,5 +1,6 @@
 
 #include "gui_spaceview.h"
+#include "gui_controller.h"
 
 #include "gui_utils.h"
 
@@ -13,21 +14,6 @@
 #include <QGraphicsSceneMouseEvent>
                 
 
-AutofitSceneView::AutofitSceneView(QWidget* parent) :
-    QGraphicsView(parent)
-{
-}
-
-void AutofitSceneView::zoom_fit()
-{
-    fitInView(sceneRect(), Qt::KeepAspectRatio);
-}
-
-void AutofitSceneView::resizeEvent(QResizeEvent *event)
-{
-    zoom_fit();
-}
-
 PlotRepresentation::PlotRepresentation(Crops& crops, Plot& plot, QDate date) :
     crops(crops), plot(plot)
 {
@@ -36,10 +22,16 @@ PlotRepresentation::PlotRepresentation(Crops& crops, Plot& plot, QDate date) :
 
 void PlotRepresentation::update_draw(QDate date)
 {
+    vector<Crop*> crops_to_plot = crops.find_crops(plot, fromQDate(date));
+    update_draw(crops_to_plot, date);
+}
+
+void PlotRepresentation::update_draw(const vector<Crop*>& crops_to_plot, QDate date)
+{
     Shape* shape = plot.get_shape();
     this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
                   shape->get_width(), shape->get_height());
-    for (Crop* p_crop: crops.find_crops(plot, fromQDate(date)))
+    for (Crop* p_crop: crops_to_plot)
     {
         CropSpaceRepr *crop_repr = new CropSpaceRepr(p_crop, date);
         crop_repr->setPos(shape->get_min_x(), -shape->get_min_y());
@@ -92,32 +84,39 @@ Crop* CropSpaceRepr::get_pcrop()
     return p_crop;
 }
 
-WholeScene::WholeScene(Dataset& dataset) : dataset(dataset)
+SpaceScene::SpaceScene(DatasetModel& dataset_model,
+                       CropSelectionController& selection_controller) :
+    dataset_model(dataset_model), selection_controller(selection_controller)
 {
+    QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
+    QObject::connect(this, SIGNAL(crop_selected(Crop*)), &selection_controller, SLOT(select_crop(Crop*)));
+
+    QObject::connect(&dataset_model, SIGNAL(updated()), this, SLOT(update_draw()));
+
     date = QDate::currentDate();
     selected_subd_repr = 0;
     this->draw_scene();
 }
 
-void WholeScene::set_date(QDate date)
+void SpaceScene::set_date(QDate date)
 {
     this->date = date;
     this->update_draw();
 }
 
-void WholeScene::update_draw()
+void SpaceScene::update_draw()
 {
     this->clear_scene();
     this->draw_scene();
 }
 
-void WholeScene::draw_scene()
+void SpaceScene::draw_scene()
 {
-    for(Plot plot: this->dataset.get_plots())
+    for(Plot plot: this->dataset_model.get_dataset().get_plots())
     {
         if (plot.get_shape())
         {
-            PlotRepresentation *plot_repr = new PlotRepresentation(dataset.get_crops(),
+            PlotRepresentation *plot_repr = new PlotRepresentation(dataset_model.get_dataset().get_crops(),
                                                                    plot, date);
             this->addItem(plot_repr);
             plot_reprs.push_back(plot_repr);
@@ -126,14 +125,14 @@ void WholeScene::draw_scene()
     }
 }
 
-void WholeScene::clear_scene()
+void SpaceScene::clear_scene()
 {
     selected_subd_repr = 0;
     plot_reprs.clear();
     clear();
 }
 
-Crop* WholeScene::getCropAtPos(QPointF scene_pos)
+Crop* SpaceScene::getCropAtPos(QPointF scene_pos)
 {
     Crop* p_current_crop = 0;
     for (PlotRepresentation* plot_repr: plot_reprs)
@@ -154,55 +153,50 @@ Crop* WholeScene::getCropAtPos(QPointF scene_pos)
     return p_current_crop;
 }
 
-void WholeScene::drawCropSelection()
-{
-    if (selected_crop && !selected_subd_repr)
-    {
-        for (PlotRepresentation* plot_repr: plot_reprs)
-        {
-            for (CropSpaceRepr* subd_repr: plot_repr->crop_reprs)
-            {
-                if (subd_repr->get_pcrop() == selected_crop)
-                {
-                    selected_subd_repr = subd_repr;
-                    break;
-                }
-            }
-        }
-    }
-    if (selected_subd_repr)
-    {
-        QPen selected_pen;
-        float scene_scale = views()[0]->transform().m11();
-        float pen_width = 4 / scene_scale;
-        selected_pen.setWidthF(pen_width);
-        //selected_pen.setColor(QColor("#444444"));
-        selected_subd_repr->setZValue(1);
-        selected_subd_repr->setPen(selected_pen);
-    }
-}
-
-void WholeScene::removeCropSelection()
+void SpaceScene::removeCropSelection()
 {
     if (selected_subd_repr)
     {
         selected_subd_repr->setZValue(0);
         selected_subd_repr->setPen(QPen());
     }
+    selected_subd_repr = nullptr;
 }
 
-void WholeScene::selectCrop(Crop* p_crop)
+void SpaceScene::selectCrop(Crop* p_crop)
 {
     removeCropSelection();
-    selected_subd_repr = 0;
-    selected_crop = p_crop;
-    drawCropSelection();
+    if (p_crop == nullptr) {
+        return;
+    }
+
+    for (PlotRepresentation* plot_repr: plot_reprs)
+    {
+        for (CropSpaceRepr* subd_repr: plot_repr->crop_reprs)
+        {
+            if (subd_repr->get_pcrop() == p_crop)
+            {
+                selected_subd_repr = subd_repr;
+                break;
+            }
+        }
+    }
+    if (selected_subd_repr == nullptr) {
+        return;
+    }
+
+    QPen selected_pen;
+    float scene_scale = views()[0]->transform().m11();
+    float pen_width = 4 / scene_scale;
+    selected_pen.setWidthF(pen_width);
+    //selected_pen.setColor(QColor("#444444"));
+    selected_subd_repr->setZValue(1);
+    selected_subd_repr->setPen(selected_pen);
 }
 
-void WholeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void SpaceScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF clic_point = event->scenePos();
-    Crop* p_current_crop = getCropAtPos(clic_point);
-    selectCrop(p_current_crop);
+    Crop* selected_crop = getCropAtPos(clic_point);
     emit crop_selected(selected_crop);
 }

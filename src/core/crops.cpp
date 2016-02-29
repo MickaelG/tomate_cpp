@@ -360,6 +360,23 @@ vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
     return result;
 }
 
+vector<Crop*> Crops::crops_for_year(const Plot& plot, bg::date date)
+{
+    vector<Crop*> result;
+    //for (int i_crop = 0; i_crop < this->size(); i_crop++)
+    for (auto it = _vcrops.begin(); it != _vcrops.end(); ++it)
+    {
+        if ((*it)->get_plot() == plot)
+        {
+           if ((*it)->is_in_year_started_by(date))
+           {
+               result.push_back(it->get());
+           }
+        }
+    }
+    return result;
+}
+
 bool Crops::is_used_plot(const Plot& plot) const
 {
     string plot_key = plot.get_key();

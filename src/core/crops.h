@@ -17,7 +17,7 @@ class Shape;
 class CropAction
 {
 public:
-    CropAction(bg::date date, std::string note) : date(date), note(note) {};
+    CropAction(bg::date date, std::string note) : date(date), note(note) {}
     bg::date get_date() const { return date; }
     std::string get_note() const { return note; }
 
@@ -100,6 +100,7 @@ class Crops
 {
 public:
     std::vector<Crop*> find_crops(const Plot& plot, bg::date date);
+    std::vector<Crop*> crops_for_year(const Plot& plot, bg::date date);
     Crop& add(bg::date start_date, bg::date end_date,
               bg::date planned_start_date, bg::date planned_end_date,
               Plant *p_plant, const std::string& varkey,

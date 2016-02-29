@@ -2,6 +2,7 @@
 #include "EditCropWidget.h"
 
 #include "gui_utils.h"
+#include "gui_controller.h"
 #include "PlantsModel.h"
 #include "PlotsModel.h"
 
@@ -11,10 +12,18 @@
 #include <QMessageBox>
 #include <string>
 
-EditCropWidget::EditCropWidget(Dataset& dataset, PlantsModel* plants_model,
+EditCropWidget::EditCropWidget(DatasetModel& dataset_model,
+                               DatasetController& dataset_controller,
+                               CropSelectionController& selection_controller,
+                               PlantsModel* plants_model,
                                PlotsModel* plots_model, QWidget* parent) :
-    QWidget(parent), dataset(dataset), p_crop(0), plants_model(plants_model),
-    plots_model(plots_model), ui(new Ui::EditCropWidget)
+    QWidget(parent),
+    dataset_model(dataset_model),
+    dataset_controller(dataset_controller),
+    selection_controller(selection_controller),
+    plants_model(plants_model),
+    plots_model(plots_model),
+    ui(new Ui::EditCropWidget)
 {
     ui->setupUi(this);
 
@@ -33,6 +42,9 @@ EditCropWidget::EditCropWidget(Dataset& dataset, PlantsModel* plants_model,
     ui->plannedenddateInput->setEnabled(false);
 
     ui->DelButton->setEnabled(false);
+
+    QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)),
+                     this, SLOT(set_crop_values(Crop*)));
 }
 
 
@@ -43,7 +55,6 @@ EditCropWidget::~EditCropWidget()
 
 void EditCropWidget::set_crop_values(Crop* p_crop)
 {
-    this->p_crop = p_crop;
     if (p_crop)
     {
         ui->startdateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::START)));
@@ -69,69 +80,61 @@ void EditCropWidget::set_crop_values(Crop* p_crop)
     }
 }
 
-
 void EditCropWidget::edit_crop()
 {
+    unique_ptr<Crop> crop(get_described_crop());
+    if (crop.get() != nullptr) {
+        dataset_controller.update_current_crop(*crop);
+    }
+}
+
+unique_ptr<Crop> EditCropWidget::get_described_crop()
+{
     QString plot_key = ui->plotInput->currentElem();
-    Plot* p_plot = dataset.get_plots().find(fromQString(plot_key));
+    Plot* p_plot = dataset_model.get_dataset().get_plots().find(fromQString(plot_key));
     if (p_plot == nullptr) {
        QMessageBox::critical(NULL, QObject::tr("Error"),
                               QObject::tr("Please select a plot."));
-       return;
+       return nullptr;
     }
     Rectangle rect = ui->shapeInput->get_rect();
 
     QString plant_key = ui->plantInput->currentElem();
-    Plant* p_plant = dataset.get_plants().find(fromQString(plant_key));
+    Plant* p_plant = dataset_model.get_dataset().get_plants().find(fromQString(plant_key));
     if (p_plant == nullptr) {
        QMessageBox::critical(NULL, QObject::tr("Error"),
                               QObject::tr("Please select a plant."));
-       return;
+       return nullptr;
     }
     QString var_key = ui->varInput->currentElem();
-    
+
     QDate start_date = ui->startdateInput->selectedDate();
     QDate end_date = ui->enddateInput->selectedDate();
     QDate planned_start_date = ui->plannedstartdateInput->selectedDate();
     QDate planned_end_date = ui->plannedenddateInput->selectedDate();
 
     QString note = ui->noteInput->text();
-    if (!p_crop)
-    {
-        Crop crop = dataset.get_crops().add(fromQDate(start_date), fromQDate(end_date),
-                                            fromQDate(planned_start_date), fromQDate(planned_end_date),
-                                            p_plant, fromQString(var_key), p_plot, fromQString(note),
-                                            rect);
-    }
-    else
-    {
-        p_crop->set_date(Crop::DateSel::START, fromQDate(start_date));
-        p_crop->set_date(Crop::DateSel::END, fromQDate(end_date));
-        p_crop->set_date(Crop::DateSel::PLANNED_START, fromQDate(planned_start_date));
-        p_crop->set_date(Crop::DateSel::PLANNED_END, fromQDate(planned_end_date));
-        p_crop->set_plot(*p_plot);
-        p_crop->set_shape(new Rectangle(rect));
-        p_crop->set_plant(*p_plant);
-        p_crop->set_varkey(fromQString(var_key));
-        p_crop->set_note(fromQString(note));
-    }
-    emit dataset_changed();
+
+    unique_ptr<Crop> crop(new Crop(fromQDate(start_date), fromQDate(end_date),
+                                   fromQDate(planned_start_date), fromQDate(planned_end_date),
+                                   p_plant, fromQString(var_key), p_plot, fromQString(note),
+                                   rect));
+    return crop;
 }
 
 void EditCropWidget::delete_crop()
 {
-   if (p_crop)
-   {
-       int result = QMessageBox::question(NULL, QObject::tr("Delete crop"),
-                             QObject::tr("Are you sure you want to delete the crop ?"),
-                             QMessageBox::Yes | QMessageBox::No);
+    Crop* selected_crop = selection_controller.get_selected();
+    if (selected_crop == nullptr) {
+        return;
+    }
+    int result = QMessageBox::question(NULL, QObject::tr("Delete crop"),
+                                       QObject::tr("Are you sure you want to delete the crop ?"),
+                                       QMessageBox::Yes | QMessageBox::No);
 
-       if (result == QMessageBox::Yes) {
-           dataset.get_crops().remove(*p_crop);
-           p_crop = NULL;
-           set_crop_values(p_crop);
-           emit select_crop(NULL);
-           emit dataset_changed();
-       }
-   }
+    if (result != QMessageBox::Yes) {
+        return;
+    }
+
+    dataset_controller.remove_crop(selected_crop);
 }
