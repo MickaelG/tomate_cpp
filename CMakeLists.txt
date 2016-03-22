@@ -25,7 +25,7 @@ file(GLOB CORE_SRC src/core/*.cpp lib/pugixml.cpp)
 
 set( qrc_outfile ${CMAKE_CURRENT_BINARY_DIR}/qrc_tomate.cxx)
 
-set(ui_FORMS src/gui/gui_widgets/EditCropWidget.ui src/gui/gui_widgets/EnableCalendar.ui)
+file(GLOB ui_FORMS src/gui/gui_widgets/*.ui)
 QT4_WRAP_UI(ui_FORMS_HEADERS ${ui_FORMS})
 
 add_executable(tomate_gui ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp ${qrc_outfile} ${ui_FORMS_HEADERS})
