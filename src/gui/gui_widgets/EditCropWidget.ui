@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
+    <width>680</width>
     <height>108</height>
    </rect>
   </property>
@@ -173,7 +173,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>Add this crop</string>
+        <string>Apply changes</string>
        </property>
       </widget>
      </item>

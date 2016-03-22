@@ -52,9 +52,6 @@ void AutofitSceneView::resizeEvent(QResizeEvent *event)
 
 QWidget* GuiMainWin::createTabsWidget()
 {
-    PlantsModel* plants_model = new PlantsModel(dataset_model.get_dataset().get_plants());
-    PlotsModel* plots_model = new PlotsModel(dataset_model.get_dataset().get_plots());
-
     QTabWidget* tab_widget = new QTabWidget;
 
     SpaceScene* spacescene = new SpaceScene(dataset_model, selection_controller);
@@ -68,23 +65,6 @@ QWidget* GuiMainWin::createTabsWidget()
     timeview->setScene(timescene);
     tab_widget->addTab(timeview, QObject::tr("Time view"));
 
-    PlantsWindow* plantswidget = new PlantsWindow(plants_model);
-    PlotsWindow* plotswidget = new PlotsWindow(plots_model);
-
-    EditCropWidget* edit_crop_widget = new EditCropWidget(dataset_model, dataset_controller,
-                                                          selection_controller, plants_model, plots_model);
-
-    //Date of the spacewidget
-    QObject::connect(timescene, SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
-
-    QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
-    QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
-
-    QDockWidget *dockWidget = new QDockWidget(this);
-    dockWidget->setWidget(edit_crop_widget);
-    dockWidget->setFeatures(dockWidget->features() & ~QDockWidget::DockWidgetClosable);
-    addDockWidget(Qt::BottomDockWidgetArea, dockWidget);
-
     return tab_widget;
 }
 
@@ -97,10 +77,38 @@ GuiMainWin::GuiMainWin(Dataset& dataset) :
     showMaximized();
     setWindowTitle("tomate");
 
-    setCentralWidget(createTabsWidget());
+    PlantsModel* plants_model = new PlantsModel(dataset_model.get_dataset().get_plants());
+    PlotsModel* plots_model = new PlotsModel(dataset_model.get_dataset().get_plots());
+
+    PlantsWindow* plantswidget = new PlantsWindow(plants_model);
+    PlotsWindow* plotswidget = new PlotsWindow(plots_model);
+
+    EditCropWidget* edit_crop_widget = new EditCropWidget(dataset_model, dataset_controller,
+                                                          selection_controller, plants_model, plots_model);
+
+    QToolBar* toolbar = new QToolBar("", this);
+    addToolBar(toolbar);
+    toolbar->addAction(tr("Add Crop"), edit_crop_widget, SLOT(show_add()));
+    toolbar->setMovable(false);
+
+    QWidget* central_widget = new QWidget(this);
+    QVBoxLayout* central_layout = new QVBoxLayout;
+    central_widget->setLayout(central_layout);
+    central_layout->addWidget(createTabsWidget());
+
+    setCentralWidget(central_widget);
+
+    //Date of the spacewidget
+    //QObject::connect(timescene, SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
+
+    QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
+    QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
+
+    central_layout->addWidget(edit_crop_widget);
 }
 
-GuiMainWin::~GuiMainWin() {
+GuiMainWin::~GuiMainWin()
+{
     //TODO: delete tabwidget, timewidget, plantswidget, spacewidget
 }
 

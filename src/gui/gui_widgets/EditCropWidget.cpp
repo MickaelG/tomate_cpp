@@ -25,6 +25,7 @@ EditCropWidget::EditCropWidget(DatasetModel& dataset_model,
     plots_model(plots_model),
     ui(new Ui::EditCropWidget)
 {
+    hide();
     ui->setupUi(this);
 
     ui->plantInput->setModel(plants_model);
@@ -41,8 +42,6 @@ EditCropWidget::EditCropWidget(DatasetModel& dataset_model,
     ui->enddateInput->setEnabled(false);
     ui->plannedenddateInput->setEnabled(false);
 
-    ui->DelButton->setEnabled(false);
-
     QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)),
                      this, SLOT(set_crop_values(Crop*)));
 }
@@ -53,31 +52,46 @@ EditCropWidget::~EditCropWidget()
     delete ui;
 }
 
-void EditCropWidget::set_crop_values(Crop* p_crop)
+void EditCropWidget::set_crop_values(Crop* crop)
 {
-    if (p_crop)
-    {
-        ui->startdateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::START)));
-        ui->enddateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::END)));
-        ui->plannedstartdateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::PLANNED_START)));
-        ui->plannedenddateInput->setSelectedDate(toQDate(p_crop->get_date(Crop::DateSel::PLANNED_END)));
-        ui->plantInput->setCurrentElem(toQString(p_crop->get_plant().get_key()));
-        if (p_crop->get_varkey() != "")
-        {
-            ui->varInput->setCurrentElem(toQString(p_crop->get_varkey()));
-        }
-        ui->plotInput->setCurrentElem(toQString(p_crop->get_plot().get_key()).split("-")[0]);
-        ui->shapeInput->set_shape(p_crop->get_shape());
-        ui->noteInput->setText(toQString(p_crop->get_note()));
-        //ui->AddButton->hide();
-        ui->AddButton->setText(tr("Apply changes"));
-        ui->DelButton->setEnabled(true);
-    } else {
-        //set_default_values();
-        //ui->AddButton->show();
-        ui->AddButton->setText(tr("Add this crop"));
-        ui->DelButton->setEnabled(false);
+    if (crop == nullptr) {
+        hide();
+
+        ui->startdateInput->setSelectedDate(QDate::currentDate());
+        ui->enddateInput->setSelectedDate(QDate::currentDate());
+        ui->enddateInput->setEnabled(false);
+        ui->plannedstartdateInput->setSelectedDate(QDate::currentDate());
+        ui->plannedstartdateInput->setEnabled(false);
+        ui->plannedenddateInput->setSelectedDate(QDate::currentDate());
+        ui->plannedenddateInput->setEnabled(false);
+        ui->noteInput->clear();
+        ui->AddButton->setText(tr("Add crop"));
+        ui->DelButton->setText(tr("Cancel"));
+
+        return;
     }
+    ui->startdateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::START)));
+    ui->enddateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::END)));
+    ui->plannedstartdateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::PLANNED_START)));
+    ui->plannedenddateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::PLANNED_END)));
+    ui->plantInput->setCurrentElem(toQString(crop->get_plant().get_key()));
+    if (crop->get_varkey() != "")
+    {
+        ui->varInput->setCurrentElem(toQString(crop->get_varkey()));
+    }
+    ui->plotInput->setCurrentElem(toQString(crop->get_plot().get_key()).split("-")[0]);
+    ui->shapeInput->set_shape(crop->get_shape());
+    ui->noteInput->setText(toQString(crop->get_note()));
+
+    ui->AddButton->setText(tr("Apply changes"));
+    ui->DelButton->setText(tr("Delete crop"));
+    show();
+}
+
+void EditCropWidget::show_add()
+{
+    selection_controller.select_crop(nullptr);
+    show();
 }
 
 void EditCropWidget::edit_crop()
@@ -126,6 +140,7 @@ void EditCropWidget::delete_crop()
 {
     Crop* selected_crop = selection_controller.get_selected();
     if (selected_crop == nullptr) {
+        hide();
         return;
     }
     int result = QMessageBox::question(NULL, QObject::tr("Delete crop"),
