@@ -92,6 +92,8 @@ GuiMainWin::GuiMainWin(Dataset& dataset) :
     QToolBar* toolbar = new QToolBar("", this);
     addToolBar(toolbar);
     toolbar->addAction(tr("Add Crop"), edit_crop_widget, SLOT(show_add()));
+    toolbar->addAction(tr("Plants"), plantswidget, SLOT(show()));
+    toolbar->addAction(tr("Plots"), plotswidget, SLOT(show()));
     toolbar->setMovable(false);
 
     QWidget* central_widget = new QWidget(this);
