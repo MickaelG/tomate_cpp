@@ -65,6 +65,9 @@ QWidget* GuiMainWin::createTabsWidget()
     timeview->setScene(timescene);
     tab_widget->addTab(timeview, QObject::tr("Time view"));
 
+    //Date of the spacewidget
+    QObject::connect(timescene, SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
+
     return tab_widget;
 }
 
@@ -97,9 +100,6 @@ GuiMainWin::GuiMainWin(Dataset& dataset) :
     central_layout->addWidget(createTabsWidget());
 
     setCentralWidget(central_widget);
-
-    //Date of the spacewidget
-    //QObject::connect(timescene, SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
 
     QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
