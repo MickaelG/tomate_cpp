@@ -13,6 +13,7 @@ class Crop;
 class Crops;
 class Plot;
 class CropSelectionController;
+class DateController;
 class DatasetModel;
 #include "geometry.h"
 
@@ -50,7 +51,9 @@ class SpaceScene: public QGraphicsScene
     Q_OBJECT
 
 public:
-    SpaceScene(DatasetModel& dataset_model, CropSelectionController& selection_controller);
+    SpaceScene(DatasetModel& dataset_model,
+               CropSelectionController& selection_controller,
+               DateController& date_controller);
     void draw_scene();
     void clear_scene();
     Crop* getCropAtPos(QPointF scene_pos);
@@ -59,7 +62,6 @@ public:
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private slots:
-    void set_date(QDate date);
     void selectCrop(Crop *p_crop);
     void update_draw();
 
@@ -68,7 +70,7 @@ signals:
     
 private:
     DatasetModel& dataset_model;
-    QDate date;
+    DateController& date_controller;
     CropSpaceRepr* selected_subd_repr;
     CropSelectionController& selection_controller;
     vector<PlotRepresentation*> plot_reprs;

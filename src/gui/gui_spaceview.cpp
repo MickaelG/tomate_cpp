@@ -85,23 +85,21 @@ Crop* CropSpaceRepr::get_pcrop()
 }
 
 SpaceScene::SpaceScene(DatasetModel& dataset_model,
-                       CropSelectionController& selection_controller) :
-    dataset_model(dataset_model), selection_controller(selection_controller)
+                       CropSelectionController& selection_controller,
+                       DateController& date_controller) :
+    dataset_model(dataset_model),
+    selection_controller(selection_controller),
+    date_controller(date_controller)
 {
     QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
     QObject::connect(this, SIGNAL(crop_selected(Crop*)), &selection_controller, SLOT(select_crop(Crop*)));
 
+    QObject::connect(&date_controller, SIGNAL(date_changed(bool)), this, SLOT(update_draw()));
+
     QObject::connect(&dataset_model, SIGNAL(updated()), this, SLOT(update_draw()));
 
-    date = QDate::currentDate();
     selected_subd_repr = 0;
     this->draw_scene();
-}
-
-void SpaceScene::set_date(QDate date)
-{
-    this->date = date;
-    this->update_draw();
 }
 
 void SpaceScene::update_draw()
@@ -117,7 +115,7 @@ void SpaceScene::draw_scene()
         if (plot.get_shape())
         {
             PlotRepresentation *plot_repr = new PlotRepresentation(dataset_model.get_dataset().get_crops(),
-                                                                   plot, date);
+                                                                   plot, date_controller.get_date());
             this->addItem(plot_repr);
             plot_reprs.push_back(plot_repr);
             //TODO: delete plot_repr

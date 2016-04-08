@@ -1,5 +1,6 @@
 
 #include <QObject>
+#include <QDate>
 #include <memory>
 #pragma once
 
@@ -26,6 +27,37 @@ signals:
 
 private:
     Crop* _selected_crop;
+};
+
+class DateController: public QObject
+{
+    Q_OBJECT
+
+public:
+    DateController(QObject* parent = nullptr) :
+        QObject(parent),
+        selected_date(QDate::currentDate())
+    {
+    }
+
+    void set_date(QDate date)
+    {
+        bool year_changed = date.year() != selected_date.year();
+        selected_date = date;
+        emit date_changed(year_changed);
+    }
+
+    const QDate& get_date() const
+    {
+        return selected_date;
+    }
+
+signals:
+    void date_changed(bool year_changed);
+
+private:
+    QDate selected_date;
+    bool bWholeYear;
 };
 
 class DatasetModel: public QObject

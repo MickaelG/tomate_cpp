@@ -34,4 +34,5 @@ private:
     DatasetModel dataset_model;
     DatasetController dataset_controller;
     CropSelectionController selection_controller;
+    DateController date_controller;
 };

@@ -12,6 +12,7 @@ using namespace std;
 class DatasetModel;
 class Crop;
 class CropSelectionController;
+class DateController;
 
 
 class CropTimeRepresentation: public QGraphicsItemGroup
@@ -51,6 +52,7 @@ class TimeScene: public QGraphicsScene
 public:
     TimeScene(DatasetModel& dataset,
               CropSelectionController& selection_controller,
+              DateController& date_controller,
               QWidget* parent=NULL);
     void draw_scene();
     void clear_scene();
@@ -67,19 +69,19 @@ public slots:
     void redraw();
     void previous_year();
     void next_year();
+    void date_changed(bool year_changed);
 
 signals:
-    void current_date_changed(QDate date);
     void crop_selected(Crop* p_crop);
     void size_changed();
 
 private:
     DatasetModel& dataset_model;
     //QMenu* context_menu;
-    QDate date;
     vector<CropTimeRepresentation*> crop_reprs;
     CropTimeRepresentation* selected_crop_repr;
     CropSelectionController& _selection_controller;
+    DateController& date_controller;
     QGraphicsItem* _date_line;
 
     void add_year_buttons();

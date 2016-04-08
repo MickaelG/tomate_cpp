@@ -54,19 +54,20 @@ QWidget* GuiMainWin::createTabsWidget()
 {
     QTabWidget* tab_widget = new QTabWidget;
 
-    SpaceScene* spacescene = new SpaceScene(dataset_model, selection_controller);
+    SpaceScene* spacescene = new SpaceScene(dataset_model,
+                                            selection_controller,
+                                            date_controller);
     AutofitSceneView* spaceview = new AutofitSceneView(false);
     spaceview->setScene(spacescene);
     tab_widget->addTab(spaceview, QObject::tr("Space view"));
 
 
-    TimeScene* timescene = new TimeScene(dataset_model, selection_controller);
+    TimeScene* timescene = new TimeScene(dataset_model,
+                                         selection_controller,
+                                         date_controller);
     AutofitSceneView* timeview = new AutofitSceneView(true);
     timeview->setScene(timescene);
     tab_widget->addTab(timeview, QObject::tr("Time view"));
-
-    //Date of the spacewidget
-    QObject::connect(timescene, SIGNAL(current_date_changed(QDate)), spacescene, SLOT(set_date(QDate)));
 
     return tab_widget;
 }

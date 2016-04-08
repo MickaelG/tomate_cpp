@@ -258,17 +258,21 @@ private:
 
 TimeScene::TimeScene(DatasetModel& dataset_model,
                      CropSelectionController& selection_controller,
+                     DateController& date_controller,
                      QWidget* parent) :
     QGraphicsScene(parent),
-    dataset_model(dataset_model), selected_crop_repr(nullptr),
-    _selection_controller(selection_controller)
+    dataset_model(dataset_model),
+    selected_crop_repr(nullptr),
+    _selection_controller(selection_controller),
+    date_controller(date_controller)
 {
     QObject::connect(&_selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
     QObject::connect(this, SIGNAL(crop_selected(Crop*)), &_selection_controller, SLOT(select_crop(Crop*)));
 
+    QObject::connect(&date_controller, SIGNAL(date_changed(bool)), this, SLOT(date_changed(bool)));
+
     QObject::connect(&dataset_model, SIGNAL(updated()), this, SLOT(redraw()));
 
-    date = QDate::currentDate();
     draw_scene();
 }
 
@@ -371,10 +375,8 @@ void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     if ((clic_point.y() > -30) && (clic_point.y() < 0))
     {
         int xpos = clic_point.x();
-        date = pos_to_date(xpos, QDate(date.year(), 1, 1));
-        current_date_changed(date);
-        //redraw();
-        _date_line->setPos(xpos, 0);
+        QDate date = pos_to_date(xpos, QDate(date_controller.get_date().year(), 1, 1));
+        date_controller.set_date(date);
     }
     else {
         CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
@@ -396,18 +398,25 @@ void TimeScene::keyPressEvent(QKeyEvent* keyEvent)
 }
 
 void TimeScene::next_year() {
-    date = date.addYears(1);
-    current_date_changed(date);
-    redraw();
+    QDate date = date_controller.get_date().addYears(1);
+    date_controller.set_date(date);
 }
 
 
 void TimeScene::previous_year() {
-    date = date.addYears(-1);
-    current_date_changed(date);
-    redraw();
+    QDate date = date_controller.get_date().addYears(-1);
+    date_controller.set_date(date);
 }
 
+void TimeScene::date_changed(bool year_changed) {
+    if (year_changed) {
+        redraw();
+    } else {
+        const QDate& date = date_controller.get_date();
+        int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
+        _date_line->setPos(xpos, 0);
+    }
+}
 
 void TimeScene::redraw()
 {
@@ -425,6 +434,8 @@ void TimeScene::clear_scene()
 
 void TimeScene::add_year_buttons()
 {
+    const QDate& date = date_controller.get_date();
+
     QDate date0 = QDate(date.year(), 1, 1);
     QDate date_end = date0.addYears(1);
 
@@ -461,7 +472,7 @@ void TimeScene::draw_scene()
 {
     //date0 is the 1 january of the first year if (a crop exists,
     //else 1 january of current year
-    QDate date0 = QDate(date.year(), 1, 1);
+    QDate date0 = QDate(date_controller.get_date().year(), 1, 1);
     MonthsRepresentation *months = new MonthsRepresentation(date0, date0.addYears(1).addDays(-1));
 
     addItem(months);
@@ -530,7 +541,7 @@ void TimeScene::draw_scene()
         addItem(T);
     }
     _date_line = new DateLineGraphicsItem(plot_max_pos);
-    int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
+    int xpos = date_to_pos(date_controller.get_date(), QDate(date_controller.get_date().year(), 1, 1));
     _date_line->setPos(xpos, 0);
     this->addItem(_date_line);
     selectCrop(_selection_controller.get_selected());
