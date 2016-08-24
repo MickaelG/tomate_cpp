@@ -7,6 +7,7 @@
 using namespace pugi;
 
 #include <unordered_map>
+#include <map>
 
 bg::date get_date(xml_node &elem_xml, string attribute_name)
 {
@@ -52,6 +53,9 @@ int xml_read_data(string filename, Dataset& dataset)
 
     unordered_map<string, vector<float>> subd_data;
 
+    std::map<string, Plot*> plots_map;
+    std::map<string, Plant*> plants_map;
+
     xml_node root_node = doc.child("sfg");
     //for (elem_xml = root_node.child("plots").first_child(); elem_xml; elem_xml = elem_xml.next_sibling())
     for (xml_node elem_xml: root_node.child("plots").children())
@@ -63,7 +67,8 @@ int xml_read_data(string filename, Dataset& dataset)
         float height = elem_xml.attribute("height").as_float(-1);
         float posx = elem_xml.attribute("posx").as_float(0);
         float posy = elem_xml.attribute("posy").as_float(0);
-        dataset.get_plots().add(key, name, descr, width, height, posx, posy);
+        Plot& new_plot = dataset.get_plots().add(name, descr, width, height, posx, posy);
+        plots_map[key] = &new_plot;
 
         //Saved for conversion from 0.1 to 0.2
         int isubd = 0;
@@ -88,14 +93,17 @@ int xml_read_data(string filename, Dataset& dataset)
         string note = elem_xml.attribute("note").value();
         replaceAll(note, "\\n", "\n");
         string color = elem_xml.attribute("color").value();
-        Plant& plant = dataset.get_plants().add(key, name, note);
+        PlantSpecies& plant = dataset.get_plants().add(name, note);
+        plants_map[key] = &plant;
         plant.set_color_str(color);
         for (xml_node var_xml: elem_xml.children())
         {
             string varkey = var_xml.attribute("key").value();
             string varname = var_xml.attribute("name").value();
             string note = var_xml.attribute("note").value();
-            plant.add_var(varkey, varname, note);
+            PlantVariety& var = plant.add_var(varname, note);
+            varkey = key + "-" + varkey;
+            plants_map[varkey] = &var;
         }
     }
 
@@ -109,10 +117,13 @@ int xml_read_data(string filename, Dataset& dataset)
         string plotkey = elem_xml.attribute("plot").value();
         string plantkey = elem_xml.attribute("plant").value();
         string varkey = elem_xml.attribute("var").value();
+        if (!varkey.empty()) {
+            plantkey += "-" + varkey;
+        }
         string note = elem_xml.attribute("note").value();
 
-        Plant* p_plant = dataset.get_plants().find(plantkey);
-        if (p_plant == nullptr)
+        auto plant_it = plants_map.find(plantkey);
+        if (plant_it == plants_map.end())
         {
             std::cout << "Error: plant " << plantkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
             continue;
@@ -123,8 +134,8 @@ int xml_read_data(string filename, Dataset& dataset)
         float posx = elem_xml.attribute("posx").as_float(0);
         float posy = elem_xml.attribute("posy").as_float(0);
 
-        Plot* p_plot = dataset.get_plots().find(plotkey);
-        if (!p_plot)
+        auto plot_it = plots_map.find(plotkey);
+        if (plot_it == plots_map.end())
         {
             size_t delim_pos = plotkey.find("-");
             if (width < 0 && delim_pos != string::npos)
@@ -132,8 +143,8 @@ int xml_read_data(string filename, Dataset& dataset)
                 string mainplotkey = plotkey.substr(0, delim_pos);
                 if (subd_data.count(plotkey))
                 {
-                    p_plot = dataset.get_plots().find(mainplotkey);
-                    if (!p_plot)
+                    plot_it = plots_map.find(mainplotkey);
+                    if (plot_it == plots_map.end())
                     {
                         std::cout << "Error: conversion from 0.1, plot " << mainplotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
                     }
@@ -159,7 +170,7 @@ int xml_read_data(string filename, Dataset& dataset)
 
         Crop& crop = dataset.get_crops().add(start_date, end_date,
                                              planned_start_date, planned_end_date,
-                                             dataset.get_plants().find(plantkey), varkey, p_plot, note, rect);
+                                             plant_it->second, plot_it->second, note, rect);
         for (xml_node action_xml: elem_xml.children())
         {
             bg::date date = get_date(action_xml, "date");
@@ -197,13 +208,19 @@ int xml_write_data(string filename, const Dataset& dataset)
     xml_document doc;
 
     xml_node root_node = doc.append_child("sfg");
-    root_node.append_attribute("v") = "0.2";
+    root_node.append_attribute("v") = "0.3";
+
+    map<const Plot*, string> plots_map;
+    map<const Plant*, string> plants_map;
 
     xml_node plot_node = root_node.append_child("plots");
-    for (const Plot& plot: dataset.get_plots())
+    for (int plot_index = 0; plot_index < dataset.get_plots().size(); ++plot_index)
     {
         xml_node elem_node = plot_node.append_child("plot");
-        elem_node.append_attribute("key") = plot.get_key().c_str();
+        const Plot& plot = dataset.get_plots()[plot_index];
+        string plot_key = std::to_string(plot_index);
+        plots_map[&plot] = plot_key;
+        elem_node.append_attribute("key") = plot_key.c_str();
         elem_node.append_attribute("name") = plot.get_name().c_str();
         elem_node.append_attribute("descr") = plot.get_note().c_str();
 
@@ -218,21 +235,29 @@ int xml_write_data(string filename, const Dataset& dataset)
         }
     }
     xml_node plant_node = root_node.append_child("plants");
-    for (const Plant& plant: dataset.get_plants())
+    int plant_id = 0;
+    for (const PlantSpecies& plant: dataset.get_plants())
     {
         xml_node elem_node = plant_node.append_child("plant");
-        elem_node.append_attribute("key") = plant.get_key().c_str();
+        string plant_key = to_string(plant_id);
+        plants_map[&plant] = plant_key;
+        ++plant_id;
+        elem_node.append_attribute("key") = plant_key.c_str();
         elem_node.append_attribute("name") = plant.get_name().c_str();
         add_str_attribute(elem_node, "color", plant.get_color_str());
         string note = plant.get_note();
         replaceAll(note, "\n", "\\n");
         add_str_attribute(elem_node, "note", note);
-        for (const Var& var: plant.get_vars())
+        int var_id = 0;
+        for (const auto& var: plant.get_vars())
         {
             xml_node var_node = elem_node.append_child("var");
-            var_node.append_attribute("key") = var.get_key().c_str();
-            var_node.append_attribute("name") = var.get_name().c_str();
-            add_str_attribute(var_node, "note", var.get_note());
+            string var_key = to_string(var_id);
+            ++var_id;
+            plants_map[var.get()] = plant_key + "-" + var_key;
+            var_node.append_attribute("key") = var_key.c_str();
+            var_node.append_attribute("name") = var->get_name().c_str();
+            add_str_attribute(var_node, "note", var->get_note());
         }
     }
     xml_node crop_node = root_node.append_child("crops");
@@ -260,13 +285,12 @@ int xml_write_data(string filename, const Dataset& dataset)
 
             add_date_attribute(elem_node, which_str + "_date", crop.get_date(which_date));
         }
-        elem_node.append_attribute("plant") = crop.get_plant().get_key().c_str();
-        add_str_attribute(elem_node, "var", crop.get_varkey());
+        elem_node.append_attribute("plant") = plants_map[&crop.get_plant()].c_str();
 
         const Plot& plot = crop.get_plot();
         float plot_width = 0;
         float plot_height = 0;
-        elem_node.append_attribute("plot") = plot.get_key().c_str();
+        elem_node.append_attribute("plot") = plots_map[&plot].c_str();
         plot_width = plot.get_shape()->get_width();
         plot_height = plot.get_shape()->get_height();
 

@@ -41,11 +41,6 @@ QVariant PlotsModel::data(const QModelIndex& index, int role) const
             QString name = toQString(plots[index.row()].get_name());
             return QVariant(name);
         }
-        else if (index.column() == 1)
-        {
-            QString key = toQString(plots[index.row()].get_key());
-            return QVariant(key);
-        }
     }
     return QVariant();
 }
@@ -67,10 +62,27 @@ Plot& PlotsModel::addPlot(QString plot_name)
 {
    beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
 
-   Plot& plot = plots.add("", fromQString(plot_name));
+   Plot& plot = plots.add(fromQString(plot_name));
 
    endInsertRows();
 
    return plot;
 }
 
+int PlotsModel::GetRowIndex(const Plot &plot) const
+{
+    for (int plot_index = 0; plot_index < plots.size(); ++plot_index) {
+        if (plots[plot_index] == plot) {
+            return plot_index;
+        }
+    }
+    return -1;
+}
+
+Plot* PlotsModel::GetPlot(int plot_index) const
+{
+    if (plot_index < 0 || plot_index >= plots.size()) {
+        return nullptr;
+    }
+    return &plots[plot_index];
+}

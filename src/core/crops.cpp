@@ -63,11 +63,10 @@ Crop::Crop() : p_plant(nullptr), p_plot(nullptr), shape(nullptr)
 
 Crop::Crop(bg::date start_date, bg::date end_date,
      bg::date planned_start_date, bg::date planned_end_date,
-     Plant* p_plant, const string& varkey,
+     Plant* p_plant,
      Plot* p_plot, const string& note, Rectangle rect) :
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
-    varkey(varkey),
     p_plant(p_plant), p_plot(p_plot), note(note), shape(nullptr)
 {
     if (rect.get_width() > 0) {
@@ -78,10 +77,9 @@ Crop::Crop(bg::date start_date, bg::date end_date,
 }
 
 Crop::Crop(bg::date start_date, bg::date end_date,
-     Plant* p_plant, const string& varkey,
+     Plant* p_plant,
      Plot* p_plot, const string& note) :
     start_date(start_date), end_date(end_date),
-    varkey(varkey),
     p_plant(p_plant), p_plot(p_plot), note(note), shape(nullptr)
 {
 }
@@ -162,26 +160,6 @@ const vector<CropAction>& Crop::get_actions() const
 {
     return actions;
 }
-
-string Crop::get_varkey() const
-{
-    return varkey;
-}
-
-void Crop::set_varkey(string varkey)
-{
-    this->varkey = varkey;
-}
-
-Crop::operator bool() const
-{
-    if ((!p_plant) || (!p_plot))
-    {
-        return false;
-    }
-    return (*p_plant) && (*p_plot);
-}
-
 
 bool Crop::is_active_at_date(bg::date date) const
 {
@@ -327,11 +305,11 @@ bool operator==(const Crop& elem1, const Crop& elem2)
 ///////////////////////////////////////////////////////////////////////////////
 Crop& Crops::add(bg::date start_date, bg::date end_date,
                  bg::date planned_start_date, bg::date planned_end_date,
-                 Plant *p_plant, const std::string& varkey,
+                 Plant *p_plant,
                  Plot *p_plot, const std::string& note, Rectangle rect)
 {
     _vcrops.push_back(unique_ptr<Crop>(new Crop(start_date, end_date, planned_start_date, planned_end_date,
-                                                p_plant, varkey, p_plot, note, rect)));
+                                                p_plant, p_plot, note, rect)));
     return *_vcrops.back();
 
 }
@@ -346,14 +324,13 @@ Crop& Crops::add(const Crop& crop)
 vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
 {
     vector<Crop*> result;
-    //for (int i_crop = 0; i_crop < this->size(); i_crop++)
-    for (auto it = _vcrops.begin(); it != _vcrops.end(); ++it)
+    for (auto& crop: _vcrops)
     {
-        if ((*it)->get_plot() == plot)
+        if (crop->get_plot() == plot)
         {
-           if ((*it)->is_active_at_date(date) || (*it)->is_planned_at_date(date))
+           if (crop->is_active_at_date(date) || crop->is_planned_at_date(date))
            {
-               result.push_back(it->get());
+               result.push_back(crop.get());
            }
         }
     }
@@ -379,13 +356,9 @@ vector<Crop*> Crops::crops_for_year(const Plot& plot, bg::date date)
 
 bool Crops::is_used_plot(const Plot& plot) const
 {
-    string plot_key = plot.get_key();
     for (auto it = _vcrops.cbegin(); it != _vcrops.cend(); ++it)
     {
-        string loop_key = (*it)->get_plot().get_key();
-        //plot_key must be conntained in loop_key
-        if (loop_key.find(plot_key) == 0)
-        {
+        if ((*it)->get_plot() == plot) {
             return true;
         }
     }
@@ -394,13 +367,9 @@ bool Crops::is_used_plot(const Plot& plot) const
 
 bool Crops::is_used_plant(const Plant& plant) const
 {
-    string plant_key = plant.get_key();
     for (auto it = _vcrops.cbegin(); it != _vcrops.cend(); ++it)
     {
-        string loop_key = (*it)->get_plant().get_key();
-        //plant_key must be conntained in loop_key
-        if (loop_key.find(plant_key) == 0)
-        {
+        if ((*it)->get_plant() == plant) {
             return true;
         }
     }

@@ -3,7 +3,7 @@
 using namespace std;
 
 class Plants;
-class Plant;
+class PlantSpecies;
 class PlantsModel;
 
 #include <QWidget>
@@ -41,7 +41,7 @@ class PlantsWindow: public QDialog
 
 public:
     PlantsWindow(PlantsModel *plants_model, QWidget* parent = NULL);
-    Plant& selected_plant();
+    PlantSpecies& selected_plant();
 
 signals:
     void timeline_need_update();

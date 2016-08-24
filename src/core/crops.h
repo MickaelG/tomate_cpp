@@ -40,10 +40,10 @@ public:
     Crop();
     Crop(bg::date start_date, bg::date end_date,
          bg::date planned_start_date, bg::date planned_end_date,
-         Plant *p_plant, const std::string& varkey,
+         Plant *p_plant,
          Plot *p_plot, const std::string& note = "", Rectangle rect=Rectangle());
     Crop(bg::date start_date, bg::date end_date,
-         Plant* p_plant, const std::string& varkey,
+         Plant* p_plant,
          Plot* p_plot, const std::string& note = "");
     std::string get_repr() const;
 
@@ -65,8 +65,6 @@ public:
     void add_action(bg::date date, std::string note);
     std::vector<CropAction>& get_actions();
     const std::vector<CropAction>& get_actions() const;
-    std::string get_varkey() const;
-    void set_varkey(std::string varkey);
     std::string get_note() const;
     void set_note(std::string note);
     explicit operator bool() const;
@@ -87,7 +85,6 @@ private:
     bg::date planned_end_date;
     std::string note;
     Plant* p_plant;
-    std::string varkey;
     Plot* p_plot;
     std::vector<CropAction> actions;
     Shape* shape;
@@ -103,7 +100,7 @@ public:
     std::vector<Crop*> crops_for_year(const Plot& plot, bg::date date);
     Crop& add(bg::date start_date, bg::date end_date,
               bg::date planned_start_date, bg::date planned_end_date,
-              Plant *p_plant, const std::string& varkey,
+              Plant *p_plant,
               Plot *p_plot, const std::string& note = "", Rectangle rect=Rectangle());
     Crop& add(const Crop& crop);
     bool is_used_plot(const Plot& plot) const;

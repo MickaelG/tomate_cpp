@@ -37,6 +37,7 @@ private slots:
     void edit_crop();
     void delete_crop();
     void show_add();
+    void set_var_box(int selected_plant);
 
 private:
     std::unique_ptr<Crop> get_described_crop();

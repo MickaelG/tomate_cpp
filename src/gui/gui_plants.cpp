@@ -139,7 +139,7 @@ PlantsWindow::PlantsWindow(PlantsModel* plants_model, QWidget* parent) :
 }
 
 
-Plant& PlantsWindow::selected_plant()
+PlantSpecies& PlantsWindow::selected_plant()
 {
     int plant_index = plants_widget->selectionModel()->currentIndex().row();
     return *(plants_model->get_plants().begin() + plant_index);

@@ -12,19 +12,19 @@ Plot::Plot() : shape(NULL)
 {
 }
 
-Plot::Plot(string key, string name, string descr, Shape* shape) :
-    KeyName(key, name, descr), shape(shape)
+Plot::Plot(string name, string descr, Shape* shape) :
+    name(name), descr(descr), shape(shape)
 {
 }
 
-Plot::Plot(string key, string name, string descr, float width, float height, float posx, float posy) :
-    KeyName(key, name, descr), shape(NULL)
+Plot::Plot(string name, string descr, float width, float height, float posx, float posy) :
+    name(name), descr(descr), shape(NULL)
 {
     shape = new Rectangle(posx, posy, width, height);
 }
 
 Plot::Plot(const Plot& plot) :
-    KeyName(plot.key, plot.name, plot.note), shape(NULL)
+    name(plot.name), descr(plot.descr), shape(NULL)
 {
     if(plot.shape)
     {
@@ -64,5 +64,31 @@ void Plot::set_shape(Shape* in_shape)
     }
     shape = in_shape;
 }
+
+void Plot::set_note(string new_note)
+{
+    descr = std::move(new_note);
+}
+
+const string &Plot::get_note() const
+{
+   return descr;
+}
+
+void Plot::set_name(string new_name)
+{
+    name = std::move(new_name);
+}
+
+const string &Plot::get_name() const
+{
+   return name;
+}
+
+bool operator==(const Plot& lhs, const Plot& rhs)
+{
+    return &lhs == &rhs;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////

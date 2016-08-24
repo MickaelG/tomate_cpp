@@ -13,24 +13,10 @@ Plants::Plants(const Crops& crops) : crops(crops)
 {
 }
 
-Plant& Plants::add(string key, const string& name, const string& note)
+PlantSpecies& Plants::add(const string& name, const string& note)
 {
-    if (key == "")
-    {
-        key = to_string(_vplants.size());
-    }
-    _vplants.push_back(unique_ptr<Plant>(new Plant(key, name, note)));
+    _vplants.push_back(unique_ptr<PlantSpecies>(new PlantSpecies(name, note)));
     return *_vplants.back();
-}
-
-Plant* Plants::find(const std::string& key)
-{
-    for (auto& plant_up: _vplants) {
-        if (plant_up->get_key() == key) {
-            return plant_up.get();
-        }
-    }
-    return nullptr;
 }
 
 void Plants::remove(int iplant)
@@ -57,24 +43,24 @@ bool Plants::is_used(const Plant& plant) const
     return crops.is_used_plant(plant);
 }
 
-my_iterator<Plant> Plants::begin()
+my_iterator<PlantSpecies> Plants::begin()
 {
-    return my_iterator<Plant>(_vplants.begin());
+    return my_iterator<PlantSpecies>(_vplants.begin());
 }
 
-my_iterator<Plant> Plants::end()
+my_iterator<PlantSpecies> Plants::end()
 {
-    return my_iterator<Plant>(_vplants.end());
+    return my_iterator<PlantSpecies>(_vplants.end());
 }
 
-my_const_iterator<Plant> Plants::begin() const
+my_const_iterator<PlantSpecies> Plants::begin() const
 {
-    return my_const_iterator<Plant>(_vplants.begin());
+    return my_const_iterator<PlantSpecies>(_vplants.begin());
 }
 
-my_const_iterator<Plant> Plants::end() const
+my_const_iterator<PlantSpecies> Plants::end() const
 {
-    return my_const_iterator<Plant>(_vplants.end());
+    return my_const_iterator<PlantSpecies>(_vplants.end());
 }
 
 int Plants::size() const
@@ -82,12 +68,12 @@ int Plants::size() const
     return _vplants.size();
 }
 
-const Plant& Plants::operator[](int index) const
+const PlantSpecies& Plants::operator[](int index) const
 {
     return *_vplants[index];
 }
 
-Plant& Plants::operator[](int index)
+PlantSpecies& Plants::operator[](int index)
 {
     return *_vplants[index];
 }

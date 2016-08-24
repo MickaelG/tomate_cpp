@@ -25,6 +25,43 @@ QModelIndex PlantsModel::parent(const QModelIndex &index) const
 
 }
 
+int PlantsModel::GetSpeciesRowIndex(const Plant &plant) const
+{
+    for (int plant_index = 0; plant_index < plants.size(); ++plant_index) {
+        if (plants[plant_index] == plant.get_species()) {
+            return plant_index;
+        }
+    }
+    return -1;
+}
+
+int PlantsModel::GetVarietyRowIndex(const Plant &plant) const
+{
+    const PlantSpecies& species = plant.get_species();
+    if (species == plant) {
+        return -1;
+    }
+    for (int species_index = 0; species_index < species.get_vars().size(); ++species_index) {
+        if (*species.get_vars()[species_index] == plant) {
+            return species_index;
+        }
+    }
+    return -1;
+}
+
+Plant* PlantsModel::GetPlant(int plant_index, int var_index) const
+{
+    if (plant_index < 0 || plant_index >= plants.size()) {
+        return nullptr;
+    }
+    PlantSpecies& species = plants[plant_index];
+
+    if (var_index < 0 || var_index >= species.get_vars().size()) {
+        return &species;
+    }
+    return species.get_vars()[var_index].get();
+}
+
 Plants& PlantsModel::get_plants()
 {
     return plants;
@@ -74,11 +111,6 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
                 QString name = toQString(plants[index.row()].get_name());
                 return QVariant(name);
             }
-            else if (index.column() == 1)
-            {
-                QString key = toQString(plants[index.row()].get_key());
-                return QVariant(key);
-            }
         }
         return QVariant();
     }
@@ -96,25 +128,13 @@ QVariant PlantsModel::data(const QModelIndex& index, int role) const
                 {
                     auto it = plants.begin();
                     advance(it, plant_index);
-                    const Vars& vars = it->get_vars();
+                    const auto& vars = it->get_vars();
                     auto itv = vars.begin();
                     if (index.row() > vars.size()-1) {
                         return QVariant(QString("ERROR"));
                     }
                     advance(itv, index.row());
-                    return QVariant(toQString(itv->get_name()));
-                }
-            }
-            else if (index.column() == 1)
-            {
-                if (plant_index > 0)
-                {
-                    auto it = plants.begin();
-                    advance(it, plant_index);
-                    const Vars& vars = it->get_vars();
-                    auto itv = vars.begin();
-                    advance(itv, index.row());
-                    return QVariant(toQString(itv->get_key()));
+                    return QVariant(toQString((*itv)->get_name()));
                 }
             }
         }
@@ -140,7 +160,7 @@ void PlantsModel::addPlant(QString plant_name)
 {
    beginInsertRows(QModelIndex(), rowCount(), rowCount()+1);
 
-   plants.add("", fromQString(plant_name));
+   plants.add(fromQString(plant_name));
 
    endInsertRows();
 }
@@ -150,7 +170,7 @@ void PlantsModel::addVar(const QModelIndex& plant_mi, QString var_name)
    beginInsertRows(plant_mi, rowCount(plant_mi), rowCount(plant_mi)+1);
 
    int plant_index = plant_mi.row();
-   plants[plant_index].add_var("", fromQString(var_name));
+   plants[plant_index].add_var(fromQString(var_name));
 
    endInsertRows();
 }

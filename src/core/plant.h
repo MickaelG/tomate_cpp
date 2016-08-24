@@ -2,49 +2,66 @@
 #ifndef PLANT_H
 #define PLANT_H
 
-#include "keynames.h"
 #include "my_iterator.h"
 
 #include <vector>
+#include <string>
 
-class Var: public KeyName
+class PlantVariety;
+class PlantSpecies;
+
+class Plant
 {
-private:
 public:
-    Var(std::string key, std::string name, std::string note = "");
+    virtual std::string get_color_str() const = 0;
+    virtual std::string get_name() const = 0;
+    virtual const PlantSpecies& get_species() const = 0;
 };
 
-class Vars
+class PlantSpecies: public Plant
 {
 public:
-    Vars();
-    Vars(const Vars& other) = delete;
-    void add(std::string key, std::string name, std::string note="");
-    my_iterator<Var> begin();
-    my_iterator<Var> end();
-    my_const_iterator<Var> begin() const;
-    my_const_iterator<Var> end() const;
-    int size() const;
-
-private:
-    std::vector<std::unique_ptr<Var> > _vvars;
-};
-
-class Plant: public KeyName
-{
-public:
-    Plant();
-    Plant(const Plant& other) = delete;
-    Plant(std::string key, std::string name, std::string note="", std::string color="");
-    void add_var(std::string key, std::string name, std::string note="");
-    std::string get_color_str() const;
+    PlantSpecies(const PlantSpecies& other) = delete;
+    PlantSpecies(std::string name, std::string note="", std::string color="");
+    PlantVariety& add_var(std::string name, std::string note="");
+    std::string get_color_str() const override;
     void set_color_str(std::string color);
-    Vars& get_vars();
-    const Vars& get_vars() const;
+
+    //Temp, for xml writer only
+    const std::vector<std::unique_ptr<PlantVariety> >& get_vars() const;
+
+    void set_name(std::string new_name);
+    std::string get_name() const override;
+    void set_note(std::string note);
+    const std::string& get_note() const;
+
+    const PlantSpecies& get_species() const override;
 
 private:
+    std::string name;
+    std::string note;
     std::string color;
-    Vars varlist;
+    std::vector<std::unique_ptr<PlantVariety> > vars;
 };
+
+class PlantVariety: public Plant
+{
+public:
+    PlantVariety(PlantSpecies& species, std::string name, std::string note = "");
+    void set_name(std::string new_name);
+    std::string get_name() const override;
+    void set_note(std::string note);
+    const std::string& get_note() const;
+    std::string get_color_str() const override;
+    const PlantSpecies& get_species() const override;
+
+private:
+    std::string name;
+    std::string note;
+
+    PlantSpecies& species;
+};
+
+bool operator==(const Plant& lhs, const Plant& rhs);
 
 #endif //PLANT_H

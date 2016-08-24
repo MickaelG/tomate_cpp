@@ -21,6 +21,8 @@ public:
     Plots& get_plots();
     Plot& addPlot(QString plot_name);
     const QModelIndex plotIndex(int plot_index);
+    int GetRowIndex(const Plot& plot) const;
+    Plot* GetPlot(int plot_index) const;
 
 private:
     Plots& plots;

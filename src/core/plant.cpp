@@ -2,96 +2,96 @@
 #include "plant.h"
 using namespace std;
 
-///////////////////////////////////////////////////////////////////////////////
-// class Plant
-///////////////////////////////////////////////////////////////////////////////
 
-Plant::Plant()
+PlantSpecies::PlantSpecies(string name, string note, string color) :
+    name(name), note(note), color(color)
 {
 }
 
-Plant::Plant(string key, string name, string note, string color) :
-    KeyName(key, name, note), color(color)
+PlantVariety& PlantSpecies::add_var(string name, string note)
 {
+    vars.push_back(unique_ptr<PlantVariety>(new PlantVariety(*this, name, note)));
+    return *vars.back();
 }
 
-void Plant::add_var(string key, string name, string note)
-{
-    varlist.add(key, name, note);
-}
-
-string Plant::get_color_str() const
+string PlantSpecies::get_color_str() const
 {
     return color;
 }
 
-void Plant::set_color_str(string color)
+void PlantSpecies::set_color_str(string color)
 {
     this->color = color;
 }
 
-Vars& Plant::get_vars()
+const vector<unique_ptr<PlantVariety> >& PlantSpecies::get_vars() const
 {
-    return varlist;
+    return vars;
 }
 
-const Vars& Plant::get_vars() const
+void PlantSpecies::set_note(string new_note)
 {
-    return varlist;
-}
-///////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////
-// class Var
-///////////////////////////////////////////////////////////////////////////////
-Var::Var(string key, string name, string note) :
-    KeyName(key, name, note)
-{
+    note = std::move(new_note);
 }
 
-///////////////////////////////////////////////////////////////////////////////
+const string &PlantSpecies::get_note() const
+{
+    return note;
+}
 
+const PlantSpecies &PlantSpecies::get_species() const
+{
+   return *this;
+}
 
-///////////////////////////////////////////////////////////////////////////////
-// class Vars
-///////////////////////////////////////////////////////////////////////////////
-Vars::Vars()
+void PlantSpecies::set_name(string new_name)
+{
+    name = std::move(new_name);
+}
+
+string PlantSpecies::get_name() const
+{
+   return name;
+}
+
+bool operator==(const Plant& lhs, const Plant& rhs)
+{
+    return &lhs == &rhs;
+}
+
+PlantVariety::PlantVariety(PlantSpecies& species, string name, string note) :
+    species(species),
+    name(name),
+    note(note)
 {
 }
 
-void Vars::add(string key, string name, string note)
+void PlantVariety::set_note(string new_note)
 {
-    if (key == "")
-    {
-        key = to_string(_vvars.size());
-    }
-    //TODO : check that key is unique
-    _vvars.push_back(unique_ptr<Var>(new Var(key, name, note)));
+    note = std::move(new_note);
 }
 
-my_iterator<Var> Vars::begin()
+const string &PlantVariety::get_note() const
 {
-    return my_iterator<Var>(_vvars.begin());
+   return note;
 }
 
-my_iterator<Var> Vars::end()
+void PlantVariety::set_name(string new_name)
 {
-    return my_iterator<Var>(_vvars.end());
+    name = std::move(new_name);
 }
 
-my_const_iterator<Var> Vars::begin() const
+string PlantVariety::get_name() const
 {
-    return my_const_iterator<Var>(_vvars.begin());
+   return name;
 }
 
-my_const_iterator<Var> Vars::end() const
+string PlantVariety::get_color_str() const
 {
-    return my_const_iterator<Var>(_vvars.end());
+    return species.get_color_str();
 }
 
-int Vars::size() const
+const PlantSpecies &PlantVariety::get_species() const
 {
-    return _vvars.size();
+   return species;
 }
-///////////////////////////////////////////////////////////////////////////////

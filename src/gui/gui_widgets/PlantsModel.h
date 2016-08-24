@@ -6,6 +6,7 @@
 #include <QComboBox>
 
 class Plants;
+class Plant;
 
 
 class PlantsModel: public QAbstractListModel
@@ -24,6 +25,9 @@ public:
     const QModelIndex plantIndex(int plant_index);
     QModelIndex index (int row, int column, const QModelIndex & parent = QModelIndex() ) const;
     QModelIndex parent(const QModelIndex &index) const;
+    int GetSpeciesRowIndex(const Plant& plant) const;
+    int GetVarietyRowIndex(const Plant& plant) const;
+    Plant* GetPlant(int plant_index, int var_index) const;
 
 private:
     Plants& plants;

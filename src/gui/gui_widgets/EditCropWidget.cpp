@@ -30,9 +30,9 @@ EditCropWidget::EditCropWidget(DatasetModel& dataset_model,
 
     ui->plantInput->setModel(plants_model);
     ui->varInput->setModel(plants_model);
-    ui->varInput->setVarRootModelIndex(0);
+    set_var_box(0);
     QObject::connect(ui->plantInput, SIGNAL(currentIndexChanged(int)),
-                     ui->varInput, SLOT(setVarRootModelIndex(int)));
+                     this, SLOT(set_var_box(int)));
 
     ui->plotInput->setModel(plots_model);
 
@@ -44,6 +44,12 @@ EditCropWidget::EditCropWidget(DatasetModel& dataset_model,
 
     QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)),
                      this, SLOT(set_crop_values(Crop*)));
+}
+
+void EditCropWidget::set_var_box(int selected_plant)
+{
+  ui->varInput->setRootModelIndex(plants_model->index(selected_plant, 0));
+  ui->varInput->setCurrentIndex(-1);
 }
 
 
@@ -74,12 +80,10 @@ void EditCropWidget::set_crop_values(Crop* crop)
     ui->enddateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::END)));
     ui->plannedstartdateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::PLANNED_START)));
     ui->plannedenddateInput->setSelectedDate(toQDate(crop->get_date(Crop::DateSel::PLANNED_END)));
-    ui->plantInput->setCurrentElem(toQString(crop->get_plant().get_key()));
-    if (crop->get_varkey() != "")
-    {
-        ui->varInput->setCurrentElem(toQString(crop->get_varkey()));
-    }
-    ui->plotInput->setCurrentElem(toQString(crop->get_plot().get_key()).split("-")[0]);
+    ui->plantInput->setCurrentIndex(plants_model->GetSpeciesRowIndex(crop->get_plant()));
+    ui->varInput->setCurrentIndex(plants_model->GetVarietyRowIndex(crop->get_plant()));
+
+    ui->plotInput->setCurrentIndex(plots_model->GetRowIndex(crop->get_plot()));
     ui->shapeInput->set_shape(crop->get_shape());
     ui->noteInput->setText(toQString(crop->get_note()));
 
@@ -104,8 +108,7 @@ void EditCropWidget::edit_crop()
 
 unique_ptr<Crop> EditCropWidget::get_described_crop()
 {
-    QString plot_key = ui->plotInput->currentElem();
-    Plot* p_plot = dataset_model.get_dataset().get_plots().find(fromQString(plot_key));
+    Plot* p_plot = plots_model->GetPlot(ui->plotInput->currentIndex());
     if (p_plot == nullptr) {
        QMessageBox::critical(NULL, QObject::tr("Error"),
                               QObject::tr("Please select a plot."));
@@ -113,14 +116,12 @@ unique_ptr<Crop> EditCropWidget::get_described_crop()
     }
     Rectangle rect = ui->shapeInput->get_rect();
 
-    QString plant_key = ui->plantInput->currentElem();
-    Plant* p_plant = dataset_model.get_dataset().get_plants().find(fromQString(plant_key));
+    Plant* p_plant = plants_model->GetPlant(ui->plantInput->currentIndex(), ui->varInput->currentIndex());
     if (p_plant == nullptr) {
        QMessageBox::critical(NULL, QObject::tr("Error"),
                               QObject::tr("Please select a plant."));
        return nullptr;
     }
-    QString var_key = ui->varInput->currentElem();
 
     QDate start_date = ui->startdateInput->selectedDate();
     QDate end_date = ui->enddateInput->selectedDate();
@@ -131,7 +132,7 @@ unique_ptr<Crop> EditCropWidget::get_described_crop()
 
     unique_ptr<Crop> crop(new Crop(fromQDate(start_date), fromQDate(end_date),
                                    fromQDate(planned_start_date), fromQDate(planned_end_date),
-                                   p_plant, fromQString(var_key), p_plot, fromQString(note),
+                                   p_plant, p_plot, fromQString(note),
                                    rect));
     return crop;
 }

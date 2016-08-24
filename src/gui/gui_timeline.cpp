@@ -45,7 +45,7 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
                                                QWidget* parent) :
     date0(date0), crop(crop), _global_rect(nullptr)
 {
-    QString text = toQString(crop.get_plant().get_name());
+    QString text = toQString(crop.get_plant().get_species().get_name());
 
     QDate p_start_date = toQDate(crop.get_virtual_planned_start_date());
     QDate p_end_date = toQDate(crop.get_virtual_planned_end_date());
@@ -495,7 +495,7 @@ void TimeScene::draw_scene()
         //Select crops in current year and current plot
         for (Crop& crop: crops)
         {
-            if (crop.get_plot().get_key() == plot.get_key() and crop.is_in_year_started_by(fromQDate(date0)))
+            if (crop.get_plot() == plot and crop.is_in_year_started_by(fromQDate(date0)))
             {
                 current_crops.push_back(&crop);
                 crop_rects.push_back(*crop.get_shape());

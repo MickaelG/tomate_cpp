@@ -14,9 +14,7 @@ class Plots
 {
 public:
     Plots(const Crops& crops);
-    Plot& add(std::string key, const std::string& name, const std::string& descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
-    Plot* find(const std::string& key);
-    void remove(const std::string& key);
+    Plot& add(const std::string& name, const std::string& descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
     void remove(int index);
     bool is_used(const Plot& plot) const;
     my_iterator<Plot> begin();

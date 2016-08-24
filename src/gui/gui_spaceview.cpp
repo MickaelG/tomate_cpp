@@ -56,7 +56,7 @@ CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
     if (p_crop)
     {
         Plant& plant = p_crop->get_plant();
-        QString text = toQString(plant.get_name());
+        QString text = toQString(plant.get_species().get_name());
         //text = re.sub("\s+", "\n", text)
         QGraphicsSimpleTextItem *textw =  new QGraphicsSimpleTextItem(text);
         QFont font = textw->font();
@@ -110,7 +110,7 @@ void SpaceScene::update_draw()
 
 void SpaceScene::draw_scene()
 {
-    for(Plot plot: this->dataset_model.get_dataset().get_plots())
+    for(Plot& plot: this->dataset_model.get_dataset().get_plots())
     {
         if (plot.get_shape())
         {

@@ -15,23 +15,22 @@ class Plants
 {
 public:
     Plants(const Crops& crops);
-    Plant& add(std::string key, const std::string& name, const std::string& note="");
-    Plant* find(const std::string& key);
+    PlantSpecies& add(const std::string& name, const std::string& note="");
     bool delete_plant(int iplant);
     bool is_used(const Plant& plant) const;
-    my_iterator<Plant> begin();
-    my_iterator<Plant> end();
-    my_const_iterator<Plant> begin() const;
-    my_const_iterator<Plant> end() const;
-    const Plant& operator[](int index) const;
-    Plant& operator[](int index);
+    my_iterator<PlantSpecies> begin();
+    my_iterator<PlantSpecies> end();
+    my_const_iterator<PlantSpecies> begin() const;
+    my_const_iterator<PlantSpecies> end() const;
+    const PlantSpecies& operator[](int index) const;
+    PlantSpecies& operator[](int index);
     int size() const;
 
 private:
     void remove(int iplant);
 
     const Crops& crops;
-    std::vector<std::unique_ptr<Plant> > _vplants;
+    std::vector<std::unique_ptr<PlantSpecies> > _vplants;
 };
 
 #endif //PLANTS_H

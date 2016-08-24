@@ -3,23 +3,33 @@
 #define PLOT_H
 
 #include "geometry.h"
-#include "keynames.h"
 
-class Plot: public KeyName
+#include <string>
+
+class Plot
 {
 public:
     Plot();
-    Plot(std::string key, std::string name, std::string descr, Shape *shape);
-    Plot(std::string key, std::string name, std::string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
+    Plot(std::string name, std::string descr, Shape *shape);
+    Plot(std::string name, std::string descr="", float width=-1, float height=-1, float posx=-1, float posy=-1);
     Plot(const Plot& plot);
     ~Plot();
     void add_subplot(float width, float height, float posx, float posy);
     Shape* get_shape();
     const Shape* get_shape() const;
     void set_shape(Shape *shape);
+    void set_name(std::string new_name);
+    const std::string& get_name() const;
+    void set_note(std::string note);
+    const std::string& get_note() const;
 
 private:
+    std::string name;
+    std::string descr;
     Shape* shape;
 };
+
+bool operator==(const Plot& lhs, const Plot& rhs);
+
 
 #endif //PLOT_H

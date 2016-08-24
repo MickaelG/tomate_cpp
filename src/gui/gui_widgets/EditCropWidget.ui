@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item>
-      <widget class="ComboBoxKey" name="plotInput">
+      <widget class="QComboBox" name="plotInput">
        <property name="toolTip">
         <string>Plot</string>
        </property>
@@ -140,14 +140,14 @@
       </widget>
      </item>
      <item>
-      <widget class="ComboBoxKey" name="plantInput">
+      <widget class="QComboBox" name="plantInput">
        <property name="toolTip">
         <string>Plant</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="ComboBoxKey" name="varInput">
+      <widget class="QComboBox" name="varInput">
        <property name="toolTip">
         <string>Variety</string>
        </property>
@@ -199,11 +199,6 @@
    <class>EnableCalendar</class>
    <extends>QDateEdit</extends>
    <header>EnableCalendar.h</header>
-  </customwidget>
-  <customwidget>
-   <class>ComboBoxKey</class>
-   <extends>QComboBox</extends>
-   <header>ComboBoxKey.h</header>
   </customwidget>
   <customwidget>
    <class>PhysInput</class>
