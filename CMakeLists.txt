@@ -48,7 +48,7 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/tomate_fr.qm
 
 set(qm_files ${CMAKE_BINARY_DIR}/tomate_fr.qm)
 set(qrc_srcfile ${CMAKE_CURRENT_SOURCE_DIR}/tomate.qrc)
-set(qrc_infile ${CMAKE_CURRENT_BINARY_DIR}/tomate.qrc)
+set(qrc_infile ${CMAKE_CURRENT_BINARY_DIR}/tomate_copied.qrc)
 # Copy the QRC file to the output directory, because the files listed in the
 # qrc file are relative to that directory.
 add_custom_command(
