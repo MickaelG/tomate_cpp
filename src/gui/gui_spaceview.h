@@ -39,6 +39,7 @@ public:
 
 private:
     void update_draw(const vector<Crop*>& crops_to_plot, QDate date);
+    void add_name();
 
     QMenu context_menu;
     Crops& crops;

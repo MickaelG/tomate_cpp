@@ -12,6 +12,7 @@
 #include <QColor>
 #include <QBrush>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSimpleTextItem>
                 
 
 PlotRepresentation::PlotRepresentation(Crops& crops, Plot& plot, QDate date) :
@@ -31,6 +32,9 @@ void PlotRepresentation::update_draw(const vector<Crop*>& crops_to_plot, QDate d
     Shape* shape = plot.get_shape();
     this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
                   shape->get_width(), shape->get_height());
+
+    add_name();
+
     for (Crop* p_crop: crops_to_plot)
     {
         CropSpaceRepr *crop_repr = new CropSpaceRepr(p_crop, date);
@@ -40,6 +44,18 @@ void PlotRepresentation::update_draw(const vector<Crop*>& crops_to_plot, QDate d
     }
 }
 //TODO: delete subd_repr
+
+void PlotRepresentation::add_name()
+{
+    QGraphicsSimpleTextItem* plot_title_item = new QGraphicsSimpleTextItem(toQString(plot.get_name()), this);
+    QFont font = plot_title_item->font();
+    font.setPointSize(int(this->rect().width()/20));
+    font.setWeight(25);
+    plot_title_item->setFont(font);
+
+    float text_height = plot_title_item->boundingRect().height();
+    plot_title_item->setPos(this->rect().left(), this->rect().top() - text_height);
+}
             
 CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
     p_crop(p_crop)
