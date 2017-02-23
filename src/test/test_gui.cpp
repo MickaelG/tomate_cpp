@@ -51,10 +51,10 @@ private slots:
     {
         Crops crops;
         Plants plants(crops);
-        PlantSpecies& plant1 = plants.add("pl1", "plant1");
-        PlantSpecies& plant2 = plants.add("pl2", "plant2");
-        plant1.add_var("", "var1");
-        plant1.add_var("", "var2");
+        PlantSpecies& plant1 = plants.add("plant1");
+        PlantSpecies& plant2 = plants.add("plant2");
+        plant1.add_var("var1");
+        plant1.add_var("var2");
 
         PlantsModel* plants_model =  new PlantsModel(plants);
         QModelIndex mi_pl0 = plants_model->index(0, 0);
