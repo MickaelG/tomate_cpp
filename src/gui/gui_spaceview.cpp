@@ -1,6 +1,7 @@
 
 #include "gui_spaceview.h"
 #include "gui_controller.h"
+#include "DateRuler.h"
 
 #include "gui_utils.h"
 
@@ -105,7 +106,7 @@ SpaceScene::SpaceScene(DatasetModel& dataset_model,
                        DateController& date_controller) :
     dataset_model(dataset_model),
     selection_controller(selection_controller),
-    date_controller(date_controller)
+    _date_controller(date_controller)
 {
     QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
     QObject::connect(this, SIGNAL(crop_selected(Crop*)), &selection_controller, SLOT(select_crop(Crop*)));
@@ -131,7 +132,7 @@ void SpaceScene::draw_scene()
         if (plot.get_shape())
         {
             PlotRepresentation *plot_repr = new PlotRepresentation(dataset_model.get_dataset().get_crops(),
-                                                                   plot, date_controller.get_date());
+                                                                   plot, _date_controller.get_date());
             this->addItem(plot_repr);
             plot_reprs.push_back(plot_repr);
             //TODO: delete plot_repr
@@ -214,3 +215,4 @@ void SpaceScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     Crop* selected_crop = getCropAtPos(clic_point);
     emit crop_selected(selected_crop);
 }
+

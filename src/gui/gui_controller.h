@@ -52,6 +52,18 @@ public:
         return selected_date;
     }
 
+    void incr_days(int delta)
+    {
+        QDate new_date = selected_date.addDays(delta);
+        set_date(new_date);
+    }
+
+    void incr_years(int delta)
+    {
+        QDate new_date = selected_date.addYears(delta);
+        set_date(new_date);
+    }
+
 signals:
     void date_changed(bool year_changed);
 

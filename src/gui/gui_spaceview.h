@@ -15,6 +15,8 @@ class Plot;
 class CropSelectionController;
 class DateController;
 class DatasetModel;
+class DateRuler;
+
 #include "geometry.h"
 
 
@@ -71,9 +73,11 @@ signals:
     
 private:
     DatasetModel& dataset_model;
-    DateController& date_controller;
+    DateController& _date_controller;
+    DateRuler* _date_ruler;
     CropSpaceRepr* selected_subd_repr;
     CropSelectionController& selection_controller;
     vector<PlotRepresentation*> plot_reprs;
 };
+
 

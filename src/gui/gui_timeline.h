@@ -7,12 +7,12 @@
 #include <QGraphicsItemGroup>
 
 #include <vector>
-using namespace std;
 
 class DatasetModel;
 class Crop;
 class CropSelectionController;
 class DateController;
+class DateRuler;
 
 
 class CropTimeRepresentation: public QGraphicsItemGroup
@@ -27,6 +27,7 @@ public:
     Crop *get_pcrop();
     //void show(QPoint point, Crop* p_crop);
     void set_selected(bool val);
+    void _date_ruler(QDate end_date, QDate date0);
 
 private:
     void update_global_rect(const QGraphicsRectItem& in_rect);
@@ -37,14 +38,6 @@ private:
 };
 
 
-class MonthsRepresentation: public QGraphicsItemGroup
-{
-public:
-    MonthsRepresentation(QDate date_start, QDate date_end, QWidget* parent=NULL);
-private:
-};
-
-
 class TimeScene: public QGraphicsScene
 {
   Q_OBJECT
@@ -52,7 +45,7 @@ class TimeScene: public QGraphicsScene
 public:
     TimeScene(DatasetModel& dataset,
               CropSelectionController& selection_controller,
-              DateController& date_controller,
+              DateController& _date_controller,
               QWidget* parent=NULL);
     void draw_scene();
     void clear_scene();
@@ -67,8 +60,6 @@ public:
 public slots:
     void selectCrop(Crop *p_crop);
     void redraw();
-    void previous_year();
-    void next_year();
     void date_changed(bool year_changed);
 
 signals:
@@ -78,12 +69,11 @@ signals:
 private:
     DatasetModel& dataset_model;
     //QMenu* context_menu;
-    vector<CropTimeRepresentation*> crop_reprs;
+    std::vector<CropTimeRepresentation*> crop_reprs;
     CropTimeRepresentation* selected_crop_repr;
     CropSelectionController& _selection_controller;
-    DateController& date_controller;
-    QGraphicsItem* _date_line;
+    DateController& _date_controller;
+    DateRuler* _date_ruler;
 
-    void add_year_buttons();
     void draw_date_line(QDate date, int bottom_y);
 };

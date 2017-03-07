@@ -3,6 +3,7 @@
 #include "gui_timeline.h"
 #include "gui_utils.h"
 #include "gui_controller.h"
+#include "DateRuler.h"
 
 #include "dataset.h"
 #include "plot.h"
@@ -18,25 +19,10 @@
 
 int Margin = 20;
 int SubMargin = 5;
-int PixPerDay = 3;
 int SquareUnit = 30;
 int PlotHeight = 200;
 
 
-int date_to_pos(QDate date, QDate date0)
-{
-    //Returns a pixel position from a date
-    int from_date0 = date0.daysTo(date);
-    int x = PixPerDay * from_date0;
-    return x;
-}
-
-QDate pos_to_date(int pos, QDate date0)
-{
-    //Returns a pixel position from a date
-    int nb_days = pos / PixPerDay;
-    return date0.addDays(nb_days);
-}
 
 CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
                                                float ypos,
@@ -132,8 +118,8 @@ QGraphicsRectItem* CropTimeRepresentation::create_rect(QDate start_date, QDate e
     if (start_date < date0) { start_date = date0.addDays(-3); }
     if (end_date > date0.addYears(1)) { end_date = date0.addYears(1).addDays(3); }
 
-    int x0 = date_to_pos(start_date, this->date0);
-    int x1 = date_to_pos(end_date, this->date0);
+    int x0 = DateRuler::date_to_pos(start_date, this->date0);
+    int x1 = DateRuler::date_to_pos(end_date, this->date0);
     int width = x1 - x0;
 
     QGraphicsRectItem* rect = new QGraphicsRectItem(x0, PlotHeight * ypos, width, PlotHeight * height);
@@ -198,64 +184,6 @@ void CropTimeRepresentation::set_selected(bool sel)
     }
 }
 
-
-MonthsRepresentation::MonthsRepresentation(QDate date_start, QDate date_end, QWidget* parent)
-{
-    //months on the top
-    int first_year = date_start.year();
-    int last_year = date_end.year();
-    for (int year=first_year; year<=last_year; year++)
-    {
-        for (int month=1; month<=12; month++)
-        {
-            QDate firstday(year, month, 1);
-            QDate lastday;
-            if (month == 12)
-            {
-                lastday = QDate(year + 1, 1, 1);
-            }
-            else
-            {
-                lastday = QDate(year, month + 1, 1);
-            }
-            int x0 = date_to_pos(firstday, date_start);
-            int x1 = date_to_pos(lastday, date_start);
-            QGraphicsRectItem* rect = new QGraphicsRectItem(x0, - 30, x1 - x0, 20);
-            rect->setParentItem(this);
-            QGraphicsSimpleTextItem* text = new QGraphicsSimpleTextItem(firstday.toString("MMMM"));
-            center_text(text, rect->rect());
-            text->setParentItem(this);
-        }
-    }
-}
-
-class DateLineGraphicsItem : public QGraphicsItem
-{
-public:
-    DateLineGraphicsItem(int length) : _length(length)
-    {
-    }
-
-    QRectF boundingRect() const
-    {
-        return QRectF(-_point_size/2, -30, _point_size, 30+_length);
-    }
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget)
-    {
-        QColor red("red");
-        painter->setPen(QPen(red));
-        painter->setBrush(QBrush(red));
-        painter->drawLine(0, -30, 0, _length);
-        painter->drawEllipse(-_point_size/2, -14, _point_size, _point_size);
-    }
-private:
-    int _length;
-    int _point_size = 8;
-};
-
-
 TimeScene::TimeScene(DatasetModel& dataset_model,
                      CropSelectionController& selection_controller,
                      DateController& date_controller,
@@ -264,7 +192,8 @@ TimeScene::TimeScene(DatasetModel& dataset_model,
     dataset_model(dataset_model),
     selected_crop_repr(nullptr),
     _selection_controller(selection_controller),
-    date_controller(date_controller)
+    _date_controller(date_controller),
+    _date_ruler(nullptr)
 {
     QObject::connect(&_selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
     QObject::connect(this, SIGNAL(crop_selected(Crop*)), &_selection_controller, SLOT(select_crop(Crop*)));
@@ -372,16 +301,9 @@ void TimeScene::selectNextCrop(bool reverse)
 void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF clic_point = event->scenePos();
-    if ((clic_point.y() > -30) && (clic_point.y() < 0))
-    {
-        int xpos = clic_point.x();
-        QDate date = pos_to_date(xpos, QDate(date_controller.get_date().year(), 1, 1));
-        date_controller.set_date(date);
-    }
-    else {
-        CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
-        emit crop_selected(p_current_crop_repr ? p_current_crop_repr->get_pcrop() : nullptr);
-    }
+    CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
+    emit crop_selected(p_current_crop_repr ? p_current_crop_repr->get_pcrop() : nullptr);
+
     QGraphicsScene::mousePressEvent(event);
 }
 
@@ -397,24 +319,11 @@ void TimeScene::keyPressEvent(QKeyEvent* keyEvent)
     }
 }
 
-void TimeScene::next_year() {
-    QDate date = date_controller.get_date().addYears(1);
-    date_controller.set_date(date);
-}
-
-
-void TimeScene::previous_year() {
-    QDate date = date_controller.get_date().addYears(-1);
-    date_controller.set_date(date);
-}
-
 void TimeScene::date_changed(bool year_changed) {
     if (year_changed) {
         redraw();
     } else {
-        const QDate& date = date_controller.get_date();
-        int xpos = date_to_pos(date, QDate(date.year(), 1, 1));
-        _date_line->setPos(xpos, 0);
+        _date_ruler->update_date();
     }
 }
 
@@ -431,34 +340,6 @@ void TimeScene::clear_scene()
     clear();
 }
 
-
-void TimeScene::add_year_buttons()
-{
-    const QDate& date = date_controller.get_date();
-
-    QDate date0 = QDate(date.year(), 1, 1);
-    QDate date_end = date0.addYears(1);
-
-    int x0 = date_to_pos(date0, date0);
-    int x1 = date_to_pos(date_end, date0);
-
-    QPushButton *previous_year_button = new QPushButton("<<");
-    previous_year_button->setGeometry(0, -54, 80, 24);
-    QObject::connect(previous_year_button, SIGNAL(clicked(bool)), this, SLOT(previous_year()), Qt::QueuedConnection);
-    QGraphicsProxyWidget* proxy_prev = addWidget(previous_year_button);
-
-    QPushButton *next_year_button = new QPushButton(">>");
-    next_year_button->setGeometry(x1-80, -54, 80, 24);
-    QObject::connect(next_year_button, SIGNAL(clicked(bool)), this, SLOT(next_year()), Qt::QueuedConnection);
-    QGraphicsProxyWidget* proxy_next = addWidget(next_year_button);
-
-    QGraphicsRectItem* rect = new QGraphicsRectItem(x0, -54, x1 - x0, 24);
-    addItem(rect);
-    QGraphicsSimpleTextItem* text = new QGraphicsSimpleTextItem(date0.toString("yyyy"));
-    center_text(text, rect->rect());
-    addItem(text);
-}
-
 pair<float, float> compute_crop_ypos(const Crop& crop, const Plot& plot)
 {
     float pos = 0;
@@ -470,14 +351,7 @@ pair<float, float> compute_crop_ypos(const Crop& crop, const Plot& plot)
 
 void TimeScene::draw_scene()
 {
-    //date0 is the 1 january of the first year if (a crop exists,
-    //else 1 january of current year
-    QDate date0 = QDate(date_controller.get_date().year(), 1, 1);
-    MonthsRepresentation *months = new MonthsRepresentation(date0, date0.addYears(1).addDays(-1));
-
-    addItem(months);
-    add_year_buttons();
-
+    QDate date0 = QDate(_date_controller.get_date().year(), 1, 1);
     Crops& crops = dataset_model.get_dataset().get_crops();
 
     qreal plot_max_pos = 0;
@@ -540,11 +414,11 @@ void TimeScene::draw_scene()
         T->setRotation(-90);
         addItem(T);
     }
-    _date_line = new DateLineGraphicsItem(plot_max_pos);
-    int xpos = date_to_pos(date_controller.get_date(), QDate(date_controller.get_date().year(), 1, 1));
-    _date_line->setPos(xpos, 0);
-    this->addItem(_date_line);
     selectCrop(_selection_controller.get_selected());
+
+    _date_ruler = new DateRuler(_date_controller, plot_max_pos);
+    addItem(_date_ruler);
+
     update();
     emit size_changed();
 }
