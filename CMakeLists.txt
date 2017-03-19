@@ -3,10 +3,9 @@ cmake_minimum_required(VERSION 2.8.7)
 
 project(tomate)
 
-#set(CMAKE_CXX_FLAGS "-std=c++11")
-set(CMAKE_CXX_FLAGS "-std=c++11 -g -O0")
-
-
+enable_testing()
+add_compile_options(-std=c++11)
+ 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 include_directories( ${CMAKE_SOURCE_DIR}/src/core/ ${CMAKE_SOURCE_DIR}/lib/
@@ -33,12 +32,15 @@ add_executable(tomate_gui ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp ${q
 target_link_libraries(tomate_gui boost_date_time boost_filesystem boost_system)
 target_link_libraries(tomate_gui ${QT_LIBRARIES})
 
-add_executable(test ${CORE_SRC} src/test/test.cpp)
-target_link_libraries(test boost_unit_test_framework boost_date_time)
+add_executable(tomate_test ${CORE_SRC} src/test/test.cpp)
+target_link_libraries(tomate_test boost_unit_test_framework boost_date_time)
+add_test(core tomate_test)
 
-add_executable(test_gui src/test/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} ${ui_FORMS_HEADERS})
-target_link_libraries(test_gui boost_date_time)
-target_link_libraries(test_gui ${QT_LIBRARIES} ${QT_QTTEST_LIBRARY})
+add_executable(tomate_test_gui src/test/test_gui.cpp ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} ${ui_FORMS_HEADERS})
+target_link_libraries(tomate_test_gui boost_date_time)
+target_link_libraries(tomate_test_gui boost_date_time boost_filesystem boost_system)
+target_link_libraries(tomate_test_gui ${QT_LIBRARIES} ${QT_QTTEST_LIBRARY})
+add_test(gui tomate_test_gui)
 #qt4_use_modules(test_gui Widgets)
 
 #Translation files
