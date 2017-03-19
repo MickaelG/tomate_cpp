@@ -18,6 +18,10 @@
 #include <QGridLayout>
 #include <QToolBar>
 #include <QDockWidget>
+#include <QMessageBox>
+#include <QCloseEvent>
+
+#include <boost/filesystem.hpp>
 
 AutofitSceneView::AutofitSceneView(bool horizontal_only, QWidget* parent) :
     QGraphicsView(parent), horizontal_only(horizontal_only)
@@ -72,14 +76,37 @@ QWidget* GuiMainWin::createTabsWidget()
     return tab_widget;
 }
 
+void GuiMainWin::writeData()
+{
+    if (_new_file)
+    {
+        boost::filesystem::create_directories(_user_data_dir.c_str());
+    }
+    int wresult = xml_write_data(_data_file, dataset_model.get_dataset());
+    if (wresult != 0) {
+        QMessageBox::critical(NULL, QObject::tr("Error"),
+                              QObject::tr("Error writing data file."));
+    }
+}
 
-GuiMainWin::GuiMainWin(Dataset& dataset) :
-    dataset_model(dataset),
+void GuiMainWin::closeEvent(QCloseEvent* event)
+{
+    writeData();
+    event->accept();
+}
+
+
+GuiMainWin::GuiMainWin() :
+    _dataset(),
+    dataset_model(_dataset),
     selection_controller(),
-    dataset_controller(dataset_model, selection_controller)
+    dataset_controller(dataset_model, selection_controller),
+    _new_file(false)
 {
     showMaximized();
     setWindowTitle("tomate");
+    
+    loadData();
 
     PlantsModel* plants_model = new PlantsModel(dataset_model.get_dataset().get_plants());
     PlotsModel* plots_model = new PlotsModel(dataset_model.get_dataset().get_plots());
@@ -108,6 +135,47 @@ GuiMainWin::GuiMainWin(Dataset& dataset) :
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
 
     central_layout->addWidget(edit_crop_widget);
+}
+
+void GuiMainWin::loadData()
+{
+    string data_home;
+    char const* temp = getenv("XDG_DATA_HOME");
+    if (temp != NULL)
+    {
+        data_home = string(temp);
+    }
+    else
+    {
+        string home_dir;
+        char const* temp = getenv("HOME");
+        if(temp != NULL)
+        {
+            home_dir = string(temp);
+        } else {
+            QMessageBox::critical(NULL, QObject::tr("Error"),
+                                  QObject::tr("Error, HOME environment variable not set."));
+            return;
+        }
+        data_home =  home_dir + "/.local/share/";
+
+    }
+
+    _user_data_dir = data_home + "/tomate/";
+    _data_file = _user_data_dir + "/data.sfg";
+
+    int res = xml_read_data(_data_file, dataset_model.get_dataset());
+    if (res == -1)
+    {
+        _new_file = true;
+        QMessageBox::information(NULL, QObject::tr("Information"),
+                                 QObject::tr("Data file not found. A new one will be created"));
+    } else if (res != 0)
+    {
+        QMessageBox::critical(NULL, QObject::tr("Error"),
+                              QObject::tr("Error reading data file. Please check console output."));
+        return;
+    }
 }
 
 GuiMainWin::~GuiMainWin()
