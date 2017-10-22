@@ -7,6 +7,63 @@
 #include <stdexcept>
 using namespace std;
 
+
+CropLocation::CropLocation(Plot* p_plot, Rectangle rect) :
+    p_plot(p_plot), shape(new Rectangle(rect))
+{
+}
+
+Plot* CropLocation::get_pplot()
+{
+    return p_plot;
+}
+
+Plot& CropLocation::get_plot()
+{
+    if (p_plot) {
+        return *p_plot;
+    }
+    throw logic_error("Plot is not yet defined for crop");
+}
+
+const Plot& CropLocation::get_plot() const
+{
+    if (p_plot) {
+        return *p_plot;
+    }
+    throw logic_error("Plot is not yet defined for crop");
+}
+
+void CropLocation::set_plot(Plot& plot)
+{
+    p_plot = &plot;
+}
+
+Shape* CropLocation::get_shape()
+{
+    return shape;
+}
+
+const Shape* CropLocation::get_shape() const
+{
+    return shape;
+}
+
+void CropLocation::set_shape(Shape* in_shape)
+{
+    if (shape)
+    {
+        delete shape;
+        shape = nullptr;
+    }
+    shape = in_shape;
+    if (p_plot)
+    {
+        shape->fit_in_plot(p_plot->get_shape());
+    }
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // class Crop
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,30 +114,25 @@ void Crop::set_date(DateSel which, bg::date date)
     }
 }
 
-Crop::Crop() : p_plant(nullptr), p_plot(nullptr), shape(nullptr)
-{
-}
-
 Crop::Crop(bg::date start_date, bg::date end_date,
      bg::date planned_start_date, bg::date planned_end_date,
      Plant* p_plant,
-     Plot* p_plot, const string& note, Rectangle rect) :
+     CropLocation location,
+     const string& note) :
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
-    p_plant(p_plant), p_plot(p_plot), note(note), shape(nullptr)
+    p_plant(p_plant),
+    location(location),
+    note(note)
 {
-    if (rect.get_width() > 0) {
-        set_shape(new Rectangle(rect));
-    } else {
-        set_default_shape();
-    }
 }
 
 Crop::Crop(bg::date start_date, bg::date end_date,
      Plant* p_plant,
-     Plot* p_plot, const string& note) :
+     CropLocation location,
+     const string& note) :
     start_date(start_date), end_date(end_date),
-    p_plant(p_plant), p_plot(p_plot), note(note), shape(nullptr)
+    p_plant(p_plant), location(location), note(note)
 {
 }
 
@@ -122,28 +174,22 @@ void Crop::set_plant(Plant& plant)
 
 Plot* Crop::get_pplot()
 {
-    return p_plot;
+    return location.get_pplot();
 }
 
 Plot& Crop::get_plot()
 {
-    if (p_plot) {
-        return *p_plot;
-    }
-    throw logic_error("Plot is not yet defined for crop");
+    return location.get_plot();
 }
 
 const Plot& Crop::get_plot() const
 {
-    if (p_plot) {
-        return *p_plot;
-    }
-    throw logic_error("Plot is not yet defined for crop");
+    return location.get_plot();
 }
 
 void Crop::set_plot(Plot& plot)
 {
-    p_plot = &plot;
+    return location.set_plot(plot);
 }
 
 void Crop::add_action(bg::date date, string note)
@@ -254,42 +300,17 @@ void Crop::set_note(string note)
 
 Shape* Crop::get_shape()
 {
-    return shape;
+    return location.get_shape();
 }
 
 const Shape* Crop::get_shape() const
 {
-    return shape;
-}
-
-void Crop::set_default_shape()
-{
-    if (shape == nullptr)
-    {
-        Shape* plot_shape = get_plot().get_shape();
-        if (plot_shape)
-        {
-            shape = new Rectangle(0, 0, plot_shape->get_width(), plot_shape->get_height());
-        }
-        else
-        {
-            shape = new Rectangle(0, 0, -1, -1);
-        }
-    }
+    return location.get_shape();
 }
 
 void Crop::set_shape(Shape* in_shape)
 {
-    if (shape)
-    {
-        delete shape;
-        shape = nullptr;
-    }
-    shape = in_shape;
-    if (p_plot)
-    {
-        shape->fit_in_plot(p_plot->get_shape());
-    }
+    return location.set_shape(in_shape);
 }
 
 bool operator==(const Crop& elem1, const Crop& elem2)
@@ -306,10 +327,11 @@ bool operator==(const Crop& elem1, const Crop& elem2)
 Crop& Crops::add(bg::date start_date, bg::date end_date,
                  bg::date planned_start_date, bg::date planned_end_date,
                  Plant *p_plant,
-                 Plot *p_plot, const std::string& note, Rectangle rect)
+                 CropLocation location,
+                 const std::string& note)
 {
     _vcrops.push_back(unique_ptr<Crop>(new Crop(start_date, end_date, planned_start_date, planned_end_date,
-                                                p_plant, p_plot, note, rect)));
+                                                p_plant, location, note)));
     return *_vcrops.back();
 
 }

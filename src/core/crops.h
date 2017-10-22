@@ -20,10 +20,29 @@ public:
     CropAction(bg::date date, std::string note) : date(date), note(note) {}
     bg::date get_date() const { return date; }
     std::string get_note() const { return note; }
-
+    
 private:
     bg::date date;
     std::string note;
+};
+
+class CropLocation
+{
+public:
+    CropLocation(Plot* p_plot, Rectangle rect);
+    
+    Plot& get_plot();
+    const Plot& get_plot() const;
+    Plot* get_pplot();
+    void set_plot(Plot& plot);
+    
+    Shape *get_shape();
+    const Shape* get_shape() const;
+    void set_shape(Shape* in_shape);
+    
+private:
+    Plot* p_plot;
+    Shape* shape;
 };
 
 class Crop
@@ -37,14 +56,14 @@ public:
         PLANNED_END
     };
 
-    Crop();
     Crop(bg::date start_date, bg::date end_date,
          bg::date planned_start_date, bg::date planned_end_date,
          Plant *p_plant,
-         Plot *p_plot, const std::string& note = "", Rectangle rect=Rectangle());
+         CropLocation location,
+         const std::string& note = "");
     Crop(bg::date start_date, bg::date end_date,
          Plant* p_plant,
-         Plot* p_plot, const std::string& note = "");
+         CropLocation location, const std::string& note = "");
     std::string get_repr() const;
 
     Plant* get_pplant();
@@ -83,11 +102,10 @@ private:
     bg::date end_date;
     bg::date planned_start_date;
     bg::date planned_end_date;
-    std::string note;
     Plant* p_plant;
-    Plot* p_plot;
     std::vector<CropAction> actions;
-    Shape* shape;
+    CropLocation location;
+    std::string note;
 };
 
 bool operator==(const Crop&, const Crop&);
@@ -101,7 +119,8 @@ public:
     Crop& add(bg::date start_date, bg::date end_date,
               bg::date planned_start_date, bg::date planned_end_date,
               Plant *p_plant,
-              Plot *p_plot, const std::string& note = "", Rectangle rect=Rectangle());
+              CropLocation location,
+              const std::string& note = "");
     Crop& add(const Crop& crop);
     bool is_used_plot(const Plot& plot) const;
     bool is_used_plant(const Plant& plant) const;

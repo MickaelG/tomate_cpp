@@ -130,10 +130,10 @@ unique_ptr<Crop> EditCropWidget::get_described_crop()
 
     QString note = ui->noteInput->text();
 
+    CropLocation location(p_plot, rect);
     unique_ptr<Crop> crop(new Crop(fromQDate(start_date), fromQDate(end_date),
                                    fromQDate(planned_start_date), fromQDate(planned_end_date),
-                                   p_plant, p_plot, fromQString(note),
-                                   rect));
+                                   p_plant, location, fromQString(note)));
     return crop;
 }
 

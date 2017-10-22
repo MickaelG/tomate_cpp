@@ -168,9 +168,10 @@ int xml_read_data(string filename, Dataset& dataset)
         }
         Rectangle rect(posx, posy, width, height);
 
+        CropLocation location(plot_it->second, rect);
         Crop& crop = dataset.get_crops().add(start_date, end_date,
                                              planned_start_date, planned_end_date,
-                                             plant_it->second, plot_it->second, note, rect);
+                                             plant_it->second, location, note);
         for (xml_node action_xml: elem_xml.children())
         {
             bg::date date = get_date(action_xml, "date");
