@@ -33,7 +33,6 @@ public:
     
     Plot& get_plot();
     const Plot& get_plot() const;
-    Plot* get_pplot();
     void set_plot(Plot& plot);
     
     Shape *get_shape();
@@ -66,14 +65,12 @@ public:
          CropLocation location, const std::string& note = "");
     std::string get_repr() const;
 
-    Plant* get_pplant();
     Plant& get_plant();
     const Plant& get_plant() const;
     void set_plant(Plant& plant);
 
     Plot& get_plot();
     const Plot& get_plot() const;
-    Plot* get_pplot();
     void set_plot(Plot& plot);
 
     bg::date get_date(DateSel which) const;

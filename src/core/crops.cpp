@@ -13,11 +13,6 @@ CropLocation::CropLocation(Plot* p_plot, Rectangle rect) :
 {
 }
 
-Plot* CropLocation::get_pplot()
-{
-    return p_plot;
-}
-
 Plot& CropLocation::get_plot()
 {
     if (p_plot) {
@@ -144,11 +139,6 @@ string Crop::description() const
                                     " planned_end:"   + bg::to_simple_string(get_date(DateSel::PLANNED_END));
 }
 
-Plant* Crop::get_pplant()
-{
-    return p_plant;
-}
-
 Plant& Crop::get_plant()
 {
     if (p_plant)
@@ -170,11 +160,6 @@ const Plant& Crop::get_plant() const
 void Crop::set_plant(Plant& plant)
 {
     p_plant = &plant;
-}
-
-Plot* Crop::get_pplot()
-{
-    return location.get_pplot();
 }
 
 Plot& Crop::get_plot()
