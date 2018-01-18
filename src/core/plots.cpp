@@ -67,4 +67,14 @@ Plot& Plots::operator[](int index)
     return *_vplots[index];
 }
 
+Plot* Plots::get_for_pos(const Shape& shape)
+{
+    for (const auto& plot: _vplots) {
+        if (plot->get_shape()->overlaps(static_cast< const Rectangle& >(shape))) {
+            return &(*plot);
+        }
+    }
+    return nullptr;
+}
+
 ///////////////////////////////////////////////////////////////////////////////

@@ -369,7 +369,8 @@ void TimeScene::draw_scene()
         //Select crops in current year and current plot
         for (Crop& crop: crops)
         {
-            if (crop.get_plot() == plot and crop.is_in_year_started_by(fromQDate(date0)))
+            if (crop.get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape())) and
+                crop.is_in_year_started_by(fromQDate(date0)))
             {
                 current_crops.push_back(&crop);
                 crop_rects.push_back(*crop.get_shape());

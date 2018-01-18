@@ -70,6 +70,16 @@ float Rectangle::get_height() const
     return height;
 }
 
+void Rectangle::set_width(float in_width)
+{
+    width = in_width;
+}
+
+void Rectangle::set_height(float in_height)
+{
+    height = in_height;
+}
+
 float Rectangle::get_min_x() const
 {
     return posx;
@@ -121,6 +131,12 @@ void Rectangle::fit_in_plot(const Shape* parent_shape)
     {
         height = parent_shape->get_height() - posy;
     }
+}
+
+void Rectangle::translate(float x_shift, float y_shift)
+{
+    posx += x_shift;
+    posy += y_shift;
 }
 
 bool Rectangle::is_inside(const Shape& other) const

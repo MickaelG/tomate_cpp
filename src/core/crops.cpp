@@ -8,30 +8,9 @@
 using namespace std;
 
 
-CropLocation::CropLocation(Plot* p_plot, Rectangle rect) :
-    p_plot(p_plot), shape(new Rectangle(rect))
+CropLocation::CropLocation(Rectangle rect) :
+    shape(new Rectangle(rect))
 {
-}
-
-Plot& CropLocation::get_plot()
-{
-    if (p_plot) {
-        return *p_plot;
-    }
-    throw logic_error("Plot is not yet defined for crop");
-}
-
-const Plot& CropLocation::get_plot() const
-{
-    if (p_plot) {
-        return *p_plot;
-    }
-    throw logic_error("Plot is not yet defined for crop");
-}
-
-void CropLocation::set_plot(Plot& plot)
-{
-    p_plot = &plot;
 }
 
 Shape* CropLocation::get_shape()
@@ -52,10 +31,6 @@ void CropLocation::set_shape(Shape* in_shape)
         shape = nullptr;
     }
     shape = in_shape;
-    if (p_plot)
-    {
-        shape->fit_in_plot(p_plot->get_shape());
-    }
 }
 
 
@@ -160,21 +135,6 @@ const Plant& Crop::get_plant() const
 void Crop::set_plant(Plant& plant)
 {
     p_plant = &plant;
-}
-
-Plot& Crop::get_plot()
-{
-    return location.get_plot();
-}
-
-const Plot& Crop::get_plot() const
-{
-    return location.get_plot();
-}
-
-void Crop::set_plot(Plot& plot)
-{
-    return location.set_plot(plot);
 }
 
 void Crop::add_action(bg::date date, string note)
@@ -333,7 +293,7 @@ vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
     vector<Crop*> result;
     for (auto& crop: _vcrops)
     {
-        if (crop->get_plot() == plot)
+        if (crop->get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape())))
         {
            if (crop->is_active_at_date(date) || crop->is_planned_at_date(date))
            {
@@ -350,7 +310,7 @@ vector<Crop*> Crops::crops_for_year(const Plot& plot, bg::date date)
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
     for (auto it = _vcrops.begin(); it != _vcrops.end(); ++it)
     {
-        if ((*it)->get_plot() == plot)
+        if ((*it)->get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape())))
         {
            if ((*it)->is_in_year_started_by(date))
            {
@@ -365,7 +325,7 @@ bool Crops::is_used_plot(const Plot& plot) const
 {
     for (auto it = _vcrops.cbegin(); it != _vcrops.cend(); ++it)
     {
-        if ((*it)->get_plot() == plot) {
+        if ((*it)->get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape()))) {
             return true;
         }
     }

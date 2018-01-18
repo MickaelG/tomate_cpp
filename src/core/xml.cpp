@@ -114,7 +114,6 @@ int xml_read_data(string filename, Dataset& dataset)
         bg::date planned_start_date = get_date(elem_xml, "planned_start_date");
         bg::date planned_end_date = get_date(elem_xml, "planned_end_date");
 
-        string plotkey = elem_xml.attribute("plot").value();
         string plantkey = elem_xml.attribute("plant").value();
         string varkey = elem_xml.attribute("var").value();
         if (!varkey.empty()) {
@@ -133,42 +132,52 @@ int xml_read_data(string filename, Dataset& dataset)
         float height = elem_xml.attribute("height").as_float(-1);
         float posx = elem_xml.attribute("posx").as_float(0);
         float posy = elem_xml.attribute("posy").as_float(0);
-
-        auto plot_it = plots_map.find(plotkey);
-        if (plot_it == plots_map.end())
-        {
-            size_t delim_pos = plotkey.find("-");
-            if (width < 0 && delim_pos != string::npos)
+        
+        Rectangle rect(posx, posy, width, height);
+        auto plot_attr = elem_xml.attribute("plot");
+        if (plot_attr) {
+            string plotkey = plot_attr.value();
+            auto plot_it = plots_map.find(plotkey);
+            if (plot_it == plots_map.end())
             {
-                string mainplotkey = plotkey.substr(0, delim_pos);
-                if (subd_data.count(plotkey))
+                size_t delim_pos = plotkey.find("-");
+                if (width < 0 && delim_pos != string::npos)
                 {
-                    plot_it = plots_map.find(mainplotkey);
-                    if (plot_it == plots_map.end())
+                    string mainplotkey = plotkey.substr(0, delim_pos);
+                    if (subd_data.count(plotkey))
                     {
-                        std::cout << "Error: conversion from 0.1, plot " << mainplotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
+                        plot_it = plots_map.find(mainplotkey);
+                        if (plot_it == plots_map.end())
+                        {
+                            std::cout << "Error: conversion from 0.1, plot " << mainplotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
+                        }
+                        rect.translate(subd_data[plotkey][0], subd_data[plotkey][1]);
+                        rect.set_width(subd_data[plotkey][2]);
+                        rect.set_height(subd_data[plotkey][3]);
                     }
-                    posx = subd_data[plotkey][0];
-                    posy = subd_data[plotkey][1];
-                    width = subd_data[plotkey][2];
-                    height = subd_data[plotkey][3];
+                    else
+                    {
+                        std::cout << "Error: conversion from 0.1, subplot data " << plotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
+                        continue;
+                    }
+
                 }
                 else
                 {
-                    std::cout << "Error: conversion from 0.1, subplot data " << plotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
+                    std::cout << "Error: plot " << plotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
                     continue;
                 }
-
             }
-            else
-            {
-                std::cout << "Error: plot " << plotkey << " does not exist (xml offset " << load_res.offset << ")" << std::endl;
-                continue;
+            Shape* plot_shape = plot_it->second->get_shape();
+            if (rect.get_width() < 0 || rect.get_height() < 0) {
+                rect.set_width(plot_shape->get_width());
+                rect.set_height(plot_shape->get_height());
             }
+            rect.translate(plot_shape->get_min_x(), plot_shape->get_min_y());
         }
-        Rectangle rect(posx, posy, width, height);
+        
+        CropLocation location(rect);
 
-        CropLocation location(plot_it->second, rect);
         Crop& crop = dataset.get_crops().add(start_date, end_date,
                                              planned_start_date, planned_end_date,
                                              plant_it->second, location, note);
@@ -209,7 +218,7 @@ int xml_write_data(string filename, const Dataset& dataset)
     xml_document doc;
 
     xml_node root_node = doc.append_child("sfg");
-    root_node.append_attribute("v") = "0.3";
+    root_node.append_attribute("v") = "0.4";
 
     map<const Plot*, string> plots_map;
     map<const Plant*, string> plants_map;
@@ -288,21 +297,11 @@ int xml_write_data(string filename, const Dataset& dataset)
         }
         elem_node.append_attribute("plant") = plants_map[&crop.get_plant()].c_str();
 
-        const Plot& plot = crop.get_plot();
-        float plot_width = 0;
-        float plot_height = 0;
-        elem_node.append_attribute("plot") = plots_map[&plot].c_str();
-        plot_width = plot.get_shape()->get_width();
-        plot_height = plot.get_shape()->get_height();
-
         float width = crop.get_shape()->get_width();
         float height = crop.get_shape()->get_height();
         float posx = crop.get_shape()->get_min_x();
         float posy = crop.get_shape()->get_min_y();
-        if (width > 0 && height > 0 &&
-            (posx != 0 || posy != 0 || width != plot_width || height != plot_height))
-
-        {
+        if (width > 0 && height > 0) {
             add_float_attribute(elem_node, "posx", posx);
             add_float_attribute(elem_node, "posy", posy);
             add_float_attribute(elem_node, "width", width);

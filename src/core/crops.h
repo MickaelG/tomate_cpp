@@ -29,18 +29,13 @@ private:
 class CropLocation
 {
 public:
-    CropLocation(Plot* p_plot, Rectangle rect);
-    
-    Plot& get_plot();
-    const Plot& get_plot() const;
-    void set_plot(Plot& plot);
+    CropLocation(Rectangle rect = Rectangle());
     
     Shape *get_shape();
     const Shape* get_shape() const;
     void set_shape(Shape* in_shape);
     
 private:
-    Plot* p_plot;
     Shape* shape;
 };
 
@@ -68,10 +63,6 @@ public:
     Plant& get_plant();
     const Plant& get_plant() const;
     void set_plant(Plant& plant);
-
-    Plot& get_plot();
-    const Plot& get_plot() const;
-    void set_plot(Plot& plot);
 
     bg::date get_date(DateSel which) const;
     void set_date(DateSel which, bg::date date);

@@ -39,7 +39,6 @@ void PlotRepresentation::update_draw(const vector<Crop*>& crops_to_plot, QDate d
     for (Crop* p_crop: crops_to_plot)
     {
         CropSpaceRepr *crop_repr = new CropSpaceRepr(p_crop, date);
-        crop_repr->setPos(shape->get_min_x(), -shape->get_min_y());
         crop_repr->setParentItem(this);
         crop_reprs.push_back(crop_repr);
     }

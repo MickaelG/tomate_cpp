@@ -30,5 +30,6 @@
     <crop planned_start_date="2013-05-15" planned_end_date="2013-07-15" plant="hn" plot="2" />
     <crop start_date="2013-04-02" end_date="2013-08-28" planned_start_date="2013-04-01" planned_end_date="2013-05-15" plant="hn" var="1" plot="1" note="note quelconque" />
     <crop start_date="2013-04-02" end_date="2013-08-28" planned_start_date="2013-04-01" planned_end_date="2013-05-15" plant="hn" var="1" plot="1" posx="5" posy="5" width="20" height="10" note="note quelconque2" />
+    <crop start_date="2013-04-02" end_date="2013-08-28" planned_start_date="2013-04-01" planned_end_date="2013-05-15" plant="hn" var="1" plot="2" posx="5" posy="5" width="20" height="10" note="note quelconque2" />
   </crops>
 </sfg>

@@ -245,7 +245,7 @@ Partitions::Partitions(const vector<Rectangle> &sub_shapes, const Rectangle& mas
 
     //Add partitions for empty parts of the plot
     set<Rectangle> empty_parts;
-    Rectangle allpart(0, 0, master_shape.get_width(), master_shape.get_height());
+    Rectangle allpart(master_shape.get_min_x(), master_shape.get_min_y(), master_shape.get_width(), master_shape.get_height());
     for (Rectangle realpart: _partitions) {
         set<Rectangle> splitparts = compute_non_overlapping_rects(realpart, allpart);
         empty_parts.insert(splitparts.begin(), splitparts.end());

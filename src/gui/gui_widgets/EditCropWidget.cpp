@@ -83,7 +83,8 @@ void EditCropWidget::set_crop_values(Crop* crop)
     ui->plantInput->setCurrentIndex(plants_model->GetSpeciesRowIndex(crop->get_plant()));
     ui->varInput->setCurrentIndex(plants_model->GetVarietyRowIndex(crop->get_plant()));
 
-    ui->plotInput->setCurrentIndex(plots_model->GetRowIndex(crop->get_plot()));
+    Plot* plot_p = plots_model->get_plots().get_for_pos(*crop->get_shape());
+    ui->plotInput->setCurrentIndex(plots_model->GetRowIndex(*plot_p));
     ui->shapeInput->set_shape(crop->get_shape());
     ui->noteInput->setText(toQString(crop->get_note()));
 
@@ -130,7 +131,10 @@ unique_ptr<Crop> EditCropWidget::get_described_crop()
 
     QString note = ui->noteInput->text();
 
-    CropLocation location(p_plot, rect);
+    rect.fit_in_plot(p_plot->get_shape());
+    rect.translate(p_plot->get_shape()->get_min_x(), p_plot->get_shape()->get_min_y());
+    CropLocation location(rect);
+
     unique_ptr<Crop> crop(new Crop(fromQDate(start_date), fromQDate(end_date),
                                    fromQDate(planned_start_date), fromQDate(planned_end_date),
                                    p_plant, location, fromQString(note)));

@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(crops)
     Plot plot("Carré1", "description du carré 1", new Rectangle(8,9,2,3));
     bg::date start_date(2013, 3, 3);
     bg::date end_date(2013, 3, 23);
-    CropLocation location(&plot, Rectangle());
+    CropLocation location;
     Crop crop(start_date, end_date, &plant, location);
     BOOST_CHECK(crop.get_plant().get_name() == "tomate");
     plant.set_name("Concombre");
@@ -23,10 +23,6 @@ BOOST_AUTO_TEST_CASE(crops)
     PlantSpecies plant2("radis");
     crop.set_plant(plant2);
     BOOST_CHECK(crop.get_plant().get_name() == "radis");
-    Plot plot2("Carré2");
-    BOOST_CHECK(crop.get_plot().get_name() == "Carré1");
-    crop.set_plot(plot2);
-    BOOST_CHECK(crop.get_plot().get_name() == "Carré2");
 }
 
 #include <fstream>
@@ -43,7 +39,7 @@ BOOST_AUTO_TEST_CASE(xml_conv_from_02)
     xml_read_data("../testfiles/data_v0.2.sfg", dataset);
     BOOST_CHECK(dataset.get_plots()[1].get_name() == "Plot1");
     xml_write_data("data_out.sfg", dataset);
-    ifstream ifs1("../testfiles/data_v0.2.out_v0.3.sfg");
+    ifstream ifs1("../testfiles/data_v0.2.out_v0.4.sfg");
     ifstream ifs2("data_out.sfg");
     string str1;
     string str2;
@@ -59,7 +55,7 @@ BOOST_AUTO_TEST_CASE(xml_conv_from_01)
     xml_read_data("../testfiles/data_v0.1.sfg", dataset);
     BOOST_CHECK(dataset.get_plots()[1].get_name() == "Plot1");
     xml_write_data("data_out.sfg", dataset);
-    ifstream ifs1("../testfiles/data_v0.1.out_v0.3.sfg");
+    ifstream ifs1("../testfiles/data_v0.1.out_v0.4.sfg");
     ifstream ifs2("data_out.sfg");
     string str1;
     string str2;
@@ -69,13 +65,29 @@ BOOST_AUTO_TEST_CASE(xml_conv_from_01)
     BOOST_CHECK(!(ifs1 && ifs2));
 }
 
-BOOST_AUTO_TEST_CASE(xml_v03)
+BOOST_AUTO_TEST_CASE(xml_conv_from_03)
 {
     Dataset dataset;
     xml_read_data("../testfiles/data_v0.3.sfg", dataset);
     BOOST_CHECK(dataset.get_plots()[1].get_name() == "Plot1");
     xml_write_data("data_out.sfg", dataset);
-    ifstream ifs1("../testfiles/data_v0.3.sfg");
+    ifstream ifs1("../testfiles/data_v0.3.out_v0.4.sfg");
+    ifstream ifs2("data_out.sfg");
+    string str1;
+    string str2;
+    while(getline(ifs1, str1) && getline(ifs2, str2)) {
+        BOOST_REQUIRE_EQUAL(str1, str2);
+    }
+    BOOST_CHECK(!(ifs1 && ifs2));
+}
+
+BOOST_AUTO_TEST_CASE(xml_v04)
+{
+    Dataset dataset;
+    xml_read_data("../testfiles/data_v0.4.sfg", dataset);
+    BOOST_CHECK(dataset.get_plots()[1].get_name() == "Plot1");
+    xml_write_data("data_out.sfg", dataset);
+    ifstream ifs1("../testfiles/data_v0.4.sfg");
     ifstream ifs2("data_out.sfg");
     string str1;
     string str2;
@@ -88,10 +100,9 @@ BOOST_AUTO_TEST_CASE(xml_v03)
 BOOST_AUTO_TEST_CASE(is_active)
 {
     PlantSpecies plant("plant_name");
-    Plot plot("plot_name");
-    
+   
     //Crop with only a start date
-    Crop crop1(bg::date(2012, 10, 02), bg::date(), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop1(bg::date(2012, 10, 02), bg::date(), &plant, CropLocation());
     BOOST_CHECK(crop1.is_active_at_date(bg::date(2012, 10, 03)));
     BOOST_CHECK(crop1.is_active_at_date(bg::date(bg::day_clock::local_day())));
     BOOST_CHECK(!crop1.is_active_at_date(bg::date(2012, 10, 01)));
@@ -102,7 +113,7 @@ BOOST_AUTO_TEST_CASE(is_active)
     //BOOST_CHECK(!crop1.is_in_year_started_by(bg::date(2013, 01, 01)));
 
     //Crop with start date and end date
-    Crop crop2(bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop2(bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, CropLocation());
     BOOST_CHECK(crop2.is_active_at_date(bg::date(2012, 10, 03)));
     BOOST_CHECK(!crop2.is_active_at_date(bg::date(bg::day_clock::local_day())));
     BOOST_CHECK(!crop2.is_active_at_date(bg::date(2012, 11, 23)));
@@ -114,7 +125,7 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop2.is_in_year_started_by(bg::date(2013, 01, 01)));
 
     //Crop with only planned start and planned end
-    Crop crop3(bg::date(), bg::date(), bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop3(bg::date(), bg::date(), bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, CropLocation());
     BOOST_CHECK(!crop3.is_active_at_date(bg::date(2012, 10, 03)));
     BOOST_CHECK(!crop3.is_active_at_date(bg::date(bg::day_clock::local_day())));
     BOOST_CHECK(!crop3.is_active_at_date(bg::date(2012, 11, 23)));
@@ -128,7 +139,9 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop3.is_in_year_started_by(bg::date(2013, 01, 01)));
 
     //Crop with all dates set
-    Crop crop4(bg::date(2012, 10, 15), bg::date(2012, 11, 28), bg::date(2012, 10, 02), bg::date(2012, 11, 22), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop4(bg::date(2012, 10, 15), bg::date(2012, 11, 28),
+               bg::date(2012, 10, 02), bg::date(2012, 11, 22),
+               &plant, CropLocation());
     BOOST_CHECK(!crop4.is_active_at_date(bg::date(2012, 10, 14)));
     BOOST_CHECK(!crop4.is_active_at_date(bg::date(2012, 11, 29)));
     BOOST_CHECK(crop4.is_active_at_date(bg::date(2012, 10, 16)));
@@ -142,7 +155,7 @@ BOOST_AUTO_TEST_CASE(is_active)
     BOOST_CHECK(!crop4.is_in_year_started_by(bg::date(2013, 01, 01)));
 
     //Crop with star date and planned end
-    Crop crop5(bg::date(2012, 10, 15), bg::date(), bg::date(), bg::date(2012, 11, 22), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop5(bg::date(2012, 10, 15), bg::date(), bg::date(), bg::date(2012, 11, 22), &plant, CropLocation());
     BOOST_CHECK(!crop5.is_active_at_date(bg::date(2012, 10, 14)));
     BOOST_CHECK(crop5.is_active_at_date(bg::date(2012, 10, 16)));
     BOOST_CHECK(crop5.is_active_at_date(bg::date(2012, 11, 27)));
@@ -155,7 +168,9 @@ BOOST_AUTO_TEST_CASE(is_active)
     //BOOST_CHECK(!crop5.is_in_year_started_by(bg::date(2013, 01, 01)));
 
     //Crop with star date, end date and planned start
-    Crop crop6(bg::date(2012, 10, 15), bg::date(2012, 11, 01), bg::date(2012, 10, 1), bg::date(), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop6(bg::date(2012, 10, 15), bg::date(2012, 11, 01),
+               bg::date(2012, 10, 1), bg::date(),
+               &plant, CropLocation(Rectangle()));
     BOOST_CHECK(!crop6.is_active_at_date(bg::date(2012, 10, 14)));
     BOOST_CHECK(crop6.is_active_at_date(bg::date(2012, 10, 16)));
     BOOST_CHECK(crop6.is_active_at_date(bg::date(2012, 10, 30)));
@@ -169,76 +184,29 @@ BOOST_AUTO_TEST_CASE(is_active)
 
 BOOST_AUTO_TEST_CASE(crop_shape)
 {
-    Dataset data;
-    Plot& plot = data.get_plots().add("plot_nom", "une jolie planche", 2,3,8,9);
-    Plant& plant = data.get_plants().add("plant_name");
-    Crop crop(bg::date(2012, 8, 15), bg::date(2012, 9, 10), &plant, CropLocation(&plot, Rectangle()), "first crop");
-    //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), -1);
-    Rectangle *rect = new Rectangle(50, 20, 100, 120);
-    plot.set_shape(rect);
-    //BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 100);
+    Rectangle *plot_rect = new Rectangle(50, 20, 100, 120);
 
-    crop.set_shape(new Rectangle(10, 11, 20, 30));
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 20);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_height(), 30);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_x(), 10);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_y(), 11);
+    unique_ptr< Rectangle > crop_rect(new Rectangle(10, 11, 20, 30));
+    crop_rect->fit_in_plot(plot_rect);
+    BOOST_CHECK_EQUAL(crop_rect->get_width(), 20);
+    BOOST_CHECK_EQUAL(crop_rect->get_height(), 30);
+    BOOST_CHECK_EQUAL(crop_rect->get_min_x(), 10);
+    BOOST_CHECK_EQUAL(crop_rect->get_min_y(), 11);
 
-    crop.set_shape(new Rectangle(55, 65, 70, 70));
-    //Crops are limited to plot boundary
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 45);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_height(), 55);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_x(), 55);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_y(), 65);
+    crop_rect.reset(new Rectangle(55, 65, 70, 70));
+    crop_rect->fit_in_plot(plot_rect);
+    BOOST_CHECK_EQUAL(crop_rect->get_width(), 45);
+    BOOST_CHECK_EQUAL(crop_rect->get_height(), 55);
+    BOOST_CHECK_EQUAL(crop_rect->get_min_x(), 55);
+    BOOST_CHECK_EQUAL(crop_rect->get_min_y(), 65);
 
-    crop.set_shape(new Rectangle(150, 150, 70, 70));
-    //Crops are limited to plot boundary
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_width(), 10);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_height(), 10);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_x(), 90);
-    BOOST_CHECK_EQUAL(crop.get_shape()->get_min_y(), 110);
+    crop_rect.reset(new Rectangle(150, 150, 70, 70));
+    crop_rect->fit_in_plot(plot_rect);
+    BOOST_CHECK_EQUAL(crop_rect->get_width(), 10);
+    BOOST_CHECK_EQUAL(crop_rect->get_height(), 10);
+    BOOST_CHECK_EQUAL(crop_rect->get_min_x(), 90);
+    BOOST_CHECK_EQUAL(crop_rect->get_min_y(), 110);
 
-}
-
-BOOST_AUTO_TEST_CASE(find_crop)
-{
-    Dataset data;
-    Plot& plot = data.get_plots().add("plot_nom", "une jolie planche", 2,3,8,9);
-    Plot& plot2 = data.get_plots().add("plot_nom2", "une très jolie planche", 2,3,8,9);
-    Plant& plant = data.get_plants().add("plant_name");
-    data.get_crops().add(bg::date(2012, 8, 15), bg::date(2012, 9, 10), bg::date(), bg::date(), &plant, CropLocation(&plot, Rectangle()), "first crop");
-    data.get_crops().add(bg::date(2012, 10, 02), bg::date(2012, 11, 10), bg::date(), bg::date(), &plant, CropLocation(&plot, Rectangle()), "second crop");
-    data.get_crops().add(bg::date(), bg::date(), bg::date(2012, 12, 1), bg::date(2013, 2, 9), &plant, CropLocation(&plot, Rectangle()), "third, planned crop");
-    data.get_crops().add(bg::date(2012, 10, 02), bg::date(2012, 12, 10), bg::date(), bg::date(), &plant, CropLocation(&plot2, Rectangle()), "other crop");
-
-    BOOST_CHECK_EQUAL(data.get_crops().begin()->get_plot().get_name(), "plot_nom");
-    
-    /*
-    Crop* p_crop0 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
-    BOOST_CHECK_EQUAL(p_crop0->get_note(), "second crop");
-    BOOST_CHECK( p_crop0 );
-    Crop* p_crop1 = data.get_crops().find_pcrop(plot, bg::date(2012, 9, 1));
-    BOOST_CHECK_EQUAL(p_crop1->get_note(), "first crop");
-    BOOST_CHECK( p_crop1 );
-    const Crop* p_crop2 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 21));
-    BOOST_CHECK( !p_crop2 );
-    Crop* p_crop3 = data.get_crops().find_pcrop(plot2, bg::date(2012, 11, 21));
-    BOOST_CHECK( p_crop3 );
-    BOOST_CHECK_EQUAL(p_crop3->get_note(), "other crop");
-    Crop* p_crop4 = data.get_crops().find_pcrop(plot, bg::date(2012, 12, 21));
-    BOOST_CHECK( p_crop4 );
-    BOOST_CHECK_EQUAL(p_crop4->get_note(), "third, planned crop");
-
-    //delete_plot
-    Crop* p_crop5 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
-    BOOST_CHECK( p_crop5 );
-    data.get_crops().delete_crop(*p_crop5);
-    Crop* p_crop6 = data.get_crops().find_pcrop(plot, bg::date(2012, 11, 1));
-    BOOST_CHECK( !p_crop6 );
-    Crop* p_crop7 = data.get_crops().find_pcrop(plot2, bg::date(2012, 11, 21));
-    BOOST_CHECK( p_crop7 );
-    BOOST_CHECK_EQUAL(p_crop7->get_note(), "other crop");
-    */
 }
 
 BOOST_AUTO_TEST_CASE(plots)
@@ -271,7 +239,7 @@ BOOST_AUTO_TEST_CASE(plants)
     bg::date end_date(2013, 3, 23);
 
     BOOST_CHECK_EQUAL(data.get_plants().is_used(plant), false);
-    data.get_crops().add(start_date, end_date, bg::date(), bg::date(), &plant, CropLocation(&plot, Rectangle()));
+    data.get_crops().add(start_date, end_date, bg::date(), bg::date(), &plant, CropLocation());
     BOOST_CHECK_EQUAL(data.get_plants().is_used(plant), true);
 }
 
@@ -875,7 +843,7 @@ BOOST_AUTO_TEST_CASE(calendar_test_1)
 {
     PlantSpecies plant("plant_name");
     Plot plot("plot_name");
-    Crop crop1(bg::date(2012, 10, 2), bg::date(), &plant, CropLocation(&plot, Rectangle()));
+    Crop crop1(bg::date(2012, 10, 2), bg::date(), &plant, CropLocation());
     Crops crops;
     crops.add(crop1);
 

@@ -24,6 +24,8 @@ public:
     const Plot& operator[](int index) const;
     Plot& operator[](int index);
     int size() const;
+    
+    Plot* get_for_pos(const Shape& shape);
 
 private:
     const Crops& crops;

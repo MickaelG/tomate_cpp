@@ -9,6 +9,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// class Shape : abstract class for all others
 ///////////////////////////////////////////////////////////////////////////////
+
+class Rectangle;
+
 class Shape
 {
 public:
@@ -20,6 +23,8 @@ public:
     virtual float get_max_y() const = 0;
     virtual float get_area() const = 0;
     virtual void fit_in_plot(const Shape* parent_shape) = 0;
+    virtual bool overlaps(const Rectangle& other) const = 0;
+    virtual void translate(float x, float y) = 0;
     explicit operator bool() const ;
     virtual Shape* clone() = 0;
 };
@@ -52,7 +57,12 @@ public:
     float get_max_x() const;
     float get_max_y() const;
     float get_area() const;
+    
+    void set_width(float width);
+    void set_height(float height);
+    
     virtual void fit_in_plot(const Shape* parent_shape);
+    void translate(float x_shift, float y_shift) override;
     bool is_inside(const Shape& other) const;
     bool is_inside(const Rectangle& other) const;
     bool overlaps(const Rectangle& other) const;
