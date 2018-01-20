@@ -13,7 +13,7 @@
 
 
 AddDialog::AddDialog(PlantsModel* plants_model, QWidget* parent) :
-  plants_model(plants_model), QDialog(parent)
+    QDialog(parent), plants_model(plants_model)
 {
     setModal(true);
     QFormLayout* formLayout = new QFormLayout(this);
@@ -68,7 +68,7 @@ private:
 
 
 AddVarDialog::AddVarDialog(PlantsModel *plants_model, QListView* plants_widget, QWidget* parent) :
-  plants_widget(plants_widget), AddDialog(plants_model, parent)
+    AddDialog(plants_model, parent), plants_widget(plants_widget)
 {
 }
 

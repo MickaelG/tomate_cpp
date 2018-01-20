@@ -13,7 +13,7 @@
 
 
 AddPlotDialog::AddPlotDialog(PlotsModel* plots_model, QWidget* parent) :
-  plots_model(plots_model), QDialog(parent)
+  QDialog(parent), plots_model(plots_model)
 {
     setModal(true);
     QFormLayout* formLayout = new QFormLayout(this);

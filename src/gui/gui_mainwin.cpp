@@ -99,8 +99,8 @@ void GuiMainWin::closeEvent(QCloseEvent* event)
 GuiMainWin::GuiMainWin() :
     _dataset(),
     dataset_model(_dataset),
-    selection_controller(),
     dataset_controller(dataset_model, selection_controller),
+    selection_controller(),
     _new_file(false)
 {
     showMaximized();

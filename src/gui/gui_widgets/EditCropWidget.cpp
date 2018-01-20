@@ -18,12 +18,12 @@ EditCropWidget::EditCropWidget(DatasetModel& dataset_model,
                                PlantsModel* plants_model,
                                PlotsModel* plots_model, QWidget* parent) :
     QWidget(parent),
-    dataset_model(dataset_model),
-    dataset_controller(dataset_controller),
-    selection_controller(selection_controller),
+    ui(new Ui::EditCropWidget),
     plants_model(plants_model),
     plots_model(plots_model),
-    ui(new Ui::EditCropWidget)
+    dataset_model(dataset_model),
+    dataset_controller(dataset_controller),
+    selection_controller(selection_controller)
 {
     hide();
     ui->setupUi(this);

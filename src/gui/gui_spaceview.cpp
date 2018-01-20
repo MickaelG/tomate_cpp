@@ -104,8 +104,8 @@ SpaceScene::SpaceScene(DatasetModel& dataset_model,
                        CropSelectionController& selection_controller,
                        DateController& date_controller) :
     dataset_model(dataset_model),
-    selection_controller(selection_controller),
-    _date_controller(date_controller)
+    _date_controller(date_controller),
+    selection_controller(selection_controller)
 {
     QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
     QObject::connect(this, SIGNAL(crop_selected(Crop*)), &selection_controller, SLOT(select_crop(Crop*)));

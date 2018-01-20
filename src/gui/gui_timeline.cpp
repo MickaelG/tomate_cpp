@@ -29,7 +29,7 @@ CropTimeRepresentation::CropTimeRepresentation(Crop &crop,
                                                float height,
                                                QDate date0,
                                                QWidget* parent) :
-    date0(date0), crop(crop), _global_rect(nullptr)
+    crop(crop), date0(date0), _global_rect(nullptr)
 {
     QString text = toQString(crop.get_plant().get_species().get_name());
 

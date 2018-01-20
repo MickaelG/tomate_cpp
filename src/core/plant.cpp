@@ -60,9 +60,9 @@ bool operator==(const Plant& lhs, const Plant& rhs)
 }
 
 PlantVariety::PlantVariety(PlantSpecies& species, string name, string note) :
-    species(species),
     name(name),
-    note(note)
+    note(note),
+    species(species)
 {
 }
 
