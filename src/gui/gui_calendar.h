@@ -1,4 +1,7 @@
 
+#ifndef GUI_CALENDAR_H
+#define GUI_CALENDAR_H
+
 #include <QWidget>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -29,3 +32,5 @@ private:
 
     const Calendar& _calendar;
 };
+
+#endif //GUI_CALENDAR_H

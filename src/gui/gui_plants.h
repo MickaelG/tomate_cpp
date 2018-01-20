@@ -1,4 +1,7 @@
 
+#ifndef GUI_PLANTS_H
+#define GUI_PLANTS_H
+
 #include <vector>
 using namespace std;
 
@@ -66,3 +69,5 @@ private:
     QColorDialog* color_dialog;
     QPushButton* del_plant_btn;
 };
+
+#endif //GUI_PLANTS_H

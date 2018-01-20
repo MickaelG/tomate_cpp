@@ -1,4 +1,7 @@
 
+#ifndef GUI_PLOTS_H
+#define GUI_PLOTS_H
+
 class Plot;
 class Plots;
 class PlotsModel;
@@ -63,3 +66,5 @@ private:
     PhysInput* phys_widget;
     QPushButton* del_plot_btn;
 };
+
+#endif //GUI_PLOTS_H

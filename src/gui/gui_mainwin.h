@@ -1,4 +1,7 @@
 
+#ifndef GUI_MAINWIN_H
+#define GUI_MAINWIN_H
+
 #include "gui_controller.h"
 #include "dataset.h"
 
@@ -48,3 +51,5 @@ private:
     std::string _data_file;
     bool _new_file;
 };
+
+#endif //GUI_MAINWIN_H

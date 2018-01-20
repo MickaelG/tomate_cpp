@@ -1,4 +1,7 @@
 
+#ifndef GUI_TIMELINE_H
+#define GUI_TIMELINE_H
+
 #include <QWidget>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -77,3 +80,5 @@ private:
 
     void draw_date_line(QDate date, int bottom_y);
 };
+
+#endif //GUI_TIMELINE_H

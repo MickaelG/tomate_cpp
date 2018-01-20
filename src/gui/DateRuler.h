@@ -1,4 +1,7 @@
 
+#ifndef DATERULER_H
+#define DATERULER_H
+
 #include <QGraphicsItemGroup>
 #include <QDate>
 
@@ -28,3 +31,4 @@ private:
     QGraphicsItem* _date_line;
 };
 
+#endif //DATERULER_H

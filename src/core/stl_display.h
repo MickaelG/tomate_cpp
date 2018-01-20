@@ -1,4 +1,7 @@
 
+#ifndef STL_DISPLAY_H
+#define STL_DISPLAY_H
+
 template <typename T>
 std::ostream& operator<<(std::ostream& stream, const std::list<T>& list)
 {
@@ -33,3 +36,4 @@ std::ostream& operator<<(std::ostream& stream, const std::set<T>& list)
     return stream;
 }
 
+#endif //STL_DISPLAY_H

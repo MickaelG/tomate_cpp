@@ -1,4 +1,7 @@
 
+#ifndef GUI_SPACEVIEW_H
+#define GUI_SPACEVIEW_H
+
 #include <QWidget>
 #include <QGraphicsRectItem>
 #include <QGraphicsScene>
@@ -80,4 +83,4 @@ private:
     vector<PlotRepresentation*> plot_reprs;
 };
 
-
+#endif //GUI_SPACEVIEW_H
