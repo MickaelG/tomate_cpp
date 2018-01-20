@@ -13,24 +13,19 @@ CropLocation::CropLocation(Rectangle rect) :
 {
 }
 
-Shape* CropLocation::get_shape()
+Shape& CropLocation::get_shape()
 {
-    return shape;
+    return *shape;
 }
 
-const Shape* CropLocation::get_shape() const
+const Shape& CropLocation::get_shape() const
 {
-    return shape;
+    return *shape;
 }
 
-void CropLocation::set_shape(Shape* in_shape)
+void CropLocation::set_shape(unique_ptr< Shape > in_shape)
 {
-    if (shape)
-    {
-        delete shape;
-        shape = nullptr;
-    }
-    shape = in_shape;
+    shape = std::move(in_shape);
 }
 
 
@@ -92,7 +87,7 @@ Crop::Crop(bg::date start_date, bg::date end_date,
     start_date(start_date), end_date(end_date),
     planned_start_date(planned_start_date), planned_end_date(planned_end_date),
     p_plant(p_plant),
-    location(location),
+    location(std::move(location)),
     note(note)
 {
 }
@@ -102,7 +97,7 @@ Crop::Crop(bg::date start_date, bg::date end_date,
      CropLocation location,
      const string& note) :
     start_date(start_date), end_date(end_date),
-    p_plant(p_plant), location(location), note(note)
+    p_plant(p_plant), location(std::move(location)), note(note)
 {
 }
 
@@ -243,19 +238,19 @@ void Crop::set_note(string note)
     this->note = note;
 }
 
-Shape* Crop::get_shape()
+Shape& Crop::get_shape()
 {
     return location.get_shape();
 }
 
-const Shape* Crop::get_shape() const
+const Shape& Crop::get_shape() const
 {
     return location.get_shape();
 }
 
-void Crop::set_shape(Shape* in_shape)
+void Crop::set_shape(unique_ptr< Shape > in_shape)
 {
-    return location.set_shape(in_shape);
+    return location.set_shape(std::move(in_shape));
 }
 
 bool operator==(const Crop& elem1, const Crop& elem2)
@@ -276,14 +271,14 @@ Crop& Crops::add(bg::date start_date, bg::date end_date,
                  const std::string& note)
 {
     _vcrops.push_back(unique_ptr<Crop>(new Crop(start_date, end_date, planned_start_date, planned_end_date,
-                                                p_plant, location, note)));
+                                                p_plant, std::move(location), note)));
     return *_vcrops.back();
 
 }
 
-Crop& Crops::add(const Crop& crop)
+Crop& Crops::add(unique_ptr< Crop > crop)
 {
-    _vcrops.push_back(unique_ptr<Crop>(new Crop(crop)));
+    _vcrops.push_back(std::move(crop));
     return *_vcrops.back();
 
 }
@@ -293,7 +288,7 @@ vector<Crop*> Crops::find_crops(const Plot& plot, bg::date date)
     vector<Crop*> result;
     for (auto& crop: _vcrops)
     {
-        if (crop->get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape())))
+        if (crop->get_shape().overlaps(plot.get_shape()))
         {
            if (crop->is_active_at_date(date) || crop->is_planned_at_date(date))
            {
@@ -310,7 +305,7 @@ vector<Crop*> Crops::crops_for_year(const Plot& plot, bg::date date)
     //for (int i_crop = 0; i_crop < this->size(); i_crop++)
     for (auto it = _vcrops.begin(); it != _vcrops.end(); ++it)
     {
-        if ((*it)->get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape())))
+        if ((*it)->get_shape().overlaps(plot.get_shape()))
         {
            if ((*it)->is_in_year_started_by(date))
            {
@@ -325,7 +320,7 @@ bool Crops::is_used_plot(const Plot& plot) const
 {
     for (auto it = _vcrops.cbegin(); it != _vcrops.cend(); ++it)
     {
-        if ((*it)->get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape()))) {
+        if ((*it)->get_shape().overlaps(plot.get_shape())) {
             return true;
         }
     }

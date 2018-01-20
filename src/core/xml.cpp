@@ -168,19 +168,19 @@ int xml_read_data(string filename, Dataset& dataset)
                     continue;
                 }
             }
-            Shape* plot_shape = plot_it->second->get_shape();
+            const Shape& plot_shape = plot_it->second->get_shape();
             if (rect.get_width() < 0 || rect.get_height() < 0) {
-                rect.set_width(plot_shape->get_width());
-                rect.set_height(plot_shape->get_height());
+                rect.set_width(plot_shape.get_width());
+                rect.set_height(plot_shape.get_height());
             }
-            rect.translate(plot_shape->get_min_x(), plot_shape->get_min_y());
+            rect.translate(plot_shape.get_min_x(), plot_shape.get_min_y());
         }
         
         CropLocation location(rect);
 
         Crop& crop = dataset.get_crops().add(start_date, end_date,
                                              planned_start_date, planned_end_date,
-                                             plant_it->second, location, note);
+                                             plant_it->second, std::move(location), note);
         for (xml_node action_xml: elem_xml.children())
         {
             bg::date date = get_date(action_xml, "date");
@@ -234,12 +234,12 @@ int xml_write_data(string filename, const Dataset& dataset)
         elem_node.append_attribute("name") = plot.get_name().c_str();
         elem_node.append_attribute("descr") = plot.get_note().c_str();
 
-        float width = plot.get_shape()->get_width();
-        float height = plot.get_shape()->get_height();
+        float width = plot.get_shape().get_width();
+        float height = plot.get_shape().get_height();
         if (width > 0 && height > 0)
         {
-            add_float_attribute(elem_node, "posx", plot.get_shape()->get_min_x());
-            add_float_attribute(elem_node, "posy", plot.get_shape()->get_min_y());
+            add_float_attribute(elem_node, "posx", plot.get_shape().get_min_x());
+            add_float_attribute(elem_node, "posy", plot.get_shape().get_min_y());
             add_float_attribute(elem_node, "width", width);
             add_float_attribute(elem_node, "height", height);
         }
@@ -297,10 +297,10 @@ int xml_write_data(string filename, const Dataset& dataset)
         }
         elem_node.append_attribute("plant") = plants_map[&crop.get_plant()].c_str();
 
-        float width = crop.get_shape()->get_width();
-        float height = crop.get_shape()->get_height();
-        float posx = crop.get_shape()->get_min_x();
-        float posy = crop.get_shape()->get_min_y();
+        float width = crop.get_shape().get_width();
+        float height = crop.get_shape().get_height();
+        float posx = crop.get_shape().get_min_x();
+        float posy = crop.get_shape().get_min_y();
         if (width > 0 && height > 0) {
             add_float_attribute(elem_node, "posx", posx);
             add_float_attribute(elem_node, "posy", posy);

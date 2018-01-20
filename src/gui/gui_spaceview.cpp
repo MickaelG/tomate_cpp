@@ -30,9 +30,9 @@ void PlotRepresentation::update_draw(QDate date)
 
 void PlotRepresentation::update_draw(const vector<Crop*>& crops_to_plot, QDate date)
 {
-    Shape* shape = plot.get_shape();
-    this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
-                  shape->get_width(), shape->get_height());
+    const Shape& shape = plot.get_shape();
+    this->setRect(shape.get_min_x(), - shape.get_min_y() - shape.get_height(),
+                  shape.get_width(), shape.get_height());
 
     add_name();
 
@@ -60,15 +60,15 @@ void PlotRepresentation::add_name()
 CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
     p_crop(p_crop)
 {
-    Shape* shape = p_crop->get_shape();
+    Shape& shape = p_crop->get_shape();
     if (!shape)
     {
         return;
     }
 
     //TODO draw the real shape instead of a rect
-    this->setRect(shape->get_min_x(), - shape->get_min_y() - shape->get_height(),
-                  shape->get_width(), shape->get_height());
+    this->setRect(shape.get_min_x(), - shape.get_min_y() - shape.get_height(),
+                  shape.get_width(), shape.get_height());
     if (p_crop)
     {
         Plant& plant = p_crop->get_plant();

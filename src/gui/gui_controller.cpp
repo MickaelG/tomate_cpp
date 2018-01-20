@@ -26,14 +26,14 @@ void DatasetController::remove_crop(Crop* crop) {
     model.emit_updated();
 }
 
-void DatasetController::update_current_crop(const Crop& new_crop)
+void DatasetController::update_current_crop(unique_ptr< Crop > new_crop)
 {
     Crop* current_crop = selection_controller.get_selected();
     if (current_crop == nullptr) {
-        current_crop = &model.get_dataset().get_crops().add(new_crop);
+        current_crop = &model.get_dataset().get_crops().add(std::move(new_crop));
         selection_controller.select_crop(current_crop);
     } else {
-        *current_crop = new_crop;
+        *current_crop = std::move(*new_crop);
     }
     model.emit_updated();
 }

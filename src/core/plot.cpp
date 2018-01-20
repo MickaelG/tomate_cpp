@@ -8,61 +8,47 @@ using namespace std;
 // class Plot
 ///////////////////////////////////////////////////////////////////////////////
 
-Plot::Plot() : shape(NULL)
+Plot::Plot() :
+    shape(new Rectangle(0, 0, -1, -1))
 {
 }
 
-Plot::Plot(string name, string descr, Shape* shape) :
-    name(name), descr(descr), shape(shape)
+Plot::Plot(string name, string descr, unique_ptr< Shape > shape) :
+    name(name), descr(descr), shape(std::move(shape))
 {
 }
 
 Plot::Plot(string name, string descr, float width, float height, float posx, float posy) :
-    name(name), descr(descr), shape(NULL)
+    name(name), descr(descr), shape(new Rectangle(posx, posy, width, height))
 {
-    shape = new Rectangle(posx, posy, width, height);
 }
 
 Plot::Plot(const Plot& plot) :
-    name(plot.name), descr(plot.descr), shape(NULL)
+    name(plot.name), descr(plot.descr)
 {
-    if(plot.shape)
+    if(plot.shape != nullptr)
     {
-        shape = plot.shape->clone();
+        shape.reset(plot.shape->clone());
     }
 }
 
 Plot::~Plot()
 {
-    if (shape)
-    {
-        delete shape;
-        shape = NULL;
-    }
 }
 
-Shape* Plot::get_shape()
+Shape& Plot::get_shape()
 {
-    if (!shape)
-    {
-        shape = new Rectangle(0, 0, -1, -1);
-    }
-    return shape;
+    return *shape;
 }
 
-const Shape* Plot::get_shape() const
+const Shape& Plot::get_shape() const
 {
-    return shape;
+    return *shape;
 }
 
-void Plot::set_shape(Shape* in_shape)
+void Plot::set_shape(unique_ptr< Shape > in_shape)
 {
-    if (shape)
-    {
-        delete shape;
-        shape = NULL;
-    }
-    shape = in_shape;
+    shape = std::move(in_shape);
 }
 
 void Plot::set_note(string new_note)

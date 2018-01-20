@@ -103,7 +103,7 @@ public:
     }
 
     void remove_crop(Crop* crop);
-    void update_current_crop(const Crop& new_crop);
+    void update_current_crop(std::unique_ptr< Crop > new_crop);
 
 private:
     DatasetModel& model;

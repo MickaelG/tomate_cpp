@@ -39,7 +39,7 @@ void AddPlotDialog::add()
     QString name = nameInput->text();
     Plot& plot = plots_model->addPlot(name);
 
-    plot.set_shape(new Rectangle(physInput->get_rect()));
+    plot.set_shape(std::make_unique<Rectangle>(physInput->get_rect()));
 
     emit list_updated();
     hide();
@@ -153,13 +153,13 @@ void PlotsWindow::update_phys(int current_plot_index, int previous_plot_index)
     //We save the note content of the previous plot
     if (previous_plot_index >= 0)
     {
-        plots_model->get_plots()[previous_plot_index].set_shape(new Rectangle(phys_widget->get_rect()));
+        plots_model->get_plots()[previous_plot_index].set_shape(std::make_unique<Rectangle>(phys_widget->get_rect()));
     }
 
     //and get the notes for the new plot
     if (current_plot_index >= 0)
     {
-        Shape* shape = plots_model->get_plots()[current_plot_index].get_shape();
+        Shape& shape = plots_model->get_plots()[current_plot_index].get_shape();
         phys_widget->set_shape(shape);
         phys_widget->setDisabled(false);
     }

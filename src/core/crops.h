@@ -31,12 +31,12 @@ class CropLocation
 public:
     CropLocation(Rectangle rect = Rectangle());
     
-    Shape *get_shape();
-    const Shape* get_shape() const;
-    void set_shape(Shape* in_shape);
+    Shape& get_shape();
+    const Shape& get_shape() const;
+    void set_shape(std::unique_ptr< Shape > in_shape);
     
 private:
-    Shape* shape;
+    std::unique_ptr< Shape > shape;
 };
 
 class Crop
@@ -79,9 +79,9 @@ public:
     bool is_planned_at_date(bg::date date) const;
     bool is_in_year_started_by(bg::date date) const;
     std::string description() const;
-    Shape *get_shape();
-    const Shape* get_shape() const;
-    void set_shape(Shape* in_shape);
+    Shape& get_shape();
+    const Shape& get_shape() const;
+    void set_shape(std::unique_ptr< Shape > in_shape);
 
 private:
     void set_default_shape();
@@ -109,7 +109,7 @@ public:
               Plant *p_plant,
               CropLocation location,
               const std::string& note = "");
-    Crop& add(const Crop& crop);
+    Crop& add(std::unique_ptr< Crop > crop);
     bool is_used_plot(const Plot& plot) const;
     bool is_used_plant(const Plant& plant) const;
     void remove(const Crop& crop);

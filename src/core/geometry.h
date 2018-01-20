@@ -15,6 +15,8 @@ class Rectangle;
 class Shape
 {
 public:
+    virtual ~Shape() {};
+
     virtual float get_width() const = 0;
     virtual float get_height() const = 0;
     virtual float get_min_x() const = 0;

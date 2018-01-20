@@ -12,11 +12,10 @@
 BOOST_AUTO_TEST_CASE(crops)
 {
     PlantSpecies plant("tomate");
-    Plot plot("Carré1", "description du carré 1", new Rectangle(8,9,2,3));
+    Plot plot("Carré1", "description du carré 1", std::make_unique< Rectangle >(8,9,2,3));
     bg::date start_date(2013, 3, 3);
     bg::date end_date(2013, 3, 23);
-    CropLocation location;
-    Crop crop(start_date, end_date, &plant, location);
+    Crop crop(start_date, end_date, &plant, CropLocation());
     BOOST_CHECK(crop.get_plant().get_name() == "tomate");
     plant.set_name("Concombre");
     BOOST_CHECK(crop.get_plant().get_name() == "Concombre");
@@ -234,7 +233,7 @@ BOOST_AUTO_TEST_CASE(plants)
 {
     Dataset data;
     Plant& plant = data.get_plants().add("plant1");
-    Plot plot("Carré1", "description du carré 1", new Rectangle(8,9,2,3));
+    Plot plot("Carré1", "description du carré 1", std::make_unique< Rectangle >(8,9,2,3));
     bg::date start_date(2013, 3, 3);
     bg::date end_date(2013, 3, 23);
 
@@ -677,7 +676,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_6)
     lrect.push_back(Rectangle(75, 50, 25, 25));
     lrect.push_back(Rectangle(0, 0, 100, 100));
 
-    _2dTo1dConverter converter(*plot.get_shape(), lrect);
+    _2dTo1dConverter converter(plot.get_shape(), lrect);
     //cout << "DEBUG partitions:" << partitions << endl;
     for (int irect = 0; irect < lrect.size(); ++irect) {
         const Rectangle& rect = lrect[irect];
@@ -843,9 +842,9 @@ BOOST_AUTO_TEST_CASE(calendar_test_1)
 {
     PlantSpecies plant("plant_name");
     Plot plot("plot_name");
-    Crop crop1(bg::date(2012, 10, 2), bg::date(), &plant, CropLocation());
+    unique_ptr< Crop > crop1(new Crop(bg::date(2012, 10, 2), bg::date(), &plant, CropLocation()));
     Crops crops;
-    crops.add(crop1);
+    crops.add(std::move(crop1));
 
     CropsCalendar TestCal(crops);
     for (auto& event: TestCal.GetEvents()) {

@@ -343,7 +343,7 @@ void TimeScene::clear_scene()
 pair<float, float> compute_crop_ypos(const Crop& crop, const Plot& plot)
 {
     float pos = 0;
-    float height = crop.get_shape()->get_area() / plot.get_shape()->get_area();
+    float height = crop.get_shape().get_area() / plot.get_shape().get_area();
 
     return make_pair(pos, height);
 }
@@ -369,18 +369,18 @@ void TimeScene::draw_scene()
         //Select crops in current year and current plot
         for (Crop& crop: crops)
         {
-            if (crop.get_shape()->overlaps(dynamic_cast< const Rectangle& >(*plot.get_shape())) and
+            if (crop.get_shape().overlaps(plot.get_shape()) and
                 crop.is_in_year_started_by(fromQDate(date0)))
             {
                 current_crops.push_back(&crop);
-                crop_rects.push_back(*crop.get_shape());
+                crop_rects.push_back(crop.get_shape());
             }
         }
 
-        _2dTo1dConverter converter(*plot.get_shape(), crop_rects);
+        _2dTo1dConverter converter(plot.get_shape(), crop_rects);
         for (Crop* crop_p: current_crops)
         {
-            pair<float, float> ycoords = converter.get_position(*crop_p->get_shape());
+            pair<float, float> ycoords = converter.get_position(crop_p->get_shape());
             float ypos = ycoords.first;
             CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*crop_p, (ypos == -1) ? 0 : ypos,
                                                                            ycoords.second, date0);

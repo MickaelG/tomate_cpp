@@ -70,7 +70,7 @@ Plot& Plots::operator[](int index)
 Plot* Plots::get_for_pos(const Shape& shape)
 {
     for (const auto& plot: _vplots) {
-        if (plot->get_shape()->overlaps(shape)) {
+        if (plot->get_shape().overlaps(shape)) {
             return &(*plot);
         }
     }
