@@ -184,24 +184,24 @@ BOOST_AUTO_TEST_CASE(is_active)
 
 BOOST_AUTO_TEST_CASE(crop_shape)
 {
-    Rectangle *plot_rect = new Rectangle(50, 20, 100, 120);
+    Rectangle plot_rect(50, 20, 100, 120);
 
     unique_ptr< Rectangle > crop_rect(new Rectangle(10, 11, 20, 30));
-    crop_rect->fit_in_plot(plot_rect);
+    crop_rect->fit_in_other(plot_rect);
     BOOST_CHECK_EQUAL(crop_rect->get_width(), 20);
     BOOST_CHECK_EQUAL(crop_rect->get_height(), 30);
     BOOST_CHECK_EQUAL(crop_rect->get_min_x(), 10);
     BOOST_CHECK_EQUAL(crop_rect->get_min_y(), 11);
 
     crop_rect.reset(new Rectangle(55, 65, 70, 70));
-    crop_rect->fit_in_plot(plot_rect);
+    crop_rect->fit_in_other(plot_rect);
     BOOST_CHECK_EQUAL(crop_rect->get_width(), 45);
     BOOST_CHECK_EQUAL(crop_rect->get_height(), 55);
     BOOST_CHECK_EQUAL(crop_rect->get_min_x(), 55);
     BOOST_CHECK_EQUAL(crop_rect->get_min_y(), 65);
 
     crop_rect.reset(new Rectangle(150, 150, 70, 70));
-    crop_rect->fit_in_plot(plot_rect);
+    crop_rect->fit_in_other(plot_rect);
     BOOST_CHECK_EQUAL(crop_rect->get_width(), 10);
     BOOST_CHECK_EQUAL(crop_rect->get_height(), 10);
     BOOST_CHECK_EQUAL(crop_rect->get_min_x(), 90);

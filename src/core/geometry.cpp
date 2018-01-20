@@ -105,31 +105,31 @@ float Rectangle::get_area() const
     return width * height;
 }
 
-void Rectangle::fit_in_plot(const Shape* parent_shape)
+void Rectangle::fit_in_other(const Shape& parent_shape)
 {
-    if (!parent_shape || parent_shape->get_width() < 0)
+    if (parent_shape.get_width() < 0)
     {
         return;
     }
 
-    if (posx > parent_shape->get_width())
+    if (posx > parent_shape.get_width())
     {
-        posx = parent_shape->get_width() - 10;
+        posx = parent_shape.get_width() - 10;
         width = 10;
     }
-    else if (posx + width  > parent_shape->get_width())
+    else if (posx + width  > parent_shape.get_width())
     {
-        width = parent_shape->get_width() - posx;
+        width = parent_shape.get_width() - posx;
     }
 
-    if (posy > parent_shape->get_height())
+    if (posy > parent_shape.get_height())
     {
-        posy = parent_shape->get_height() - 10;
+        posy = parent_shape.get_height() - 10;
         height = 10;
     }
-    else if (posy + height  > parent_shape->get_height())
+    else if (posy + height  > parent_shape.get_height())
     {
-        height = parent_shape->get_height() - posy;
+        height = parent_shape.get_height() - posy;
     }
 }
 
@@ -157,12 +157,13 @@ bool Rectangle::is_inside(const Rectangle& other) const
     return true;
 }
 
-bool Rectangle::overlaps(const Rectangle& other) const
+bool Rectangle::overlaps(const Shape& other) const
 {
-    if (posx >= other.posx + other.width || posy >= other.posy + other.height) {
+    const Rectangle& other_rect = dynamic_cast< const Rectangle& >(other);
+    if (posx >= other_rect.posx + other_rect.width || posy >= other_rect.posy + other_rect.height) {
         return false;
     }
-    if (other.posx >= posx + width || other.posy >= posy + height) {
+    if (other_rect.posx >= posx + width || other_rect.posy >= posy + height) {
         return false;
     }
     return true;
@@ -235,10 +236,9 @@ std::ostream& operator<<(std::ostream& stream, const Rectangle& rect)
    return stream;
 }
 
-Shape* Rectangle::clone()
+Rectangle* Rectangle::clone()
 {
-    Rectangle* shape = new Rectangle(*this);
-    return shape;
+    return new Rectangle(*this);
 }
 
 string Rectangle::str() const

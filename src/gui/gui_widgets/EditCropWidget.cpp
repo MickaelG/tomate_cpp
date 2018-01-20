@@ -133,7 +133,7 @@ unique_ptr<Crop> EditCropWidget::get_described_crop()
 
     QString note = ui->noteInput->text();
 
-    rect.fit_in_plot(p_plot->get_shape());
+    rect.fit_in_other(*p_plot->get_shape());
     rect.translate(p_plot->get_shape()->get_min_x(), p_plot->get_shape()->get_min_y());
     CropLocation location(rect);
 

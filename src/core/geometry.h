@@ -22,8 +22,8 @@ public:
     virtual float get_max_x() const = 0;
     virtual float get_max_y() const = 0;
     virtual float get_area() const = 0;
-    virtual void fit_in_plot(const Shape* parent_shape) = 0;
-    virtual bool overlaps(const Rectangle& other) const = 0;
+    virtual void fit_in_other(const Shape& parent_shape) = 0;
+    virtual bool overlaps(const Shape& other) const = 0;
     virtual void translate(float x, float y) = 0;
     explicit operator bool() const ;
     virtual Shape* clone() = 0;
@@ -50,24 +50,24 @@ public:
     Rectangle(const Shape& shape);
     Rectangle(const Rectangle& shape);
 
-    float get_width() const;
-    float get_height() const;
-    float get_min_x() const;
-    float get_min_y() const;
-    float get_max_x() const;
-    float get_max_y() const;
-    float get_area() const;
+    float get_width() const override;
+    float get_height() const override;
+    float get_min_x() const override;
+    float get_min_y() const override;
+    float get_max_x() const override;
+    float get_max_y() const override;
+    float get_area() const override;
     
     void set_width(float width);
     void set_height(float height);
     
-    virtual void fit_in_plot(const Shape* parent_shape);
+    virtual void fit_in_other(const Shape& parent_shape) override;
     void translate(float x_shift, float y_shift) override;
     bool is_inside(const Shape& other) const;
     bool is_inside(const Rectangle& other) const;
-    bool overlaps(const Rectangle& other) const;
+    bool overlaps(const Shape& other) const override;
     Rectangle intersection(const Rectangle& other) const;
-    Shape* clone();
+    Rectangle* clone() override;
     std::string str() const;
 };
 
