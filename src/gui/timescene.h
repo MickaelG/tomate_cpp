@@ -1,6 +1,6 @@
 
-#ifndef GUI_TIMELINE_H
-#define GUI_TIMELINE_H
+#ifndef GUI_TIMESCENE_H
+#define GUI_TIMESCENE_H
 
 #include <QWidget>
 #include <QGraphicsScene>
@@ -11,34 +11,13 @@
 
 #include <vector>
 
+#include "croptimerepresentation.h"
+
 class DatasetModel;
 class Crop;
 class CropSelectionController;
 class DateController;
 class DateRuler;
-
-
-class CropTimeRepresentation: public QGraphicsItemGroup
-{
-public:
-    CropTimeRepresentation(Crop &crop, float ypos, float height,
-                           QDate date0 = QDate(), QWidget* parent = NULL);
-    QGraphicsRectItem* create_rect(QDate start_date, QDate end_date,
-                                   float ypos, float height, bool planned=false);
-    void delete_me();
-    const Crop *get_pcrop() const;
-    Crop *get_pcrop();
-    //void show(QPoint point, Crop* p_crop);
-    void set_selected(bool val);
-    void _date_ruler(QDate end_date, QDate date0);
-
-private:
-    void update_global_rect(const QGraphicsRectItem& in_rect);
-
-    Crop& crop;
-    QDate date0;
-    QGraphicsRectItem* _global_rect;
-};
 
 
 class TimeScene: public QGraphicsScene
@@ -81,4 +60,4 @@ private:
     void draw_date_line(QDate date, int bottom_y);
 };
 
-#endif //GUI_TIMELINE_H
+#endif //GUI_TIMESCENE_H
