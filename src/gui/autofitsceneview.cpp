@@ -1,9 +1,14 @@
 
 #include "autofitsceneview.h"
 
-AutofitSceneView::AutofitSceneView(bool horizontal_only, QWidget* parent) :
-    QGraphicsView(parent), horizontal_only(horizontal_only)
+AutofitSceneView::AutofitSceneView(QWidget* parent) :
+    QGraphicsView(parent)
 {
+}
+
+void AutofitSceneView::setHorizontalOnly()
+{
+    horizontal_only = true;
 }
 
 void AutofitSceneView::zoom_fit()
@@ -17,7 +22,7 @@ void AutofitSceneView::resizeEvent(QResizeEvent *event)
         return;
     }
 
-    int Margin = 20;
+    int Margin = 10;
     if (horizontal_only) {
         QRectF itemsRect = scene()->itemsBoundingRect();
         int x = itemsRect.x();
@@ -27,6 +32,7 @@ void AutofitSceneView::resizeEvent(QResizeEvent *event)
         setSceneRect(x - Margin, y - Margin,
                      width + 2 * Margin, height + 2 * Margin);
         setAlignment(Qt::AlignTop);
+        setMinimumHeight(height + 2 * Margin);
     } else {
         zoom_fit();
     }

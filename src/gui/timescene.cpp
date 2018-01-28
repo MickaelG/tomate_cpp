@@ -17,11 +17,6 @@
 #include <QPushButton>
 #include <QSignalMapper>
 
-int Margin = 20;
-int SubMargin = 5;
-int SquareUnit = 30;
-int PlotHeight = 200;
-
 
 TimeScene::TimeScene(DatasetModel& dataset_model,
                      CropSelectionController& selection_controller,
@@ -71,6 +66,8 @@ void TimeScene::removeCropSelection()
 
 void TimeScene::selectCrop(Crop* p_crop)
 {
+    redraw();
+    /*
     removeCropSelection();
     if (p_crop == nullptr) {
         return;
@@ -87,6 +84,7 @@ void TimeScene::selectCrop(Crop* p_crop)
         return;
     }
     selected_crop_repr->set_selected(true);
+    */
 }
 
 void TimeScene::selectNextCrop(bool reverse)
@@ -141,7 +139,9 @@ void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF clic_point = event->scenePos();
     CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
-    emit crop_selected(p_current_crop_repr ? p_current_crop_repr->get_pcrop() : nullptr);
+    if (p_current_crop_repr != nullptr) {
+        emit crop_selected(p_current_crop_repr->get_pcrop());
+    }
 
     QGraphicsScene::mousePressEvent(event);
 }
@@ -190,76 +190,54 @@ pair<float, float> compute_crop_ypos(const Crop& crop, const Plot& plot)
 
 void TimeScene::draw_scene()
 {
-    QDate date0 = QDate(_date_controller.get_date().year(), 1, 1);
-    Crops& crops = dataset_model.get_dataset().get_crops();
+    add_crops();
 
-    qreal plot_max_pos = 0;
-    for (const Plot& plot: dataset_model.get_dataset().get_plots())
-    {
-        qreal y_pos_start = plot_max_pos;
-        if (y_pos_start != 0) {
-            y_pos_start += Margin;
-        }
-        plot_max_pos += PlotHeight;
-        //actual timeline
-        list<Crop*> current_crops;
-        vector<Rectangle> crop_rects;
-
-        //Select crops in current year and current plot
-        for (Crop& crop: crops)
-        {
-            if (crop.get_shape().overlaps(plot.get_shape()) and
-                crop.is_in_year_started_by(fromQDate(date0)))
-            {
-                current_crops.push_back(&crop);
-                crop_rects.push_back(crop.get_shape());
-            }
-        }
-
-        _2dTo1dConverter converter(plot.get_shape(), crop_rects);
-        for (Crop* crop_p: current_crops)
-        {
-            pair<float, float> ycoords = converter.get_position(crop_p->get_shape());
-            float ypos = ycoords.first;
-            CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*crop_p, (ypos == -1) ? 0 : ypos * PlotHeight,
-                                                                           ycoords.second * PlotHeight, date0);
-            crop_repr->setY(y_pos_start);
-
-            if (ycoords.first == -1) {
-
-                QList<QGraphicsItem*> colliding_items;
-                do {
-                    colliding_items = collidingItems(crop_repr);
-                    qreal lowest_y = crop_repr->pos().y();
-                    for (auto item: colliding_items) {
-                        qreal low_y = item->pos().y() + item->boundingRect().height();
-                        if (low_y > lowest_y) {
-                            lowest_y = low_y;
-                        }
-                    }
-                    crop_repr->setY(lowest_y+1);
-                } while (!colliding_items.empty());
-            }
-
-            plot_max_pos = qMax(plot_max_pos, crop_repr->pos().y() + crop_repr->boundingRect().height());
-
-            addItem(crop_repr);
-            crop_reprs.push_back(crop_repr);
-        }
-
-        //Add plot name on the left
-        QGraphicsSimpleTextItem* T = new QGraphicsSimpleTextItem(toQString(plot.get_name()));
-        float text_width = T->boundingRect().width();
-        T->setPos(-40, (y_pos_start + plot_max_pos + text_width) / 2);
-        T->setRotation(-90);
-        addItem(T);
-    }
-    selectCrop(_selection_controller.get_selected());
-
-    _date_ruler = new DateRuler(_date_controller, plot_max_pos);
+    _date_ruler = new DateRuler(_date_controller, 24);
     addItem(_date_ruler);
 
     update();
     emit size_changed();
+}
+
+
+void TimeScene::add_crops()
+{
+    Crop* selected_crop = _selection_controller.get_selected();
+
+    if (selected_crop == nullptr) {
+        return;
+    }
+
+    const float full_height = 24;
+
+    QDate date0 = QDate(_date_controller.get_date().year(), 1, 1);
+    Crops& crops = dataset_model.get_dataset().get_crops();
+
+    CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*selected_crop, 0, full_height, date0);
+    crop_repr->set_selected(true);
+    crop_reprs.push_back(crop_repr);
+    addItem(crop_repr);
+    const float selected_area = selected_crop->get_shape().get_area();
+
+    //Select crops in current year and current plot
+    for (Crop& crop: crops)
+    {
+        if (&crop == selected_crop) {
+            continue;
+        }
+        if (!crop.is_in_year_started_by(fromQDate(date0))) {
+            continue;
+        }
+        if (!crop.get_shape().overlaps(selected_crop->get_shape())) {
+            continue;
+        }
+        unique_ptr<Shape> overlapping_shape(crop.get_shape().clone());
+        overlapping_shape->fit_in_other(selected_crop->get_shape());
+        const float overlapping_area = overlapping_shape->get_area();
+        const float height = full_height * overlapping_area / selected_area;
+        CropTimeRepresentation* crop_repr = new CropTimeRepresentation(crop, 0, height, date0);
+        crop_reprs.push_back(crop_repr);
+        addItem(crop_repr);
+    }
 }
 

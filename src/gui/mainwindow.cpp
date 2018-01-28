@@ -27,28 +27,6 @@
 #include <boost/filesystem.hpp>
 
 
-QWidget* MainWindow::createTabsWidget()
-{
-    QTabWidget* tab_widget = new QTabWidget;
-
-    SpaceScene* spacescene = new SpaceScene(dataset_model,
-                                            selection_controller,
-                                            date_controller);
-    AutofitSceneView* spaceview = new AutofitSceneView(false);
-    spaceview->setScene(spacescene);
-    tab_widget->addTab(spaceview, QObject::tr("Space view"));
-
-
-    TimeScene* timescene = new TimeScene(dataset_model,
-                                         selection_controller,
-                                         date_controller);
-    AutofitSceneView* timeview = new AutofitSceneView(true);
-    timeview->setScene(timescene);
-    tab_widget->addTab(timeview, QObject::tr("Time view"));
-
-    return tab_widget;
-}
-
 void MainWindow::writeData()
 {
     if (_new_file)
@@ -97,7 +75,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar->addAction(tr("Plants"), plantswidget, SLOT(show()));
     ui->toolBar->addAction(tr("Plots"), plotswidget, SLOT(show()));
 
-    ui->centralLayout->addWidget(createTabsWidget());
+    TimeScene* timescene = new TimeScene(dataset_model,
+                                         selection_controller,
+                                         date_controller);
+    ui->timeView->setHorizontalOnly();
+    ui->timeView->setScene(timescene);
+    
+    SpaceScene* spacescene = new SpaceScene(dataset_model,
+                                            selection_controller,
+                                            date_controller);
+    ui->spaceView->setScene(spacescene);
 
     QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));

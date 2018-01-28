@@ -58,6 +58,7 @@ private:
     DateRuler* _date_ruler;
 
     void draw_date_line(QDate date, int bottom_y);
+    void add_crops();
 };
 
 #endif //GUI_TIMESCENE_H

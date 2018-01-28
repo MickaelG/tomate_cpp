@@ -9,12 +9,13 @@ class AutofitSceneView: public QGraphicsView
     Q_OBJECT
 
 public:
-    AutofitSceneView(bool horizontal_only, QWidget* parent = nullptr);
+    AutofitSceneView(QWidget* parent = nullptr);
+    void setHorizontalOnly();
     void zoom_fit();
     void resizeEvent(QResizeEvent *event);
 
 private:
-    bool horizontal_only;
+    bool horizontal_only = false;
 };
 
 #endif //AUTOFITSCENEVIEW_H

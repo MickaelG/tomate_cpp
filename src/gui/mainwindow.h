@@ -23,7 +23,6 @@ public:
     ~MainWindow();
     
 private:
-    QWidget* createTabsWidget();
     void loadData();
     void writeData();
     virtual void closeEvent(QCloseEvent*);
