@@ -1,46 +1,35 @@
 
-#ifndef GUI_MAINWIN_H
-#define GUI_MAINWIN_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
+#include "ui_mainwindow.h"
 #include "gui_controller.h"
 #include "dataset.h"
 
 #include <QObject>
 #include <QMainWindow>
-#include <QGraphicsView>
 
 #include <string>
 
 class Dataset;
 
-class AutofitSceneView: public QGraphicsView
+class MainWindow : public QMainWindow
+//class MainWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    AutofitSceneView(bool horizontal_only, QWidget* parent = nullptr);
-    void zoom_fit();
-    void resizeEvent(QResizeEvent *event);
-
-private:
-    bool horizontal_only;
-};
-
-class GuiMainWin : public QMainWindow
-//class GuiMainWin : public QWidget
-{
-    Q_OBJECT
-
-public:
-    GuiMainWin();
-    ~GuiMainWin();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
     
 private:
     QWidget* createTabsWidget();
     void loadData();
     void writeData();
     virtual void closeEvent(QCloseEvent*);
-    
+
+    Ui::MainWindow *ui;
+
     Dataset _dataset;
     DatasetModel dataset_model;
     DatasetController dataset_controller;
@@ -52,4 +41,4 @@ private:
     bool _new_file;
 };
 
-#endif //GUI_MAINWIN_H
+#endif //MAINWINDOW_H

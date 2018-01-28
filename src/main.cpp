@@ -1,5 +1,5 @@
 
-#include "gui/gui_mainwin.h"
+#include "gui/mainwindow.h"
 
 #include <QApplication>
 #include <QTranslator>
@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     translator.load("tomate_" + QLocale::system().name(), ":/lang/");
     a.installTranslator(&translator);
 
-    GuiMainWin w;
+    MainWindow w;
     w.show();
 
     int result = a.exec();

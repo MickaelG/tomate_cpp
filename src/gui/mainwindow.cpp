@@ -1,7 +1,9 @@
 
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
 #include "dataset.h"
 #include "calendar.h"
-#include "gui_mainwin.h"
 #include "gui_plants.h"
 #include "gui_plots.h"
 #include "gui_spaceview.h"
@@ -11,6 +13,7 @@
 #include "PlantsModel.h"
 #include "PlotsModel.h"
 #include "EditCropWidget.h"
+#include "autofitsceneview.h"
 
 #include "xml.h"
 
@@ -23,38 +26,8 @@
 
 #include <boost/filesystem.hpp>
 
-AutofitSceneView::AutofitSceneView(bool horizontal_only, QWidget* parent) :
-    QGraphicsView(parent), horizontal_only(horizontal_only)
-{
-}
 
-void AutofitSceneView::zoom_fit()
-{
-    fitInView(sceneRect(), Qt::KeepAspectRatio);
-}
-
-void AutofitSceneView::resizeEvent(QResizeEvent *event)
-{
-    if (scene() == nullptr) {
-        return;
-    }
-
-    int Margin = 20;
-    if (horizontal_only) {
-        QRectF itemsRect = scene()->itemsBoundingRect();
-        int x = itemsRect.x();
-        int y = itemsRect.y();
-        int width = itemsRect.width();
-        int height = itemsRect.height();
-        setSceneRect(x - Margin, y - Margin,
-                     width + 2 * Margin, height + 2 * Margin);
-        setAlignment(Qt::AlignTop);
-    } else {
-        zoom_fit();
-    }
-}
-
-QWidget* GuiMainWin::createTabsWidget()
+QWidget* MainWindow::createTabsWidget()
 {
     QTabWidget* tab_widget = new QTabWidget;
 
@@ -76,7 +49,7 @@ QWidget* GuiMainWin::createTabsWidget()
     return tab_widget;
 }
 
-void GuiMainWin::writeData()
+void MainWindow::writeData()
 {
     if (_new_file)
     {
@@ -89,22 +62,25 @@ void GuiMainWin::writeData()
     }
 }
 
-void GuiMainWin::closeEvent(QCloseEvent* event)
+void MainWindow::closeEvent(QCloseEvent* event)
 {
     writeData();
     event->accept();
 }
 
 
-GuiMainWin::GuiMainWin() :
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
     _dataset(),
     dataset_model(_dataset),
     dataset_controller(dataset_model, selection_controller),
     selection_controller(),
     _new_file(false)
 {
+    ui->setupUi(this);
+
     showMaximized();
-    setWindowTitle("tomate");
     
     loadData();
 
@@ -117,27 +93,19 @@ GuiMainWin::GuiMainWin() :
     EditCropWidget* edit_crop_widget = new EditCropWidget(dataset_model, dataset_controller,
                                                           selection_controller, plants_model, plots_model);
 
-    QToolBar* toolbar = new QToolBar("", this);
-    addToolBar(toolbar);
-    toolbar->addAction(tr("Add Crop"), edit_crop_widget, SLOT(show_add()));
-    toolbar->addAction(tr("Plants"), plantswidget, SLOT(show()));
-    toolbar->addAction(tr("Plots"), plotswidget, SLOT(show()));
-    toolbar->setMovable(false);
+    ui->toolBar->addAction(tr("Add Crop"), edit_crop_widget, SLOT(show_add()));
+    ui->toolBar->addAction(tr("Plants"), plantswidget, SLOT(show()));
+    ui->toolBar->addAction(tr("Plots"), plotswidget, SLOT(show()));
 
-    QWidget* central_widget = new QWidget(this);
-    QVBoxLayout* central_layout = new QVBoxLayout;
-    central_widget->setLayout(central_layout);
-    central_layout->addWidget(createTabsWidget());
-
-    setCentralWidget(central_widget);
+    ui->centralLayout->addWidget(createTabsWidget());
 
     QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));
 
-    central_layout->addWidget(edit_crop_widget);
+    ui->centralLayout->addWidget(edit_crop_widget);
 }
 
-void GuiMainWin::loadData()
+void MainWindow::loadData()
 {
     string data_home;
     char const* temp = getenv("XDG_DATA_HOME");
@@ -178,8 +146,8 @@ void GuiMainWin::loadData()
     }
 }
 
-GuiMainWin::~GuiMainWin()
+MainWindow::~MainWindow()
 {
-    //TODO: delete tabwidget, timewidget, plantswidget, spacewidget
+    delete ui;
 }
 
