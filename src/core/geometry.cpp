@@ -112,24 +112,46 @@ void Rectangle::fit_in_other(const Shape& parent_shape)
         return;
     }
 
-    if (posx > parent_shape.get_width())
+    if (get_max_x() <= parent_shape.get_min_x())
     {
-        posx = parent_shape.get_width() - 10;
+        posx = parent_shape.get_min_x();
         width = 10;
     }
-    else if (posx + width  > parent_shape.get_width())
+    else if (get_min_x() >= parent_shape.get_max_x())
     {
-        width = parent_shape.get_width() - posx;
+        posx = parent_shape.get_max_x() - 10;
+        width = 10;
+    }
+    else if (get_max_x()  > parent_shape.get_max_x())
+    {
+        width = parent_shape.get_max_x() - posx;
+    }
+    else if (get_min_x() < parent_shape.get_min_x())
+    {
+        auto x_translate = parent_shape.get_min_x() - get_min_x();
+        posx += x_translate;
+        width -= x_translate;
     }
 
-    if (posy > parent_shape.get_height())
+    if (get_max_y() <= parent_shape.get_min_y())
     {
-        posy = parent_shape.get_height() - 10;
+        posy = parent_shape.get_min_y();
         height = 10;
     }
-    else if (posy + height  > parent_shape.get_height())
+    else if (get_min_y() >= parent_shape.get_max_y())
     {
-        height = parent_shape.get_height() - posy;
+        posy = parent_shape.get_max_y() - 10;
+        height = 10;
+    }
+    else if (get_max_y()  > parent_shape.get_max_y())
+    {
+        height = parent_shape.get_max_y() - posy;
+    }
+    else if (get_min_y() < parent_shape.get_min_y())
+    {
+        auto y_translate = parent_shape.get_min_y() - get_min_y();
+        posy += y_translate;
+        height -= y_translate;
     }
 }
 

@@ -32,7 +32,8 @@ add_executable(tomate_gui ${CORE_SRC} ${GUI_SRC} ${WIDGETS_SRC} src/main.cpp ${q
 target_link_libraries(tomate_gui boost_date_time boost_filesystem boost_system)
 target_link_libraries(tomate_gui ${QT_LIBRARIES})
 
-add_executable(tomate_test ${CORE_SRC} src/test/test.cpp)
+set (CORE_TEST_SRC src/test/test.cpp src/test/testgeometry.cpp)
+add_executable(tomate_test ${CORE_SRC} ${CORE_TEST_SRC})
 target_link_libraries(tomate_test boost_unit_test_framework boost_date_time)
 add_test(core tomate_test)
 
