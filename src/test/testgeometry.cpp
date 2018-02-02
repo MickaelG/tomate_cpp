@@ -48,3 +48,11 @@ BOOST_AUTO_TEST_CASE(geometry)
     BOOST_CHECK_EQUAL(Rect1->get_area(), 25);
 }
 
+BOOST_AUTO_TEST_CASE(rectangle)
+{
+    Rectangle rect(0, 0, 120, 120);
+    BOOST_CHECK_EQUAL(rect.get_min_x(), 0);
+    BOOST_CHECK_EQUAL(rect.get_max_x(), 120);
+    BOOST_CHECK_EQUAL(rect.get_min_y(), 0);
+    BOOST_CHECK_EQUAL(rect.get_max_y(), 120);
+}

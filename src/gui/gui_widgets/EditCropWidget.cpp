@@ -85,7 +85,7 @@ void EditCropWidget::set_crop_values(Crop* crop)
 
     Plot* plot_p = plots_model->get_plots().get_for_pos(crop->get_shape());
     ui->plotInput->setCurrentIndex(plots_model->GetRowIndex(*plot_p));
-    Rectangle crop_shape(crop->get_shape());
+    Rectangle crop_shape(crop->get_shape().rect());
     crop_shape.translate(-plot_p->get_shape().get_min_x(), -plot_p->get_shape().get_min_y());
     ui->shapeInput->set_shape(crop_shape);
     ui->noteInput->setText(toQString(crop->get_note()));

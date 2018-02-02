@@ -18,176 +18,118 @@ Shape::operator bool() const
 // class Rectangle
 ///////////////////////////////////////////////////////////////////////////////
 Rectangle::Rectangle(int posx, int posy, int width, int height) :
-    width(width), height(height), posx(posx), posy(posy)
+    _rect(posx, posy, width, height)
 {
 }
 
 Rectangle::Rectangle(int width, int height) :
-    width(width), height(height), posx(0), posy(0)
+    _rect(0, 0, width, height)
+{
+}
+
+Rectangle::Rectangle(QRectF rect) :
+    _rect(std::move(rect))
 {
 }
 
 Rectangle::Rectangle()
 {
-    width = 0;
-    height = 0;
-    posx = 0;
-    posy = 0;
 }
 
-Rectangle::Rectangle(const Shape &shape) :
-    width(shape.get_width()), height(shape.get_height()),
-    posx(shape.get_min_x()), posy(shape.get_min_y())
-{
-}
-
-Rectangle::Rectangle(const Rectangle &shape) :
-    width(shape.get_width()), height(shape.get_height()),
-    posx(shape.get_min_x()), posy(shape.get_min_y())
+Rectangle::Rectangle(const Rectangle &other) :
+    _rect(other._rect)
 {
 }
 
 float Rectangle::get_width() const
 {
-    return width;
+    return _rect.width();
 }
 
 float Rectangle::get_height() const
 {
-    return height;
+    return _rect.height();
 }
 
-void Rectangle::set_width(float in_width)
+void Rectangle::set_width(float width)
 {
-    width = in_width;
+    _rect.setWidth(width);
 }
 
-void Rectangle::set_height(float in_height)
+void Rectangle::set_height(float height)
 {
-    height = in_height;
+    _rect.setHeight(height);
 }
 
 float Rectangle::get_min_x() const
 {
-    return posx;
+    return _rect.left();
 }
 
 float Rectangle::get_min_y() const
 {
-    return posy;
+    return _rect.top();
 }
 
 float Rectangle::get_max_x() const
 {
-    return posx + width;
+    return _rect.right();
 }
 
 float Rectangle::get_max_y() const
 {
-    return posy + height;
+    return _rect.bottom();
 }
 
 float Rectangle::get_area() const
 {
-    return width * height;
+    return _rect.width() * _rect.height();
 }
 
-void Rectangle::fit_in_other(const Shape& parent_shape)
+const QRectF& Rectangle::rect() const
 {
-    if (parent_shape.get_width() < 0)
-    {
-        return;
+    return _rect;
+}
+
+void Rectangle::fit_in_other(const Shape& other)
+{
+    if (_rect.bottom() <= other.rect().top()) {
+        _rect.setHeight(10);
+        _rect.moveBottom(other.rect().top() + 10);
+    } else if (_rect.top() >= other.rect().bottom()) {
+        _rect.setHeight(10);
+        _rect.moveTop(other.rect().bottom() - 10);
     }
 
-    if (get_max_x() <= parent_shape.get_min_x())
-    {
-        posx = parent_shape.get_min_x();
-        width = 10;
-    }
-    else if (get_min_x() >= parent_shape.get_max_x())
-    {
-        posx = parent_shape.get_max_x() - 10;
-        width = 10;
-    }
-    else if (get_max_x()  > parent_shape.get_max_x())
-    {
-        width = parent_shape.get_max_x() - posx;
-    }
-    else if (get_min_x() < parent_shape.get_min_x())
-    {
-        auto x_translate = parent_shape.get_min_x() - get_min_x();
-        posx += x_translate;
-        width -= x_translate;
+    if (_rect.left() >= other.rect().right()) {
+        _rect.setWidth(10);
+        _rect.moveLeft(other.rect().right() - 10);
+    } else if (_rect.right() <= other.rect().left()) {
+        _rect.setWidth(10);
+        _rect.moveRight(other.rect().left() + 10);
     }
 
-    if (get_max_y() <= parent_shape.get_min_y())
-    {
-        posy = parent_shape.get_min_y();
-        height = 10;
-    }
-    else if (get_min_y() >= parent_shape.get_max_y())
-    {
-        posy = parent_shape.get_max_y() - 10;
-        height = 10;
-    }
-    else if (get_max_y()  > parent_shape.get_max_y())
-    {
-        height = parent_shape.get_max_y() - posy;
-    }
-    else if (get_min_y() < parent_shape.get_min_y())
-    {
-        auto y_translate = parent_shape.get_min_y() - get_min_y();
-        posy += y_translate;
-        height -= y_translate;
-    }
+    _rect &= other.rect();
 }
 
 void Rectangle::translate(float x_shift, float y_shift)
 {
-    posx += x_shift;
-    posy += y_shift;
+    _rect.translate(x_shift, y_shift);
 }
 
 bool Rectangle::is_inside(const Shape& other) const
 {
-    //TODO: handle something else than rect
-    return is_inside(dynamic_cast<const Rectangle&>(other));
-}
-
-bool Rectangle::is_inside(const Rectangle& other) const
-{
-    if (posx < other.posx || posy < other.posy) {
-        return false;
-    }
-    if (posx + width > other.posx + other.width ||
-        posy + height > other.posy + other.height) {
-        return false;
-    }
-    return true;
+    return other.rect().contains(_rect);
 }
 
 bool Rectangle::overlaps(const Shape& other) const
 {
-    const Rectangle& other_rect = dynamic_cast< const Rectangle& >(other);
-    if (posx >= other_rect.posx + other_rect.width || posy >= other_rect.posy + other_rect.height) {
-        return false;
-    }
-    if (other_rect.posx >= posx + width || other_rect.posy >= posy + height) {
-        return false;
-    }
-    return true;
+    return _rect.intersects(other.rect());
 }
 
 Rectangle Rectangle::intersection(const Rectangle& other) const
 {
-    if (!overlaps(other)) {
-        return Rectangle(0, 0, -1, -1);
-    }
-    int x = max(posx, other.posx);
-    int y = max(posy, other.posy);
-    int x2 = min(get_max_x(), other.get_max_x());
-    int y2 = min(get_max_y(), other.get_max_y());
-    return Rectangle(x, y, x2-x, y2-y);
+    return Rectangle(_rect & other.rect());
 }
 
 set<Rectangle> compute_non_overlapping_rects(const Rectangle& first, const Rectangle& other)
@@ -252,8 +194,8 @@ Rectangle* Rectangle::clone()
 
 string Rectangle::str() const
 {
-    return "(" + to_string(posx) + ", " + to_string(posy) + ", " +
-           to_string(width) + ", " + to_string(height) + ")";
+    return "(" + to_string(get_min_x()) + ", " + to_string(get_min_y()) + ", " +
+           to_string(get_width()) + ", " + to_string(get_height()) + ")";
 }
 
 ///////////////////////////////////////////////////////////////////////////////

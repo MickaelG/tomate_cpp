@@ -639,7 +639,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_5)
 
 BOOST_AUTO_TEST_CASE(timeline_ycomputing_6)
 {
-    Plot plot = Plot("plot", "", 100, 100, 0, 0);
+    Rectangle plot_shape(0, 0, 100, 100);
 
     vector<Rectangle> lrect;
     lrect.push_back(Rectangle(0, 0, 25, 25));
@@ -649,7 +649,7 @@ BOOST_AUTO_TEST_CASE(timeline_ycomputing_6)
     lrect.push_back(Rectangle(75, 50, 25, 25));
     lrect.push_back(Rectangle(0, 0, 100, 100));
 
-    _2dTo1dConverter converter(plot.get_shape(), lrect);
+    _2dTo1dConverter converter(plot_shape, lrect);
     //cout << "DEBUG partitions:" << partitions << endl;
     for (int irect = 0; irect < lrect.size(); ++irect) {
         const Rectangle& rect = lrect[irect];
