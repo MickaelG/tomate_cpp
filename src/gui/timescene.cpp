@@ -132,7 +132,7 @@ void TimeScene::selectNextCrop(bool reverse)
             }
         }
     }
-    emit crop_selected(crop_repr_to_select->get_pcrop());
+    _selection_controller.select_crop(crop_repr_to_select->get_pcrop());
 }
 
 void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -140,7 +140,7 @@ void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
     QPointF clic_point = event->scenePos();
     CropTimeRepresentation* p_current_crop_repr = getCropReprAtPos(clic_point);
     if (p_current_crop_repr != nullptr) {
-        emit crop_selected(p_current_crop_repr->get_pcrop());
+        _selection_controller.select_crop(p_current_crop_repr->get_pcrop());
     }
 
     if (clic_point.y() > -30) {

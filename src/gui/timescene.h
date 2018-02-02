@@ -45,7 +45,6 @@ public slots:
     void date_changed(bool year_changed);
 
 signals:
-    void crop_selected(Crop* p_crop);
     void size_changed();
 
 private:
