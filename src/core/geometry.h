@@ -28,15 +28,6 @@ public:
     virtual Shape* clone() = 0;
 };
 
-class Polygon: public Shape
-{
-private:
-    std::vector<float> points;
-public:
-    Polygon();
-    Polygon(std::vector<float> points);
-};
-
 class Rectangle: public Shape
 {
 private:
