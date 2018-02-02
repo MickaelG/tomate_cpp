@@ -6,16 +6,13 @@
 #include <set>
 #include <iostream>
 
-///////////////////////////////////////////////////////////////////////////////
-/// class Shape : abstract class for all others
-///////////////////////////////////////////////////////////////////////////////
 
 class Rectangle;
 
 class Shape
 {
 public:
-    virtual ~Shape() {};
+    virtual ~Shape() = default;
 
     virtual float get_width() const = 0;
     virtual float get_height() const = 0;
