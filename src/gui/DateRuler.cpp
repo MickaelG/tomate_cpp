@@ -105,14 +105,6 @@ public:
         }
     }
   }
-  
-  void mousePressEvent(QGraphicsSceneMouseEvent *event) override
-  {
-      QPointF clic_point = event->scenePos();
-      int xpos = clic_point.x();
-      QDate date = DateRuler::pos_to_date(xpos, QDate(_date_controller.get_date().year(), 1, 1));
-      _date_controller.set_date(date);
-  }
 
   void wheelEvent(QGraphicsSceneWheelEvent *event) override
   {

@@ -143,6 +143,12 @@ void TimeScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
         emit crop_selected(p_current_crop_repr->get_pcrop());
     }
 
+    if (clic_point.y() > -30) {
+        int xpos = clic_point.x();
+        QDate date = DateRuler::pos_to_date(xpos, QDate(_date_controller.get_date().year(), 1, 1));
+        _date_controller.set_date(date);
+    }
+
     QGraphicsScene::mousePressEvent(event);
 }
 
