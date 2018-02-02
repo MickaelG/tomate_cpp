@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Hello
+#define BOOST_TEST_MODULE TomateCore
 #include <boost/test/unit_test.hpp>
 
 #include "dataset.h"
