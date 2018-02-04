@@ -30,7 +30,6 @@ TimeScene::TimeScene(DatasetModel& dataset_model,
     _date_ruler(nullptr)
 {
     QObject::connect(&_selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
-    QObject::connect(this, SIGNAL(crop_selected(Crop*)), &_selection_controller, SLOT(select_crop(Crop*)));
 
     QObject::connect(&date_controller, SIGNAL(date_changed(bool)), this, SLOT(date_changed(bool)));
 

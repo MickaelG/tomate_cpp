@@ -108,7 +108,6 @@ SpaceScene::SpaceScene(DatasetModel& dataset_model,
     selection_controller(selection_controller)
 {
     QObject::connect(&selection_controller, SIGNAL(selection_changed(Crop*)), this, SLOT(selectCrop(Crop*)));
-    QObject::connect(this, SIGNAL(crop_selected(Crop*)), &selection_controller, SLOT(select_crop(Crop*)));
 
     QObject::connect(&date_controller, SIGNAL(date_changed(bool)), this, SLOT(update_draw()));
 
@@ -212,6 +211,6 @@ void SpaceScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QPointF clic_point = event->scenePos();
     Crop* selected_crop = getCropAtPos(clic_point);
-    emit crop_selected(selected_crop);
+    selection_controller.select_crop(selected_crop);
 }
 

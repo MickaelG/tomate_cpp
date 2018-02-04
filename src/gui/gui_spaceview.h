@@ -70,9 +70,6 @@ public:
 private slots:
     void selectCrop(Crop *p_crop);
     void update_draw();
-
-signals:
-    void crop_selected(Crop* p_crop);
     
 private:
     DatasetModel& dataset_model;
