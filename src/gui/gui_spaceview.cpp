@@ -133,7 +133,6 @@ void SpaceScene::draw_scene()
                                                                    plot, _date_controller.get_date());
             this->addItem(plot_repr);
             plot_reprs.push_back(plot_repr);
-            //TODO: delete plot_repr
         }
     }
 }
