@@ -218,10 +218,12 @@ void TimeScene::add_crops()
     QDate date0 = QDate(_date_controller.get_date().year(), 1, 1);
     Crops& crops = dataset_model.get_dataset().get_crops();
 
-    CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*selected_crop, 0, full_height, date0);
-    crop_repr->set_selected(true);
-    crop_reprs.push_back(crop_repr);
-    addItem(crop_repr);
+    if (selected_crop->is_in_year_started_by(fromQDate(date0))) {
+        CropTimeRepresentation* crop_repr = new CropTimeRepresentation(*selected_crop, 0, full_height, date0);
+        crop_repr->set_selected(true);
+        crop_reprs.push_back(crop_repr);
+        addItem(crop_repr);
+    }
     const float selected_area = selected_crop->get_shape().get_area();
 
     //Select crops in current year and current plot
