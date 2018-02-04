@@ -135,6 +135,7 @@ void SpaceScene::draw_scene()
             plot_reprs.push_back(plot_repr);
         }
     }
+    selectCrop(selection_controller.get_selected());
 }
 
 void SpaceScene::clear_scene()
