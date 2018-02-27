@@ -25,7 +25,7 @@
      <number>6</number>
     </property>
     <item>
-     <widget class="AutofitSceneView" name="timeView">
+     <widget class="TimeView" name="timeView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -35,7 +35,7 @@
      </widget>
     </item>
     <item>
-     <widget class="AutofitSceneView" name="spaceView"/>
+     <widget class="SpaceView" name="spaceView"/>
     </item>
    </layout>
   </widget>
@@ -53,9 +53,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>AutofitSceneView</class>
+   <class>TimeView</class>
    <extends>QGraphicsView</extends>
-   <header>autofitsceneview.h</header>
+   <header>timeview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SpaceView</class>
+   <extends>QGraphicsView</extends>
+   <header>spaceview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

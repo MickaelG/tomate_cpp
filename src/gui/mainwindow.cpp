@@ -13,7 +13,6 @@
 #include "PlantsModel.h"
 #include "PlotsModel.h"
 #include "EditCropWidget.h"
-#include "autofitsceneview.h"
 
 #include "xml.h"
 
@@ -78,7 +77,6 @@ MainWindow::MainWindow(QWidget *parent) :
     TimeScene* timescene = new TimeScene(dataset_model,
                                          selection_controller,
                                          date_controller);
-    ui->timeView->setHorizontalOnly();
     ui->timeView->setScene(timescene);
     
     SpaceScene* spacescene = new SpaceScene(dataset_model,
