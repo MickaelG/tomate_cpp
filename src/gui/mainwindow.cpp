@@ -83,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
                                             selection_controller,
                                             date_controller);
     ui->spaceView->setScene(spacescene);
+    ui->spaceView->zoom_fit();
 
     QObject::connect(edit_crop_widget->ui->EditPlantsBtn, SIGNAL(clicked()), plantswidget, SLOT(show()));
     QObject::connect(edit_crop_widget->ui->EditPlotsBtn, SIGNAL(clicked()), plotswidget, SLOT(show()));

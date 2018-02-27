@@ -11,7 +11,7 @@ class SpaceView: public QGraphicsView
 public:
     SpaceView(QWidget* parent = nullptr);
     void zoom_fit();
-    void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent* event);
 
 private:
 };

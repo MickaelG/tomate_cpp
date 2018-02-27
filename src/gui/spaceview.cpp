@@ -1,4 +1,6 @@
 
+#include <QWheelEvent>
+
 #include "spaceview.h"
 
 SpaceView::SpaceView(QWidget* parent) :
@@ -11,11 +13,18 @@ void SpaceView::zoom_fit()
     fitInView(sceneRect(), Qt::KeepAspectRatio);
 }
 
-void SpaceView::resizeEvent(QResizeEvent *event)
+void SpaceView::wheelEvent(QWheelEvent* event)
 {
-    if (scene() == nullptr) {
-        return;
+    const int degrees = event->delta() / 8;
+    int steps = degrees / 15;
+
+    setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    qreal scale_factor = 1;
+    if (steps > 0) {
+        scale_factor = steps * 1.1;
+    } else {
+        scale_factor = 1 / (-steps * 1.1);
     }
 
-    zoom_fit();
+    scale(scale_factor, scale_factor);
 }
