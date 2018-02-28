@@ -19,6 +19,10 @@
 PlotRepresentation::PlotRepresentation(Crops& crops, Plot& plot, QDate date) :
     crops(crops), plot(plot)
 {
+    QPen pen;
+    pen.setWidth(0);
+    setPen(pen);
+
     this->update_draw(date);
 }
 
@@ -60,6 +64,10 @@ void PlotRepresentation::add_name()
 CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
     p_crop(p_crop)
 {
+    QPen pen;
+    pen.setWidth(0);
+    setPen(pen);
+
     Shape& shape = p_crop->get_shape();
     if (!shape)
     {
