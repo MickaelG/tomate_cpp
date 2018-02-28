@@ -6,7 +6,7 @@
 #include "calendar.h"
 #include "gui_plants.h"
 #include "gui_plots.h"
-#include "gui_spaceview.h"
+#include "spacescene.h"
 #include "timescene.h"
 #include "gui_calendar.h"
 #include "gui_controller.h"

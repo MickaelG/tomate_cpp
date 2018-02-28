@@ -1,5 +1,5 @@
 
-#include "gui_spaceview.h"
+#include "spacescene.h"
 #include "gui_controller.h"
 #include "DateRuler.h"
 
