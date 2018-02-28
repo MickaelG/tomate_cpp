@@ -64,9 +64,7 @@ void PlotRepresentation::add_name()
 CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
     p_crop(p_crop)
 {
-    QPen pen;
-    pen.setWidth(0);
-    setPen(pen);
+    set_selected(false);
 
     Shape& shape = p_crop->get_shape();
     if (!shape)
@@ -75,8 +73,8 @@ CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
     }
 
     //TODO draw the real shape instead of a rect
-    this->setRect(shape.get_min_x(), - shape.get_min_y() - shape.get_height(),
-                  shape.get_width(), shape.get_height());
+    setRect(QRectF(shape.get_min_x(), - shape.get_min_y() - shape.get_height(),
+                   shape.get_width(), shape.get_height()));
     if (p_crop)
     {
         Plant& plant = p_crop->get_plant();
@@ -94,19 +92,73 @@ CropSpaceRepr::CropSpaceRepr(Crop* p_crop, QDate date) :
         QColor color = QColor(color_str);
         if (p_crop->is_planned_at_date(fromQDate(date)) && !p_crop->is_active_at_date(fromQDate(date)))
         {
-            this->setBrush(QBrush(color, Qt::BDiagPattern));
+            brush = QBrush(color, Qt::BDiagPattern);
         }
         else
         {
-            this->setBrush(QBrush(color));
+            brush = QBrush(color);
         }
     }
+
 }
 
 Crop* CropSpaceRepr::get_pcrop()
 {
     return p_crop;
 }
+
+void CropSpaceRepr::set_selected(bool selected)
+{
+    this->selected = selected;
+    if (selected) {
+        setZValue(1);
+    } else {
+        setZValue(0);
+    }
+    update();
+}
+
+void CropSpaceRepr::setRect(const QRectF &rect)
+{
+    prepareGeometryChange();
+    this->rect = rect;
+    bounding_rect = QRectF();
+    update();
+}
+
+QRectF CropSpaceRepr::boundingRect() const
+{
+    if (bounding_rect.isNull()) {
+        //qreal halfpw = pen().style() == Qt::NoPen ? qreal(0) : pen().widthF() / 2;
+        bounding_rect = rect;
+        //if (halfpw > 0.0)
+        //    d->boundingRect.adjust(-halfpw, -halfpw, halfpw, halfpw);
+    }
+    return bounding_rect;
+}
+
+void CropSpaceRepr::paint(QPainter *painter,
+                          const QStyleOptionGraphicsItem *option,
+                          QWidget *widget)
+{
+    Q_UNUSED(widget);
+    Q_UNUSED(option);
+    QPen pen;
+    pen.setWidth(0);
+    if (selected) {
+        QPen white_pen(QColor("white"));
+        white_pen.setWidth(0);
+        painter->setPen(white_pen);
+        painter->setBrush(Qt::NoBrush);
+        painter->drawRect(rect);
+        pen.setStyle(Qt::DashLine);
+    }
+    painter->setPen(pen);
+    painter->setBrush(brush);
+    painter->drawRect(rect);
+}
+
+
 
 SpaceScene::SpaceScene(DatasetModel& dataset_model,
                        CropSelectionController& selection_controller,
@@ -178,8 +230,7 @@ void SpaceScene::removeCropSelection()
 {
     if (selected_subd_repr)
     {
-        selected_subd_repr->setZValue(0);
-        selected_subd_repr->setPen(QPen());
+        selected_subd_repr->set_selected(false);
     }
     selected_subd_repr = nullptr;
 }
@@ -206,13 +257,7 @@ void SpaceScene::selectCrop(Crop* p_crop)
         return;
     }
 
-    QPen selected_pen;
-    float scene_scale = views()[0]->transform().m11();
-    float pen_width = 4 / scene_scale;
-    selected_pen.setWidthF(pen_width);
-    //selected_pen.setColor(QColor("#444444"));
-    selected_subd_repr->setZValue(1);
-    selected_subd_repr->setPen(selected_pen);
+    selected_subd_repr->set_selected(true);
 }
 
 void SpaceScene::mousePressEvent(QGraphicsSceneMouseEvent *event)

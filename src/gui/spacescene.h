@@ -23,15 +23,26 @@ class DateRuler;
 #include "geometry.h"
 
 
-class CropSpaceRepr: public QGraphicsRectItem
+class CropSpaceRepr: public QGraphicsItem
 {
 public:
     CropSpaceRepr(Crop* p_crop, QDate date);
     Crop* get_pcrop();
-    Rectangle get_rect() { return rect; }
+
+    void set_selected(bool selected);
+
+    void setRect(const QRectF &rect);
+    QRectF boundingRect() const;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *widget);
+
 private:
-    Rectangle rect;
+    QRectF rect;
+    mutable QRectF bounding_rect;
+    QBrush brush;
     Crop* p_crop;
+    bool selected;
 };
 
 
