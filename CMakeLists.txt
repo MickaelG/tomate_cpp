@@ -12,6 +12,7 @@ find_package(Qt5Widgets 5.5)
 add_subdirectory(lib)
 add_subdirectory(src/core)
 add_subdirectory(src/gui)
+add_subdirectory(src/cli)
 
 install(PROGRAMS tomate.desktop DESTINATION share/applications/)
 

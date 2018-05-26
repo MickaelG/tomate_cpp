@@ -93,30 +93,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::loadData()
 {
-    string data_home;
-    char const* temp = getenv("XDG_DATA_HOME");
-    if (temp != NULL)
-    {
-        data_home = string(temp);
+    _data_file = get_datafile_default_path();
+    if (_data_file.empty()) {
+        QMessageBox::critical(NULL, QObject::tr("Error"),
+                              QObject::tr("Error, cannot infer default datafile path."));
+        return;
     }
-    else
-    {
-        string home_dir;
-        char const* temp = getenv("HOME");
-        if(temp != NULL)
-        {
-            home_dir = string(temp);
-        } else {
-            QMessageBox::critical(NULL, QObject::tr("Error"),
-                                  QObject::tr("Error, HOME environment variable not set."));
-            return;
-        }
-        data_home =  home_dir + "/.local/share/";
-
-    }
-
-    _user_data_dir = data_home + "/tomate/";
-    _data_file = _user_data_dir + "/data.sfg";
 
     int res = xml_read_data(_data_file, dataset_model.get_dataset());
     if (res == -1)

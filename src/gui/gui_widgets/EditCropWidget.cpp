@@ -8,6 +8,7 @@
 
 #include "dataset.h"
 #include "plot.h"
+#include "log.h"
 
 #include <QMessageBox>
 #include <string>
@@ -84,6 +85,10 @@ void EditCropWidget::set_crop_values(Crop* crop)
     ui->varInput->setCurrentIndex(plants_model->GetVarietyRowIndex(crop->get_plant()));
 
     Plot* plot_p = plots_model->get_plots().get_for_pos(crop->get_shape());
+    if (plot_p == nullptr) {
+        Log::Error("Failed to get plot for selected crop");
+        return;
+    }
     ui->plotInput->setCurrentIndex(plots_model->GetRowIndex(*plot_p));
     Rectangle crop_shape(crop->get_shape().rect());
     crop_shape.translate(-plot_p->get_shape().get_min_x(), -plot_p->get_shape().get_min_y());
@@ -133,7 +138,7 @@ unique_ptr<Crop> EditCropWidget::get_described_crop()
 
     QString note = ui->noteInput->text();
 
-    rect.fit_in_other(p_plot->get_shape());
+    //rect.fit_in_other(p_plot->get_shape());
     rect.translate(p_plot->get_shape().get_min_x(), p_plot->get_shape().get_min_y());
     CropLocation location(rect);
 

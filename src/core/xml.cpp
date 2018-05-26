@@ -32,6 +32,31 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
     }
 }
 
+const string get_datafile_default_path()
+{
+    string data_home;
+    char const* temp = getenv("XDG_DATA_HOME");
+    if (temp != nullptr)
+    {
+        data_home = string(temp);
+    }
+    else
+    {
+        string home_dir;
+        char const* temp = getenv("HOME");
+        if(temp != nullptr)
+        {
+            home_dir = string(temp);
+        } else {
+            return "";
+        }
+        data_home =  home_dir + "/.local/share/";
+
+    }
+
+    return data_home + "/tomate/data.sfg";
+}
+
 int xml_read_data(string filename, Dataset& dataset)
 {
     xml_document doc;
